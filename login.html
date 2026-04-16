@@ -74,7 +74,7 @@
         <i class="fas fa-user-shield text-2xl text-black"></i>
       </div>
       <h1 class="text-xl font-bold tracking-wide">KRYONIX</h1>
-      <p class="text-[10px] text-gray-500 font-mono mt-1">SECURE ACCESS PROTOCOL</p>
+      <p class="text-[10px] text-gray-500 font-mono mt-1">SECURE ACCESS PROTOCOL v2.1 (FIXED)</p>
     </div>
 
     <!-- ROLE SWITCHER -->
@@ -89,25 +89,26 @@
 
     <form onsubmit="handleAuth(event)" id="authForm">
       
-      <!-- ADMIN LOGIN ONLY -->
+      <!-- ADMIN LOGIN (Direct/Hardcoded) -->
       <div id="form-admin" class="form-content active">
-        <p class="text-xs text-gray-500 mb-4 bg-red-500/10 p-2 rounded border border-red-500/20 text-red-400">
-          <i class="fas fa-exclamation-triangle mr-1"></i> Access Restricted. Authorized Personnel Only.
+        <p class="text-xs text-gray-500 mb-4 bg-dark-bg/50 p-2 rounded border border-dark-border text-center">
+          <i class="fas fa-shield-alt text-green-500 mr-1"></i> Hardcoded Access (Local)
         </p>
         <div class="input-group">
-          <input type="text" id="admin-user" class="input-field" placeholder=" " required>
+          <input type="text" id="admin-user" class="input-field" placeholder=" " required autocomplete="off">
           <label class="input-label">ADMIN ID</label>
         </div>
         <div class="input-group">
           <input type="password" id="admin-pass" class="input-field" placeholder=" " required>
           <label class="input-label">ACCESS KEY</label>
         </div>
+        <p class="text-[10px] text-gray-600 mt-2 text-center font-mono">Default: admin / admin</p>
       </div>
 
       <!-- BUYER LOGIN -->
       <div id="form-buyer-login" class="form-content">
         <div class="input-group">
-          <input type="text" id="buyer-login-user" class="input-field" placeholder=" " required>
+          <input type="text" id="buyer-login-user" class="input-field" placeholder=" " required autocomplete="off">
           <label class="input-label">USERNAME</label>
         </div>
         <div class="input-group">
@@ -120,7 +121,7 @@
       <!-- BUYER REGISTER -->
       <div id="form-buyer-register" class="form-content">
         <div class="input-group">
-          <input type="text" id="buyer-reg-user" class="input-field" placeholder=" " required>
+          <input type="text" id="buyer-reg-user" class="input-field" placeholder=" " required autocomplete="off">
           <label class="input-label">BUAT USERNAME</label>
         </div>
         <div class="input-group">
@@ -132,11 +133,19 @@
 
       <!-- SUBMIT BUTTON -->
       <button type="submit" class="btn-login flex items-center justify-center gap-2">
-        <span id="btn-text">INITIALIZE</span>
-        <i class="fas fa-bolt" id="btn-icon"></i>
+        <span id="btn-text">EXECUTE</span>
+        <i class="fas fa-sign-in-alt" id="btn-icon"></i>
       </button>
 
     </form>
+
+    <!-- FOOTER LINK -->
+    <div class="mt-6 text-center border-t border-dark-border pt-4">
+      <a href="index.html" class="text-xs text-gray-600 hover:text-green-400 transition flex items-center justify-center gap-2">
+        <i class="fas fa-globe"></i> Back to Home Page
+      </a>
+    </div>
+
   </div>
 
   <!-- SCRIPTS -->
@@ -159,19 +168,19 @@
     const db = getFirestore(app);
 
     // --- DAFTAR ADMIN YANG DIPERBOLEHKAN (HARDCODED) ---
-    // Kamu bisa menambah admin lain di sini nanti.
     const allowedAdmins = [
-      { id: 'admin', key: 'admin' }
+      { id: 'admin', key: 'admin' },
+      // { id: 'admin2', key: 'rahasia123' } // Tambah admin disini
     ];
 
     // STATE
-    let currentRole = 'admin';
-    let buyerMode = 'login'; // login atau register
+    let currentRole = 'admin'; // Default Admin
+    let buyerMode = 'login';
 
     // --- UI FUNCTIONS ---
     window.switchRole = (role) => {
       currentRole = role;
-      buyerMode = 'login'; // reset buyer mode
+      buyerMode = 'login'; // Reset buyer mode
       updateUI();
     }
 
@@ -181,57 +190,72 @@
     }
 
     function updateUI() {
-      // Update Buttons
+      // Update Role Buttons
       document.getElementById('btn-admin').className = currentRole === 'admin' ? 'role-btn active' : 'role-btn';
       document.getElementById('btn-buyer').className = currentRole === 'buyer' ? 'role-btn active' : 'role-btn';
 
-      // Update Forms
-      document.getElementById('form-admin').className = currentRole === 'admin' ? 'form-content active' : 'form-content';
-      
-      if (currentRole === 'buyer') {
+      // Hide all forms first
+      document.getElementById('form-admin').classList.remove('active');
+      document.getElementById('form-buyer-login').classList.remove('active');
+      document.getElementById('form-buyer-register').classList.remove('active');
+
+      // Show correct form
+      if (currentRole === 'admin') {
+        document.getElementById('form-admin').classList.add('active');
+        document.getElementById('btn-text').innerText = "AUTHENTICATE ADMIN";
+      } else if (currentRole === 'buyer') {
         if (buyerMode === 'login') {
-          document.getElementById('form-buyer-login').className = 'form-content active';
-          document.getElementById('form-buyer-register').className = 'form-content';
-          document.getElementById('btn-text').innerText = "LOGIN";
+          document.getElementById('form-buyer-login').classList.add('active');
+          document.getElementById('btn-text').innerText = "BUYER LOGIN";
         } else {
-          document.getElementById('form-buyer-login').className = 'form-content';
-          document.getElementById('form-buyer-register').className = 'form-content active';
-          document.getElementById('btn-text').innerText = "REGISTER";
+          document.getElementById('form-buyer-register').classList.add('active');
+          document.getElementById('btn-text').innerText = "REGISTER NEW BUYER";
         }
       }
+      
+      // Clear inputs for cleaner UX
+      document.querySelectorAll('.input-field').forEach(i => i.value = '');
     }
 
-    // --- AUTH LOGIC ---
+    // --- AUTH LOGIC (FIXED) ---
     window.handleAuth = async (e) => {
       e.preventDefault();
       const btnText = document.getElementById('btn-text');
       const btnIcon = document.getElementById('btn-icon');
       
+      // Loading
       btnText.innerText = "PROCESSING...";
-      btnIcon.className = "fas fa-circle-notch fa-spin";
+      btnIcon.className = "fas fa-spinner fa-spin";
 
       if (currentRole === 'admin') {
+        // --- ADMIN LOGIN (FIXED: Direct Check, No Fake Delay) ---
         const id = document.getElementById('admin-user').value;
         const key = document.getElementById('admin-pass').value;
-        
-        const isAdminValid = allowedAdmins.some(a => a.id === id && a.key === key);
-        
-        if (isAdminValid) {
-          setTimeout(() => window.location.href = 'admin.html', 1000);
+
+        // Cek hardcoded admin
+        const admin = allowedAdmins.find(a => a.id === id && a.key === key);
+
+        if (admin) {
+          // Sukses
+          alert("ACCESS GRANTED: ADMIN");
+          // Pastikan file admin.html ada
+          window.location.href = 'admin.html'; 
         } else {
-          alert("ACCESS DENIED: Credentials Not Recognized");
+          // Gagal
+          alert("ACCESS DENIED: Invalid Credentials");
           resetBtn();
         }
 
       } else if (currentRole === 'buyer') {
         
         if (buyerMode === 'register') {
-          // REGISTER BUYER
-          const user = document.getElementById('buyer-reg-user').value;
-          const pass = document.getElementById('buyer-reg-pass').value;
+          // --- REGISTER BUYER ---
+          const user = document.getElementById('buyer-reg-user').value.trim();
+          const pass = document.getElementById('buyer-reg-pass').value.trim();
           
+          if(user.length < 3) { alert("Username minimal 3 karakter"); resetBtn(); return; }
+
           try {
-            // Cek apakah user sudah ada
             const docRef = doc(db, "users", user);
             const docSnap = await getDoc(docRef);
             
@@ -239,27 +263,17 @@
               alert("Username sudah terpakai!");
               resetBtn();
             } else {
-              // Simpan ke Firebase
-              await setDoc(docRef, {
-                username: user,
-                password: pass, // Simpan plain text untuk demo simple ini (Idealnya di-hash)
-                role: 'buyer',
-                createdAt: new Date()
-              });
+              await setDoc(docRef, { username: user, password: pass, role: 'buyer', createdAt: new Date() });
               alert("Registrasi Berhasil! Silakan Login.");
-              toggleBuyerMode('login'); // Pindah ke mode login
+              toggleBuyerMode('login');
               resetBtn();
             }
-          } catch(err) {
-            console.error(err);
-            alert("Gagal mendaftar.");
-            resetBtn();
-          }
+          } catch(err) { console.error(err); alert("Gagal mendaftar (Error DB)."); resetBtn(); }
 
         } else {
-          // LOGIN BUYER
-          const user = document.getElementById('buyer-login-user').value;
-          const pass = document.getElementById('buyer-login-pass').value;
+          // --- LOGIN BUYER ---
+          const user = document.getElementById('buyer-login-user').value.trim();
+          const pass = document.getElementById('buyer-login-pass').value.trim();
 
           try {
             const docRef = doc(db, "users", user);
@@ -268,7 +282,7 @@
             if (docSnap.exists()) {
               const data = docSnap.data();
               if (data.password === pass) {
-                alert("WELCOME BACK, " + user);
+                alert("WELCOME, " + user);
                 window.location.href = 'index.html';
               } else {
                 alert("PASSWORD SALAH!");
@@ -278,18 +292,22 @@
               alert("USER TIDAK DITEMUKAN. Silakan daftar dulu.");
               resetBtn();
             }
-          } catch(err) {
-            alert("Error koneksi database.");
-            resetBtn();
-          }
+          } catch(err) { alert("Error koneksi database."); resetBtn(); }
         }
       }
     }
 
     function resetBtn() {
-      document.getElementById('btn-text').innerText = buyerMode === 'register' ? "REGISTER" : "INITIALIZE";
-      document.getElementById('btn-icon').className = "fas fa-bolt";
+      // Reset text tombol sesuai state terakhir
+      if(currentRole === 'admin') document.getElementById('btn-text').innerText = "AUTHENTICATE ADMIN";
+      else if(currentRole === 'buyer' && buyerMode === 'login') document.getElementById('btn-text').innerText = "BUYER LOGIN";
+      else if(currentRole === 'buyer' && buyerMode === 'register') document.getElementById('btn-text').innerText = "REGISTER NEW BUYER";
+      
+      document.getElementById('btn-icon').className = "fas fa-sign-in-alt";
     }
+
+    // --- INIT ---
+    updateUI(); // Set initial UI state
   </script>
 
   <!-- PARTICLES (Visual Only) -->
@@ -307,8 +325,18 @@
         p.x += p.speedX; p.y += p.speedY;
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
       });
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 120) {
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, p[j].y);
+            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
       requestAnimationFrame(animP);
     }
     animP();
