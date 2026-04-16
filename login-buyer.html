@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BUYER LOGIN | KRYONIX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }, colors: { dark: { bg: '#060a10', card: '#0c1220' }, accent: { cyan: '#00c4ff' } } } }
+  </script>
+  <style>
+    :root { --bg: #060a10; --fg: #e8ecf2; --cyan: #00c4ff; --border: '#152035'; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,196,255,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,196,255,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
+    .login-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: rgba(12, 18, 32, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+    .input-field { width: 100%; background: #080c14; border: 1px solid var(--border); padding: 14px 16px; border-radius: 10px; color: white; outline: none; margin-bottom: 1.5rem; box-sizing: border-box; }
+    .input-field:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(0,196,255,0.1); }
+    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--cyan), #008bbf); color: white; border: none; cursor: pointer; }
+    .btn-login:hover { box-shadow: 0 0 20px rgba(0,196,255,0.4); }
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="login-card">
+    <div class="text-center mb-8">
+      <i class="fas fa-users text-5xl text-cyan-400 mb-4"></i>
+      <h1 class="text-2xl font-bold">BUYER LOGIN</h1>
+      <p class="text-xs text-gray-500 font-mono mt-2">WELCOME BACK CUSTOMER</p>
+    </div>
+    
+    <form onsubmit="handleLogin(event)">
+      <input type="email" id="email" class="input-field" placeholder="EMAIL ADDRESS" required>
+      <input type="password" id="pass" class="input-field" placeholder="PASSWORD" required>
+      <button type="submit" class="btn-login">LOGIN</button>
+    </form>
+
+    <div class="mt-6 text-center text-sm text-gray-500 space-y-2">
+      <a href="register-buyer.html" class="block hover:text-cyan-400">Don't have an account? Register</a>
+      <a href="login-admin.html" class="block hover:text-cyan-400">Login as Admin</a>
+      <a href="index.html" class="block hover:text-cyan-400">Back to Home</a>
+    </div>
+  </div>
+
+  <script type="module">
+    // FIREBASE IMPORT
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // LOGIN LOGIC
+    window.handleLogin = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value.trim();
+      const pass = document.getElementById('pass').value.trim();
+      const btn = document.querySelector('.btn-login');
+      
+      btn.innerText = "CHECKING...";
+
+      try {
+        const docRef = doc(db, "users", email);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.password === pass) {
+            alert("LOGIN SUCCESS: " + data.username);
+            window.location.href = 'index.html'; // Ke Halaman Utama
+          } else {
+            alert("WRONG PASSWORD!");
+          }
+        } else {
+          alert("USER NOT FOUND. Please Register first.");
+        }
+      } catch (err) {
+        alert("ERROR: " + err.message);
+      } finally {
+        btn.innerText = "LOGIN";
+      }
+    }
+  </script>
+
+  <script>
+    // PARTICLES (Visual)
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas); resizeCanvas();
+    for (let i = 0; i < 40; i++) pArr.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, opacity: Math.random() * 0.5 + 0.1 });
+    function animP() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pArr.forEach(p => {
+        p.x += p.speedX; p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,196,255,${p.opacity})`; ctx.fill();
+      });
+      requestAnimationFrame(animP);
+    }
+    animP();
+  </script>
+</body>
+</html>
