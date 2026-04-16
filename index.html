@@ -416,43 +416,9 @@
       </div>
     </section>
 
-    <!-- ================= ADMIN LOGIN ================= -->
-    <section id="admin-login" class="page-section">
-      <div class="flex items-center justify-center min-h-[60vh]">
-        <div class="w-full max-w-md bg-dark-card border border-dark-border rounded-xl p-8 shadow-2xl shadow-green-900/10">
-          <div class="text-center mb-8">
-            <h2 class="text-2xl font-bold">Admin Access</h2>
-            <p class="text-gray-500 text-sm mt-2">Secure Login Required</p>
-          </div>
-          <form onsubmit="event.preventDefault(); app.loginAdmin();" class="space-y-6">
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-2">USERNAME</label>
-              <input type="text" id="admin-user" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500 transition" placeholder="admin">
-            </div>
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-2">PASSWORD</label>
-              <input type="password" id="admin-pass" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500 transition" placeholder="admin">
-            </div>
-            <button type="submit" class="w-full btn-cyber btn-primary justify-center">
-              <i class="fas fa-lock"></i> Authenticate
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= ADMIN DASHBOARD ================= -->
-    <section id="admin-dashboard" class="page-section">
-      <div class="max-w-7xl mx-auto px-6 py-10">
-        <div class="flex justify-between items-center mb-8">
-          <h2 class="text-2xl font-bold">Admin Dashboard</h2>
-          <button onclick="app.logout()" class="text-red-400 text-sm hover:underline">Logout</button>
-        </div>
-        <div class="bg-dark-card border border-dark-border p-8 rounded-xl text-center">
-          <p class="text-gray-400">Admin Dashboard Content (CRUD Products, Settings) loaded here.</p>
-          <button class="mt-4 px-4 py-2 border border-dark-border rounded hover:bg-dark-bg transition" onclick="app.seedDB()">Seed Database (For Demo)</button>
-        </div>
-      </div>
+    <!-- ================= ADMIN LOGIN (Legacy Section - Hidden but kept just in case) ================= -->
+    <section id="admin-login" class="page-section" style="display:none;"> 
+      <!-- Section ini disembunyikan karena login sudah pindah ke admin.html -->
     </section>
 
   </main>
@@ -484,9 +450,9 @@
           <li><i class="fas fa-envelope mr-2 text-green-400"></i> support@kryonix.com</li>
         </ul>
         
-        <!-- SECRET ADMIN LINK (Footer) -->
+        <!-- SECRET ADMIN LINK (Footer) - DIUBAH KE HREF -->
         <div class="mt-6 pt-4 border-t border-gray-800">
-          <a onclick="app.nav('admin-login')" class="text-[10px] text-gray-700 hover:text-green-500 cursor-pointer transition flex items-center gap-1">
+          <a href="admin.html" class="text-[10px] text-gray-700 hover:text-green-500 cursor-pointer transition flex items-center gap-1">
             <i class="fas fa-lock"></i> Admin Access
           </a>
         </div>
@@ -584,7 +550,7 @@
 
     // --- 4. FIREBASE & APP LOGIC ---
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
@@ -626,33 +592,6 @@
         event.target.classList.add('active');
         document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
         document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-      },
-
-      loginAdmin: () => {
-        const u = document.getElementById('admin-user').value;
-        const p = document.getElementById('admin-pass').value;
-        if (u === 'admin' && p === 'admin') {
-          window.app.nav('admin-dashboard');
-        } else {
-          alert('Access Denied');
-        }
-      },
-
-      logout: () => {
-        window.app.nav('home');
-      },
-
-      seedDB: async () => {
-        const dummy = [
-          { name: "VPS SG 2GB", price: 55000, category: "vps", desc: "AMD EPYC, 2GB RAM, 40GB NVMe", icon: "fa-server", color: "text-cyan-400" },
-          { name: "MC Premium", price: 25000, category: "game", desc: "Unlimited Slots, Pterodactyl Panel", icon: "fa-cube", color: "text-green-400" },
-          { name: "Dedicated E5", price: 1500000, category: "dedi", desc: "Full Server, 32GB RAM, 1TB SSD", icon: "fa-microchip", color: "text-purple-400" }
-        ];
-        try {
-          for(let p of dummy) await addDoc(collection(db, "products"), p);
-          alert("Database Seeded!");
-          window.location.reload();
-        } catch(e) { console.error(e); alert("Error seeding DB"); }
       }
     };
     
@@ -694,7 +633,7 @@
     });
     storeObserver.observe(document.getElementById('store'), { attributes: true });
 
-    // --- SECRET ADMIN TRIGGER (5x Logo Click) ---
+    // --- SECRET ADMIN TRIGGER (5x Logo Click) - DIUBAH KE REDIRECT ---
     let logoClicks = 0;
     let logoTimer;
     const logoTrigger = document.getElementById('logo-trigger');
@@ -707,7 +646,8 @@
 
       if (logoClicks === 5) {
         e.preventDefault(); // Mencegah pindah ke home di klik ke-5
-        app.nav('admin-login');
+        // Di sini kita arahkan ke file admin.html
+        window.location.href = 'admin.html';
         logoClicks = 0;
         
         // Efek visual spin pada logo
