@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel | KRYONIX</title>
+  
+  <!-- LIBRARIES -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- TAILWIND CONFIG & CSS (Sama persis dengan index.html agar konsisten) -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg: #060a10; --bg-card: #0c1220; --border: #152035; --green: #00e89d; }
+    body { background: var(--bg); color: #e8ecf2; font-family: 'Space Grotesk', sans-serif; }
+    
+    /* Sidebar Hover */
+    .nav-item {
+      position: relative; transition: all 0.3s;
+    }
+    .nav-item:hover, .nav-item.active {
+      background: rgba(0, 232, 157, 0.05); color: var(--green);
+    }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: 0; top: 10%; bottom: 10%; width: 3px; background: var(--green);
+      border-radius: 0 4px 4px 0;
+    }
+
+    /* Table Styles */
+    .admin-table th {
+      text-align: left; padding: 1rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #5a6a80; border-bottom: 1px solid var(--border);
+    }
+    .admin-table td {
+      padding: 1rem; border-bottom: 1px solid #1e293b; font-size: 0.9rem;
+    }
+    .admin-table tr:hover td { background: rgba(0, 232, 157, 0.02); }
+
+    /* Modal Backdrop */
+    .modal-backdrop {
+      background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px);
+    }
+  </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-dark-card border-r border-dark-border hidden md:flex flex-col z-20">
+    <div class="h-20 flex items-center px-8 border-b border-dark-border">
+      <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-cyan-500 rounded flex items-center justify-center font-bold text-black mr-3">K</div>
+      <span class="font-bold text-lg tracking-wide">KRYONIX ADMIN</span>
+    </div>
+    
+    <div class="flex-1 py-6 space-y-2 px-3">
+      <button onclick="switchTab('products')" class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white transition">
+        <i class="fas fa-box w-5"></i> Products
+      </button>
+      <button onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white transition">
+        <i class="fas fa-cog w-5"></i> Settings
+      </button>
+    </div>
+
+    <div class="p-4 border-t border-dark-border">
+      <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:text-white hover:bg-red-500/10 transition cursor-pointer">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 flex flex-col relative z-10 overflow-hidden">
+    
+    <!-- Mobile Header -->
+    <header class="md:hidden h-16 border-b border-dark-border flex items-center justify-between px-4 bg-dark-bg">
+      <span class="font-bold">KRYONIX ADMIN</span>
+      <a href="index.html" class="text-sm text-gray-400"><i class="fas fa-home"></i></a>
+    </header>
+
+    <!-- Content Area -->
+    <div class="flex-1 overflow-y-auto p-4 md:p-8">
+      
+      <!-- SECTION: PRODUCTS -->
+      <div id="tab-products" class="tab-content">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div>
+            <h2 class="text-2xl font-bold">Product Management</h2>
+            <p class="text-sm text-gray-500">Kelola katalog hosting dan layanan.</p>
+          </div>
+          <button onclick="openModal()" class="btn-cyber bg-green-500 hover:bg-green-400 text-black font-bold px-6 py-2 rounded-lg flex items-center gap-2 transition shadow-lg shadow-green-500/20">
+            <i class="fas fa-plus"></i> Add Product
+          </button>
+        </div>
+
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full admin-table">
+              <thead>
+                <tr>
+                  <th>Product Info</th>
+                  <th>Category</th>
+                  <th class="text-right">Price</th>
+                  <th class="text-right">Stock</th>
+                  <th class="text-center">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-tbody">
+                <!-- Data di-load via Firebase -->
+                <tr><td colspan="5" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i> Loading Data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- SECTION: SETTINGS -->
+      <div id="tab-settings" class="tab-content hidden">
+        <div class="max-w-3xl">
+          <h2 class="text-2xl font-bold mb-6">General Settings</h2>
+          
+          <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
+            <h3 class="text-lg font-bold mb-4 text-cyan-400">Terms of Service (ToS)</h3>
+            <p class="text-sm text-gray-500 mb-4">Update teks syarat ketentuan yang muncul di halaman Important (Store).</p>
+            <textarea id="tos-input" class="w-full bg-dark-bg border border-dark-border rounded-lg p-4 text-sm text-gray-300 font-mono h-48 focus:outline-none focus:border-green-500 transition resize-none" placeholder="Masukkan text ToS di sini..."></textarea>
+            <button onclick="saveSettings()" class="mt-4 px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition">Save Changes</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- MODAL: ADD/EDIT PRODUCT -->
+  <div id="productModal" class="fixed inset-0 z-50 hidden">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 modal-backdrop transition-opacity" onclick="closeModal()"></div>
+    
+    <!-- Modal Content -->
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
+      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl shadow-black p-6 m-4">
+        <h3 id="modalTitle" class="text-xl font-bold mb-6">Add New Product</h3>
+        
+        <form id="productForm" onsubmit="handleProductSubmit(event)">
+          <input type="hidden" id="prodId">
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">PRODUCT NAME</label>
+              <input type="text" id="prodName" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none">
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-mono text-gray-400 mb-1">CATEGORY</label>
+                <select id="prodCat" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none">
+                  <option value="hosting">Hosting</option>
+                  <option value="vps">VPS</option>
+                  <option value="game">Game Server</option>
+                  <option value="dedicated">Dedicated</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-gray-400 mb-1">PRICE (IDR)</label>
+                <input type="number" id="prodPrice" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">STOCK</label>
+              <input type="number" id="prodStock" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none">
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">DESCRIPTION</label>
+              <textarea id="prodDesc" required rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none resize-none"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">ICON CLASS (FontAwesome)</label>
+              <input type="text" id="prodIcon" placeholder="fa-server" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none">
+              <p class="text-[10px] text-gray-600 mt-1">Contoh: fa-server, fa-cube, fa-gamepad</p>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6">
+              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg border border-dark-border text-gray-400 hover:text-white transition">Cancel</button>
+              <button type="submit" class="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-black font-bold transition">Save Product</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    // --- KONFIGURASI FIREBASE (Sama dengan index.html) ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- LOGIC UI ---
+    window.switchTab = (tab) => {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`tab-${tab}`).classList.remove('hidden');
+      
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      // Simple active state logic
+      if(tab === 'products') document.querySelectorAll('.nav-item')[0].classList.add('active');
+      if(tab === 'settings') document.querySelectorAll('.nav-item')[1].classList.add('active');
+    }
+
+    // --- MODAL LOGIC ---
+    const modal = document.getElementById('productModal');
+    const form = document.getElementById('productForm');
+    
+    window.openModal = (isEdit = false, data = null) => {
+      modal.classList.remove('hidden');
+      const title = document.getElementById('modalTitle');
+      
+      if (isEdit && data) {
+        title.textContent = "Edit Product";
+        document.getElementById('prodId').value = data.id;
+        document.getElementById('prodName').value = data.name;
+        document.getElementById('prodCat').value = data.category;
+        document.getElementById('prodPrice').value = data.price;
+        document.getElementById('prodStock').value = data.stock;
+        document.getElementById('prodDesc').value = data.desc;
+        document.getElementById('prodIcon').value = data.icon || 'fa-box';
+      } else {
+        title.textContent = "Add New Product";
+        form.reset();
+        document.getElementById('prodId').value = "";
+      }
+    }
+
+    window.closeModal = () => {
+      modal.classList.add('hidden');
+    }
+
+    window.handleProductSubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('prodId').value;
+      const data = {
+        name: document.getElementById('prodName').value,
+        category: document.getElementById('prodCat').value,
+        price: parseInt(document.getElementById('prodPrice').value),
+        stock: parseInt(document.getElementById('prodStock').value),
+        desc: document.getElementById('prodDesc').value,
+        icon: document.getElementById('prodIcon').value || 'fa-box',
+        color: getCategoryColor(document.getElementById('prodCat').value)
+      };
+
+      try {
+        if (id) {
+          // Update
+          await updateDoc(doc(db, "products", id), data);
+          alert("Produk berhasil diupdate!");
+        } else {
+          // Add
+          await addDoc(collection(db, "products"), data);
+          alert("Produk berhasil ditambahkan!");
+        }
+        closeModal();
+      } catch (error) {
+        console.error("Error saving product: ", error);
+        alert("Gagal menyimpan produk. Cek Console.");
+      }
+    }
+
+    window.deleteProduct = async (id) => {
+      if(confirm("Apakah anda yakin ingin menghapus produk ini?")) {
+        try {
+          await deleteDoc(doc(db, "products", id));
+          alert("Produk dihapus.");
+        } catch (e) {
+          alert("Gagal menghapus.");
+        }
+      }
+    }
+
+    function getCategoryColor(cat) {
+      if(cat === 'vps' || cat === 'dedicated') return 'text-cyan-400';
+      if(cat === 'game' || cat === 'hosting') return 'text-green-400';
+      return 'text-purple-400';
+    }
+
+    // --- REAL-TIME DATA LOADER ---
+    const tbody = document.getElementById('products-tbody');
+    
+    // Menggunakan onSnapshot agar update real-time tanpa refresh
+    onSnapshot(collection(db, "products"), (snapshot) => {
+      tbody.innerHTML = "";
+      if (snapshot.empty) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-8 text-gray-500">No products found.</td></tr>`;
+        return;
+      }
+      
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded bg-dark-bg flex items-center justify-center text-${d.color || 'white'}">
+                <i class="fas ${d.icon || 'fa-box'}"></i>
+              </div>
+              <div>
+                <div class="font-bold text-sm text-white">${d.name}</div>
+                <div class="text-xs text-gray-500 truncate max-w-[150px]">${d.desc}</div>
+              </div>
+            </div>
+          </td>
+          <td><span class="px-2 py-1 rounded text-xs bg-dark-bg border border-dark-border text-gray-400 uppercase">${d.category}</span></td>
+          <td class="text-right font-mono text-sm text-white">Rp${d.price.toLocaleString('id-ID')}</td>
+          <td class="text-right font-mono text-sm ${d.stock > 0 ? 'text-green-400' : 'text-red-400'}">${d.stock}</td>
+          <td class="text-center">
+            <button onclick='openModal(true, ${JSON.stringify({...d, id: doc.id})})' class="text-cyan-400 hover:text-cyan-300 mx-1" title="Edit"><i class="fas fa-edit"></i></button>
+            <button onclick="deleteProduct('${doc.id}')" class="text-red-400 hover:text-red-300 mx-1" title="Delete"><i class="fas fa-trash"></i></button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    });
+
+    // --- SETTINGS LOGIC ---
+    // Load ToS saat pertama kali buka tab settings
+    document.querySelector('[onclick="switchTab(\'settings\')"]').addEventListener('click', () => {
+      const docRef = doc(db, "settings", "site_info");
+      getDoc(docRef).then((docSnap) => {
+        if (docSnap.exists()) {
+          document.getElementById('tos-input').value = docSnap.data().tos || "";
+        }
+      });
+    });
+
+    // Perlu import getDoc juga (di atas sudah import, tapi ensure usage)
+    import { getDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    window.saveSettings = async () => {
+      const tos = document.getElementById('tos-input').value;
+      try {
+        await setDoc(doc(db, "settings", "site_info"), { tos: tos }, { merge: true });
+        alert("Pengaturan berhasil disimpan!");
+      } catch(e) {
+        alert("Gagal menyimpan pengaturan.");
+      }
+    }
+
+  </script>
+</body>
+</html>
