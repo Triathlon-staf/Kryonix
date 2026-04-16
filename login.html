@@ -16,7 +16,7 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff' } }
+          colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff', red: '#ff4757' } }
         }
       }
     }
@@ -24,36 +24,168 @@
 
   <style>
     :root { --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --green: #00e89d; --border: #152035; }
-    body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
     
+    body { 
+      background: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Space Grotesk', sans-serif; 
+      overflow: hidden; 
+      height: 100vh; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+    }
+    
+    /* BACKGROUND EFFECTS */
     .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
     .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
+    
     .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
     .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,232,157,0.08), transparent 70%); top: -150px; left: -150px; }
     .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); bottom: -100px; right: -100px; animation-delay: -5s; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(30px, 50px); } }
+    
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-    .login-card { position: relative; z-index: 10; width: 100%; max-width: 420px; background: rgba(12, 18, 32, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
+    /* LOGIN CARD */
+    .login-card { 
+      position: relative; 
+      z-index: 50; /* Dinaikkan agar tidak tertutup elemen lain */
+      width: 100%; 
+      max-width: 440px; 
+      background: rgba(12, 18, 32, 0.85); 
+      backdrop-filter: blur(20px); 
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border); 
+      border-radius: 20px; 
+      padding: 2.5rem; 
+      box-shadow: 0 0 50px rgba(0,0,0,0.5); 
+      transition: transform 0.3s ease;
+    }
     
-    .role-btn { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; background: rgba(255,255,255,0.03); color: #5a6a80; }
-    .role-btn.active { background: rgba(0, 232, 157, 0.1); border-color: rgba(0, 232, 157, 0.3); color: var(--green); box-shadow: 0 0 15px rgba(0,232,157,0.1); }
+    /* ROLES & BUTTONS */
+    .role-btn { 
+      flex: 1; 
+      padding: 10px; 
+      border-radius: 8px; 
+      font-weight: 600; 
+      font-size: 0.9rem; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      border: 1px solid transparent; 
+      background: rgba(255,255,255,0.03); 
+      color: #5a6a80; 
+    }
+    .role-btn.active { 
+      background: rgba(0, 232, 157, 0.1); 
+      border-color: rgba(0, 232, 157, 0.3); 
+      color: var(--green); 
+      box-shadow: 0 0 15px rgba(0,232,157,0.1); 
+    }
 
-    .auth-toggle { font-size: 0.8rem; color: #5a6a80; text-align: center; margin-top: 1rem; cursor: pointer; }
+    .auth-toggle { 
+      font-size: 0.8rem; 
+      color: #5a6a80; 
+      text-align: center; 
+      margin-top: 1rem; 
+      cursor: pointer; 
+      transition: color 0.2s;
+      user-select: none; /* Mencegah seleksi teks saat klik cepat */
+    }
     .auth-toggle:hover { color: var(--green); text-decoration: underline; }
 
+    /* INPUT FIELDS */
     .input-group { position: relative; margin-bottom: 1.5rem; }
-    .input-field { width: 100%; background: #080c14; border: 1px solid var(--border); padding: 14px 16px; border-radius: 10px; color: white; outline: none; transition: all 0.3s; font-family: 'Space Grotesk'; }
+    .input-field { 
+      width: 100%; 
+      background: #080c14; 
+      border: 1px solid var(--border); 
+      padding: 14px 16px; 
+      border-radius: 10px; 
+      color: white; 
+      outline: none; 
+      transition: all 0.3s; 
+      font-family: 'Space Grotesk'; 
+      box-sizing: border-box; 
+    }
     .input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(0,232,157,0.1); }
-    .input-label { position: absolute; left: 16px; top: 14px; color: #5a6a80; font-size: 0.9rem; pointer-events: none; transition: all 0.3s; background: transparent; padding: 0 4px; }
-    .input-field:focus + .input-label, .input-field:not(:placeholder-shown) + .input-label { top: -10px; left: 10px; font-size: 0.75rem; background: var(--bg-card); color: var(--green); }
+    .input-label { 
+      position: absolute; 
+      left: 16px; 
+      top: 14px; 
+      color: #5a6a80; 
+      font-size: 0.9rem; 
+      pointer-events: none; 
+      transition: all 0.3s; 
+      background: transparent; 
+      padding: 0 4px; 
+    }
+    .input-field:focus + .input-label, .input-field:not(:placeholder-shown) + .input-label { 
+      top: -10px; 
+      left: 10px; 
+      font-size: 0.75rem; 
+      background: #0c1220; 
+      color: var(--green); 
+    }
 
-    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 20px rgba(0,232,157,0.2); }
+    /* MAIN BUTTON */
+    .btn-login { 
+      width: 100%; 
+      padding: 14px; 
+      border-radius: 10px; 
+      font-weight: 700; 
+      font-size: 1rem; 
+      background: linear-gradient(135deg, var(--green), #00c4a0); 
+      color: #060a10; 
+      border: none; 
+      cursor: pointer; 
+      transition: all 0.3s; 
+      box-shadow: 0 0 20px rgba(0,232,157,0.2); 
+      display: flex; 
+      align-items: center; 
+      justify-content: center;
+      gap: 8px;
+    }
     .btn-login:hover { box-shadow: 0 0 30px rgba(0,232,157,0.5); transform: translateY(-2px); }
+    .btn-login:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
     
+    /* FORM ANIMATIONS */
     .form-content { display: none; animation: fadeIn 0.4s ease-out; }
     .form-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* TOAST NOTIFICATION SYSTEM */
+    #toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: rgba(12, 18, 32, 0.95);
+      backdrop-filter: blur(10px);
+      border-left: 4px solid var(--green);
+      padding: 16px 24px;
+      border-radius: 4px;
+      color: white;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 300px;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      font-size: 0.9rem;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-left-color: var(--accent-red); }
+    .toast i { font-size: 1.2rem; }
+    .toast.success i { color: var(--green); }
+    .toast.error i { color: var(--accent-red); }
+
   </style>
 </head>
 <body>
@@ -65,6 +197,9 @@
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
+  <!-- TOAST CONTAINER -->
+  <div id="toast-container"></div>
+
   <!-- LOGIN CARD -->
   <div class="login-card">
     
@@ -74,25 +209,25 @@
         <i class="fas fa-user-shield text-2xl text-black"></i>
       </div>
       <h1 class="text-xl font-bold tracking-wide">KRYONIX</h1>
-      <p class="text-[10px] text-gray-500 font-mono mt-1">SECURE ACCESS PROTOCOL v2.1 (FIXED)</p>
+      <p class="text-[10px] text-gray-500 font-mono mt-1">SECURE ACCESS PROTOCOL v3.0 (EMAIL ENABLED)</p>
     </div>
 
     <!-- ROLE SWITCHER -->
     <div class="flex gap-3 mb-6 bg-dark-bg/50 p-1 rounded-xl border border-dark-border">
-      <button onclick="switchRole('admin')" id="btn-admin" class="role-btn active">
+      <button id="btn-admin" class="role-btn active">
         <i class="fas fa-user-lock mr-2"></i> ADMIN
       </button>
-      <button onclick="switchRole('buyer')" id="btn-buyer" class="role-btn">
+      <button id="btn-buyer" class="role-btn">
         <i class="fas fa-users mr-2"></i> BUYER
       </button>
     </div>
 
-    <form onsubmit="handleAuth(event)" id="authForm">
+    <form id="authForm">
       
-      <!-- ADMIN LOGIN (Direct/Hardcoded) -->
+      <!-- ADMIN LOGIN -->
       <div id="form-admin" class="form-content active">
         <p class="text-xs text-gray-500 mb-4 bg-dark-bg/50 p-2 rounded border border-dark-border text-center">
-          <i class="fas fa-shield-alt text-green-500 mr-1"></i> Hardcoded Access (Local)
+          <i class="fas fa-shield-alt text-green-500 mr-1"></i> Hardcoded Admin Access
         </p>
         <div class="input-group">
           <input type="text" id="admin-user" class="input-field" placeholder=" " required autocomplete="off">
@@ -105,35 +240,39 @@
         <p class="text-[10px] text-gray-600 mt-2 text-center font-mono">Default: admin / admin</p>
       </div>
 
-      <!-- BUYER LOGIN -->
+      <!-- BUYER LOGIN (Email Based) -->
       <div id="form-buyer-login" class="form-content">
         <div class="input-group">
-          <input type="text" id="buyer-login-user" class="input-field" placeholder=" " required autocomplete="off">
-          <label class="input-label">USERNAME</label>
+          <input type="email" id="buyer-login-email" class="input-field" placeholder=" " required autocomplete="email">
+          <label class="input-label">EMAIL ADDRESS</label>
         </div>
         <div class="input-group">
           <input type="password" id="buyer-login-pass" class="input-field" placeholder=" " required>
           <label class="input-label">PASSWORD</label>
         </div>
-        <div class="auth-toggle" onclick="toggleBuyerMode('register')">Belum punya akun? Daftar disini</div>
+        <div class="auth-toggle" id="link-to-register">Belum punya akun? Daftar disini</div>
       </div>
 
-      <!-- BUYER REGISTER -->
+      <!-- BUYER REGISTER (Email Based) -->
       <div id="form-buyer-register" class="form-content">
         <div class="input-group">
-          <input type="text" id="buyer-reg-user" class="input-field" placeholder=" " required autocomplete="off">
-          <label class="input-label">BUAT USERNAME</label>
+          <input type="email" id="buyer-reg-email" class="input-field" placeholder=" " required autocomplete="email">
+          <label class="input-label">EMAIL ADDRESS</label>
+        </div>
+        <div class="input-group">
+          <input type="text" id="buyer-reg-name" class="input-field" placeholder=" " required autocomplete="off">
+          <label class="input-label">USERNAME (Display Name)</label>
         </div>
         <div class="input-group">
           <input type="password" id="buyer-reg-pass" class="input-field" placeholder=" " required>
-          <label class="input-label">BUAT PASSWORD</label>
+          <label class="input-label">PASSWORD</label>
         </div>
-        <div class="auth-toggle" onclick="toggleBuyerMode('login')">Sudah punya akun? Login disini</div>
+        <div class="auth-toggle" id="link-to-login">Sudah punya akun? Login disini</div>
       </div>
 
       <!-- SUBMIT BUTTON -->
-      <button type="submit" class="btn-login flex items-center justify-center gap-2">
-        <span id="btn-text">EXECUTE</span>
+      <button type="submit" id="submit-btn" class="btn-login">
+        <span id="btn-text">AUTHENTICATE ADMIN</span>
         <i class="fas fa-sign-in-alt" id="btn-icon"></i>
       </button>
 
@@ -167,158 +306,227 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // --- DAFTAR ADMIN YANG DIPERBOLEHKAN (HARDCODED) ---
+    // --- DATA & STATE ---
     const allowedAdmins = [
-      { id: 'admin', key: 'adminkryonix' },
-      // { id: 'admin2', key: 'rahasia123' } // Tambah admin disini
+      { id: 'admin', key: 'admin' },
+      { id: 'root', key: 'toor' }
     ];
 
-    // STATE
-    let currentRole = 'admin'; // Default Admin
+    let currentRole = 'admin'; 
     let buyerMode = 'login';
+    let isProcessing = false;
 
-    // --- UI FUNCTIONS ---
+    // --- HELPER: TOAST ---
+    window.showToast = (message, type = 'info') => {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      
+      let iconClass = 'fa-info-circle';
+      let colorClass = '';
+      
+      if (type === 'success') { iconClass = 'fa-check-circle'; colorClass = 'success'; }
+      if (type === 'error') { iconClass = 'fa-exclamation-triangle'; colorClass = 'error'; }
+      
+      toast.className = `toast ${colorClass}`;
+      toast.innerHTML = `<i class="fas ${iconClass}"></i><span>${message}</span>`;
+      
+      container.appendChild(toast);
+      
+      requestAnimationFrame(() => { toast.classList.add('show'); });
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400); 
+      }, 3000);
+    }
+
+    // --- CORE FUNCTIONS (BOUND TO WINDOW) ---
+    
+    // 1. Switch Role (Admin <-> Buyer)
     window.switchRole = (role) => {
+      if(isProcessing) return;
       currentRole = role;
-      buyerMode = 'login'; // Reset buyer mode
+      buyerMode = 'login'; 
       updateUI();
     }
 
+    // 2. Toggle Buyer Mode (Login <-> Register)
     window.toggleBuyerMode = (mode) => {
+      if(isProcessing) return;
       buyerMode = mode;
       updateUI();
     }
 
-    function updateUI() {
-      // Update Role Buttons
-      document.getElementById('btn-admin').className = currentRole === 'admin' ? 'role-btn active' : 'role-btn';
-      document.getElementById('btn-buyer').className = currentRole === 'buyer' ? 'role-btn active' : 'role-btn';
-
-      // Hide all forms first
-      document.getElementById('form-admin').classList.remove('active');
-      document.getElementById('form-buyer-login').classList.remove('active');
-      document.getElementById('form-buyer-register').classList.remove('active');
-
-      // Show correct form
-      if (currentRole === 'admin') {
-        document.getElementById('form-admin').classList.add('active');
-        document.getElementById('btn-text').innerText = "AUTHENTICATE ADMIN";
-      } else if (currentRole === 'buyer') {
-        if (buyerMode === 'login') {
-          document.getElementById('form-buyer-login').classList.add('active');
-          document.getElementById('btn-text').innerText = "BUYER LOGIN";
-        } else {
-          document.getElementById('form-buyer-register').classList.add('active');
-          document.getElementById('btn-text').innerText = "REGISTER NEW BUYER";
-        }
-      }
-      
-      // Clear inputs for cleaner UX
-      document.querySelectorAll('.input-field').forEach(i => i.value = '');
-    }
-
-    // --- AUTH LOGIC (FIXED) ---
+    // 3. Handle Authentication (Login/Register)
     window.handleAuth = async (e) => {
       e.preventDefault();
+      if (isProcessing) return;
+
       const btnText = document.getElementById('btn-text');
       const btnIcon = document.getElementById('btn-icon');
+      const btn = document.getElementById('submit-btn');
       
-      // Loading
+      // Start Loading
+      isProcessing = true;
+      const originalText = btnText.innerText;
       btnText.innerText = "PROCESSING...";
       btnIcon.className = "fas fa-spinner fa-spin";
+      btn.disabled = true;
 
-      if (currentRole === 'admin') {
-        // --- ADMIN LOGIN (FIXED: Direct Check, No Fake Delay) ---
-        const id = document.getElementById('admin-user').value;
-        const key = document.getElementById('admin-pass').value;
+      try {
+        if (currentRole === 'admin') {
+          // --- ADMIN LOGIN (Local) ---
+          const id = document.getElementById('admin-user').value;
+          const key = document.getElementById('admin-pass').value;
 
-        // Cek hardcoded admin
-        const admin = allowedAdmins.find(a => a.id === id && a.key === key);
+          const admin = allowedAdmins.find(a => a.id === id && a.key === key);
 
-        if (admin) {
-          // Sukses
-          alert("ACCESS GRANTED: ADMIN");
-          // Pastikan file admin.html ada
-          window.location.href = 'admin.html'; 
-        } else {
-          // Gagal
-          alert("ACCESS DENIED: Invalid Credentials");
-          resetBtn();
-        }
+          if (admin) {
+            showToast("ACCESS GRANTED: WELCOME ADMIN", "success");
+            // Redirect ke admin.html
+            setTimeout(() => { window.location.href = 'admin.html'; }, 1000);
+          } else {
+            throw new Error("Invalid Credentials");
+          }
 
-      } else if (currentRole === 'buyer') {
-        
-        if (buyerMode === 'register') {
-          // --- REGISTER BUYER ---
-          const user = document.getElementById('buyer-reg-user').value.trim();
-          const pass = document.getElementById('buyer-reg-pass').value.trim();
+        } else if (currentRole === 'buyer') {
           
-          if(user.length < 3) { alert("Username minimal 3 karakter"); resetBtn(); return; }
-
-          try {
-            const docRef = doc(db, "users", user);
+          if (buyerMode === 'register') {
+            // --- REGISTER BUYER (Email Based) ---
+            const email = document.getElementById('buyer-reg-email').value.trim();
+            const username = document.getElementById('buyer-reg-name').value.trim();
+            const pass = document.getElementById('buyer-reg-pass').value.trim();
+            
+            if(username.length < 3) { throw new Error("Username minimal 3 karakter"); }
+            
+            // Cek apakah email sudah ada (Gunakan Email sebagai Document ID)
+            const docRef = doc(db, "users", email);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
-              alert("Username sudah terpakai!");
-              resetBtn();
+              throw new Error("Email sudah terdaftar!");
             } else {
-              await setDoc(docRef, { username: user, password: pass, role: 'buyer', createdAt: new Date() });
-              alert("Registrasi Berhasil! Silakan Login.");
+              await setDoc(docRef, { email, username, password: pass, role: 'buyer', createdAt: new Date() });
+              showToast("Registrasi Berhasil! Silakan Login.", "success");
               toggleBuyerMode('login');
-              resetBtn();
             }
-          } catch(err) { console.error(err); alert("Gagal mendaftar (Error DB)."); resetBtn(); }
 
-        } else {
-          // --- LOGIN BUYER ---
-          const user = document.getElementById('buyer-login-user').value.trim();
-          const pass = document.getElementById('buyer-login-pass').value.trim();
+          } else {
+            // --- LOGIN BUYER (Email Based) ---
+            const email = document.getElementById('buyer-login-email').value.trim();
+            const pass = document.getElementById('buyer-login-pass').value.trim();
 
-          try {
-            const docRef = doc(db, "users", user);
+            const docRef = doc(db, "users", email);
             const docSnap = await getDoc(docRef);
 
             if (docSnap.exists()) {
               const data = docSnap.data();
               if (data.password === pass) {
-                alert("WELCOME, " + user);
-                window.location.href = 'index.html';
+                showToast(`WELCOME, ${data.username}`, "success");
+                // Redirect ke index.html
+                setTimeout(() => { window.location.href = 'index.html'; }, 1000);
               } else {
-                alert("PASSWORD SALAH!");
-                resetBtn();
+                throw new Error("PASSWORD SALAH!");
               }
             } else {
-              alert("USER TIDAK DITEMUKAN. Silakan daftar dulu.");
-              resetBtn();
+              throw new Error("Email tidak terdaftar.");
             }
-          } catch(err) { alert("Error koneksi database."); resetBtn(); }
+          }
         }
+      } catch (err) {
+        console.error(err);
+        showToast(err.message || "Terjadi kesalahan sistem", "error");
+        resetBtn(originalText);
       }
     }
 
-    function resetBtn() {
-      // Reset text tombol sesuai state terakhir
-      if(currentRole === 'admin') document.getElementById('btn-text').innerText = "AUTHENTICATE ADMIN";
-      else if(currentRole === 'buyer' && buyerMode === 'login') document.getElementById('btn-text').innerText = "BUYER LOGIN";
-      else if(currentRole === 'buyer' && buyerMode === 'register') document.getElementById('btn-text').innerText = "REGISTER NEW BUYER";
+    // --- UI UPDATE LOGIC ---
+    function updateUI() {
+      // Role Buttons
+      const btnAdmin = document.getElementById('btn-admin');
+      const btnBuyer = document.getElementById('btn-buyer');
       
+      // Hapus event lama untuk mencegah double bind (best practice)
+      btnAdmin.replaceWith(btnAdmin.cloneNode(true));
+      btnBuyer.replaceWith(btnBuyer.cloneNode(true));
+      
+      // Re-bind event listeners secara manual agar lebih stabil
+      document.getElementById('btn-admin').addEventListener('click', () => window.switchRole('admin'));
+      document.getElementById('btn-buyer').addEventListener('click', () => window.switchRole('buyer'));
+
+      // Set Active Class
+      document.getElementById('btn-admin').className = currentRole === 'admin' ? 'role-btn active' : 'role-btn';
+      document.getElementById('btn-buyer').className = currentRole === 'buyer' ? 'role-btn active' : 'role-btn';
+
+      // Hide Forms
+      document.getElementById('form-admin').classList.remove('active');
+      document.getElementById('form-buyer-login').classList.remove('active');
+      document.getElementById('form-buyer-register').classList.remove('active');
+
+      // Show Correct Form
+      const btnText = document.getElementById('btn-text');
+      
+      if (currentRole === 'admin') {
+        document.getElementById('form-admin').classList.add('active');
+        btnText.innerText = "AUTHENTICATE ADMIN";
+      } else if (currentRole === 'buyer') {
+        if (buyerMode === 'login') {
+          document.getElementById('form-buyer-login').classList.add('active');
+          btnText.innerText = "BUYER LOGIN";
+        } else {
+          document.getElementById('form-buyer-register').classList.add('active');
+          btnText.innerText = "REGISTER NEW BUYER";
+        }
+      }
+      
+      // Clear Inputs
+      document.querySelectorAll('.input-field').forEach(i => i.value = '');
+    }
+
+    function resetBtn(originalText) {
+      isProcessing = false;
+      document.getElementById('btn-text').innerText = originalText;
       document.getElementById('btn-icon').className = "fas fa-sign-in-alt";
+      document.getElementById('submit-btn').disabled = false;
     }
 
     // --- INIT ---
-    updateUI(); // Set initial UI state
+    // Event Listeners khusus untuk link toggle di dalam form
+    document.getElementById('link-to-register').addEventListener('click', () => window.toggleBuyerMode('register'));
+    document.getElementById('link-to-login').addEventListener('click', () => window.toggleBuyerMode('login'));
+
+    // Bind Form Submit
+    document.getElementById('authForm').addEventListener('submit', window.handleAuth);
+
+    // Set UI Awal
+    updateUI();
   </script>
 
-  <!-- PARTICLES (Visual Only) -->
+  <!-- PARTICLES (Fixed) -->
   <script>
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    
+    function resizeCanvas() { 
+      canvas.width = window.innerWidth; 
+      canvas.height = window.innerHeight; 
+    }
+    
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    for (let i = 0; i < 50; i++) pArr.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, opacity: Math.random() * 0.5 + 0.1 });
+    
+    for (let i = 0; i < 50; i++) {
+      pArr.push({ 
+        x: Math.random() * canvas.width, 
+        y: Math.random() * canvas.height, 
+        size: Math.random() * 1.5 + 0.5, 
+        speedX: (Math.random() - 0.5) * 0.5, 
+        speedY: (Math.random() - 0.5) * 0.5, 
+        opacity: Math.random() * 0.5 + 0.1 
+      });
+    }
+
     function animP() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pArr.forEach(p => {
@@ -332,7 +540,7 @@
         for (let j = i + 1; j < pArr.length; j++) {
           const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
           if (d < 120) {
-            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, p[j].y);
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
             ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
           }
         }
