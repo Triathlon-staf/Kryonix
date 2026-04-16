@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRYONIX | TERMS OF SERVICE</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- TAILWIND CONFIG -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', red: '#ff4757' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg: #060a10; --fg: #e8ecf2; --green: '#00e89d'; --border: '#152035'; }
+    
+    body { 
+      background: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Space Grotesk', sans-serif; 
+      overflow-x: hidden; 
+      min-height: 100vh;
+      display: flex; 
+      justify-content: center; 
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+    
+    /* BACKGROUND EFFECTS */
+    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
+    .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
+    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,232,157,0.08), transparent 70%); top: -150px; left: -150px; }
+    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(30px, 50px); } }
+
+    /* CARD STYLE */
+    .glass-card { 
+      width: 100%; 
+      max-width: 850px; /* Diperlebar agar teks nyaman */
+      background: rgba(12, 18, 32, 0.85); 
+      backdrop-filter: blur(20px); 
+      border: 1px solid var(--border); 
+      border-radius: 24px; 
+      padding: 3rem; 
+      box-shadow: 0 0 50px rgba(0,0,0,0.6); 
+      position: relative; 
+      z-index: 10;
+      max-height: 90vh; /* Supaya bisa discroll di layar kecil */
+      overflow-y: auto;
+    }
+
+    /* TYPOGRAPHY & ELEMENTS */
+    h2 { 
+      font-family: 'Space Grotesk', sans-serif; 
+      font-size: 1.25rem; 
+      font-weight: 700; 
+      color: white; 
+      margin-bottom: 1rem; 
+      padding-bottom: 0.5rem; 
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex; 
+      align-items: center; 
+      gap: 12px;
+    }
+    h2 i { color: var(--green); }
+    
+    p { color: #94a3b8; line-height: 1.7; margin-bottom: 1rem; font-size: 1rem; }
+    strong { color: #e8ecf2; font-weight: 600; }
+    .text-red { color: var(--accent-red); font-weight: 700; }
+
+    ul { list-style: none; margin-bottom: 1.5rem; }
+    li { 
+      position: relative; 
+      padding-left: 2rem; 
+      margin-bottom: 0.8rem; 
+      color: #cbd5e1; 
+      line-height: 1.6; 
+    }
+    li::before {
+      content: '>';
+      position: absolute; 
+      left: 0; 
+      color: var(--green); 
+      font-family: 'JetBrains Mono', font-weight: bold;
+    }
+
+    .badge { 
+      display: inline-block; 
+      padding: 4px 12px; 
+      background: rgba(0,232,157,0.1); 
+      border: 1px solid rgba(0,232,157,0.2); 
+      color: var(--green); 
+      font-family: 'JetBrains Mono', font-size: 0.75rem; 
+      margin-bottom: 2rem; 
+      border-radius: 99px;
+    }
+
+    /* BUTTON */
+    .btn-accept { 
+      display: inline-flex; 
+      align-items: center; 
+      gap: 10px; 
+      padding: 1rem 2.5rem; 
+      border-radius: 14px; 
+      font-weight: 700; 
+      font-size: 1.1rem; 
+      background: linear-gradient(135deg, var(--green), #00c4a0); 
+      color: #060a10; 
+      text-decoration: none; 
+      box-shadow: 0 10px 30px rgba(0,232,157,0.3);
+      transition: transform 0.2s;
+    }
+    .btn-accept:hover { transform: scale(1.05); }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND FX -->
+  <div class="grid-bg"></div>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+
+  <!-- MAIN CARD -->
+  <div class="glass-card">
+    
+    <!-- HEADER -->
+    <div class="text-center mb-10">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-cyan-500 rounded-2xl mb-6 shadow-2xl shadow-green-500/20">
+        <i class="fas fa-file-contract text-4xl text-black"></i>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-2">TERMS OF SERVICE</h1>
+      <p class="text-gray-500 font-mono text-sm">KRYONIX SECURE PROTOCOLS</p>
+      <div class="badge">Last Updated: 25 Mei 2025</div>
+    </div>
+
+    <!-- CONTENT WRAPPER (Scrollable) -->
+    <div class="content-wrapper">
+      
+      <!-- 1. TUJUAN -->
+      <section>
+        <h2><i class="fas fa-bullseye"></i> TUJUAN</h2>
+        <p>
+          Tujuan Terms of Service (ToS) ini adalah untuk melindungi hak-hak penyedia layanan dan pengguna, serta menjelaskan aturan main dalam menggunakan layanan. Dengan menyetujui ToS, pengguna dianggap telah memahami dan menyetujui ketentuan yang berlaku.
+        </p>
+      </section>
+
+      <!-- 2. LARANGAN -->
+      <section>
+        <h2><i class="fas fa-shield-alt"></i> LARANGAN, GARANSI, DAN PENANGANAN</h2>
+        <p>
+          <strong>Kryonix</strong> berkomitmen menjaga keamanan dan stabilitas layanan bagi seluruh pelanggan. Setiap bentuk penggunaan layanan yang bertujuan merusak, mengganggu, atau melanggar hukum publik — termasuk namun tidak terbatas pada pelaksanaan atau fasilitasi serangan DDoS, penyebaran malware, penjualan akses ilegal, phishing, spam massal, atau aktivitas kriminal lainnya — <span class="text-red">TIDAK DITOLERANSI</span> dan akan dikenai tindakan tegas.
+        </p>
+        <ul>
+          <li><strong>DDoS Attacks:</strong> Melakukan, memfasilitasi, atau menyediakan infrastruktur untuk serangan DDoS (direct atau reflective).</li>
+          <li><strong>Malware & Exploits:</strong> Hosting atau distribusi malware, ransomware, botnet, atau tools eksploitasi.</li>
+          <li><strong>Phishing & Fraud:</strong> Phishing, penipuan, pengumpulan data pribadi secara ilegal.</li>
+          <li><strong>Illegal Access:</strong> Penjualan atau pertukaran akses tidak sah ke sistem pihak ketiga.</li>
+          <li><strong>Copyright Infringement:</strong> Penyebaran materi yang melanggar hak cipta atau hukum publik.</li>
+        </ul>
+      </section>
+
+      <!-- 3. KONSEKUENSI -->
+      <section>
+        <h2><i class="fas fa-gavel"></i> KONSEKUENSI & KEBIJAKAN GARANSI</h2>
+        <p>
+          Tidak ada garansi untuk layanan yang digunakan dalam aktivitas terlarang — tidak berlaku SLA, kompensasi, atau dukungan khusus. Kryonix akan melakukan penangguhan atau terminasi permanen tanpa pemberitahuan apabila aktivitas melanggar terdeteksi.
+        </p>
+        <p>
+          Layanan yang dihentikan karena pelanggaran <span class="text-red">tidak akan mendapatkan refund</span>.
+        </p>
+      </section>
+
+      <!-- 4. PEMANTAUAN -->
+      <section>
+        <h2><i class="fas fa-crosshairs"></i> PROSES DETEKSI & PENANGANAN</h2>
+        <p>
+          Kami menggunakan sistem monitoring canggih untuk mendeteksi pelanggaran:
+        </p>
+        <ul>
+          <li><strong>Mitigasi Otomatis:</strong> Filtering, rate limit untuk melindungi jaringan.</li>
+          <li><strong>Isolasi Resource:</strong> Agar tidak memengaruhi pelanggan lain.</li>
+          <li><strong>Penyimpanan Log:</strong> Log dan bukti teknis untuk investigasi.</li>
+          <li><strong>Pemberitahuan:</strong> Pemberitahuan kepada pemilik akun (jika memungkinkan) disertai arahan perbaikan.</li>
+        </ul>
+      </section>
+
+      <!-- 5. REPORTING -->
+      <section>
+        <h2><i class="fas fa-handshake"></i> KERJASAMA HUKUM & PELAPORAN</h2>
+        <p>
+          Kryonix akan bekerja sama dengan pihak berwenang bila ditemukan bukti aktivitas ilegal. Kami akan menyerahkan data log dan informasi billing sesuai peraturan hukum yang berlaku.
+        </p>
+        <p>
+          Pengguna dapat mengajukan banding dalam waktu 14 hari setelah penangguhan melalui email: <strong>support@kryonix.com</strong>. Kryonix akan menyediakan bukti dan memberikan keputusan akhir secara objektif.
+        </p>
+      </section>
+
+      <!-- 6. DISCLAIMER -->
+      <section>
+        <h2><i class="fas fa-exclamation-triangle"></i> ABUSE OLEH PIHAK LAIN</h2>
+        <p>
+          Apabila terjadi abuse yang bukan berasal dari layanan pelanggan, namun berdampak kolektif (misalnya satu rack, subnet, atau ASN), maka pelanggan memahami bahwa:
+        </p>
+        <ul>
+          <li>Gangguan layanan dapat terjadi di luar kendali Penyedia Layanan.</li>
+          <li>Hal tersebut termasuk risiko layanan cloud berbasis shared infrastructure.</li>
+          <li>Pelanggan tidak dapat menuntut ganti rugi dalam bentuk uang tunai (refund) atas gangguan tersebut.</li>
+        </ul>
+      </section>
+
+      <!-- 7. PENYEDIA UPSTREAM -->
+      <section>
+        <h2><i class="fas fa-server"></i> PENGGUNAAN OLEH UPSTREAM PROVIDER</h2>
+        <p>
+          Penyedia Layanan berhak menyediakan layanan sementara atau permanen apabila Upstream Provider:
+        </p>
+        <ul>
+          <li>Memutus kontrak.</li>
+          <li>Mengganggukan layanan.</li>
+          <li>Atau melakukan pembatasan karena abuse atau kebijakan internal mereka.</li>
+        </ul>
+        <p>
+          Pelanggan menyetujui bahwa kondisi ini termasuk <strong>force majeure</strong> non-alam. Penyedia Layanan berhak memperbarui kebijakan ini sewaktu-waktu tanpa pemberitahuan sebelumnya.
+        </p>
+      </section>
+
+    </div> <!-- End Content Wrapper -->
+
+    <!-- DIVIDER & BUTTON (Fixed Position Relative) -->
+    <div class="relative z-20 mt-8 border-t border-dark-border pt-8">
+      <div class="text-center">
+        <p class="text-gray-500 text-sm mb-4">Dengan menggunakan layanan Kryonix, Anda menyetujui ToS di atas.</p>
+        <a href="index.html" class="btn-accept">
+          <i class="fas fa-check"></i> SAYA SETUJU
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>
