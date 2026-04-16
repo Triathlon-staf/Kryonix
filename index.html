@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KRYONIX | NEXT GEN HOSTING</title>
+  
+  <!-- LIBRARIES -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- TAILWIND CONFIG & CUSTOM CSS -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Space Grotesk', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            dark: {
+              bg: '#060a10',
+              card: '#0c1220',
+              border: '#152035',
+            },
+            accent: {
+              green: '#00e89d',
+              cyan: '#00c4ff',
+              purple: '#a78bfa',
+            }
+          },
+          animation: {
+            'spin-slow': 'spin 3s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* --- CORE VARIABLES --- */
+    :root {
+      --bg: #060a10;
+      --bg-card: #0c1220;
+      --fg: #e8ecf2;
+      --muted: #5a6a80;
+      --green: #00e89d;
+      --cyan: #00c4ff;
+      --border: #152035;
+    }
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: 'Space Grotesk', sans-serif; 
+      background: var(--bg); 
+      color: var(--fg); 
+      overflow-x: hidden; 
+    }
+
+    /* --- BACKGROUND EFFECTS --- */
+    .grid-bg {
+      position: fixed; inset: 0; 
+      background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0; pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: orbFloat 10s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,232,157,0.08), transparent 70%); top: -100px; right: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); bottom: 0; left: -100px; animation-delay: -5s; }
+    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 40px); } }
+
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+    
+    /* --- UI COMPONENTS --- */
+    .glass-nav {
+      backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border);
+    }
+    
+    .nav-link { 
+      position: relative; color: var(--muted); font-size: 0.9rem; transition: 0.3s; cursor: pointer;
+    }
+    .nav-link:hover, .nav-link.active { color: var(--green); }
+    .nav-link::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s;
+    }
+    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+
+    .btn-cyber {
+      display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px;
+      font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.3s;
+      position: relative; overflow: hidden; border: none; cursor: pointer;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10;
+      box-shadow: 0 0 20px rgba(0,232,157,0.2);
+    }
+    .btn-primary:hover { box-shadow: 0 0 30px rgba(0,232,157,0.5); transform: translateY(-2px); }
+    
+    .btn-outline {
+      background: transparent; border: 1px solid var(--border); color: var(--fg);
+    }
+    .btn-outline:hover { border-color: var(--green); background: rgba(0,232,157,0.05); color: var(--green); }
+
+    /* --- TERMINAL STYLE --- */
+    .terminal {
+      background: #080c14; border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .terminal-header {
+      display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border);
+      background: rgba(255,255,255,0.02);
+    }
+    .terminal-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-body {
+      padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.8;
+      color: var(--muted); min-height: 180px; max-height: 220px; overflow-y: auto;
+    }
+    .prompt { color: var(--green); }
+    .cmd { color: #e8ecf2; }
+    .success { color: var(--green); }
+    .terminal-cursor {
+      display: inline-block; width: 8px; height: 16px; background: var(--green);
+      animation: blink 1s step-end infinite; vertical-align: text-bottom; margin-left: 4px;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
+
+    /* --- CARD STORE --- */
+    .store-card {
+      position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden; transition: all 0.4s; display: flex; flex-direction: column;
+    }
+    .store-card:hover {
+      transform: translateY(-8px); border-color: rgba(0,232,157,0.4);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,232,157,0.1);
+    }
+    .card-bar {
+      height: 2px; width: 100%; background: linear-gradient(90deg, var(--green), var(--cyan));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .store-card:hover .card-bar { transform: scaleX(1); }
+
+    /* --- IMPORTANT TABS --- */
+    .tab-btn {
+      background: transparent; border: none; color: var(--muted); padding: 10px 20px;
+      font-family: 'Space Grotesk'; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.3s;
+    }
+    .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
+
+    /* --- UTILS --- */
+    .text-gradient {
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .page-section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; position: relative; z-index: 2; padding-bottom: 80px; padding-top: 20px;}
+    .page-section.active { display: block; opacity: 1; animation: fadeUp 0.6s ease-out; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND FX -->
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- NAVBAR -->
+  <nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
+    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      
+      <!-- LOGO (Dengan ID Rahasia) -->
+      <a href="#" id="logo-trigger" onclick="app.nav('home')" class="flex items-center gap-3 group cursor-pointer">
+        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-xl transition-transform duration-500" id="logo-icon">K</div>
+        <span class="text-xl font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+      </a>
+
+      <!-- DESKTOP MENU (Tombol Admin Dihapus) -->
+      <div class="hidden md:flex items-center gap-8">
+        <a onclick="app.nav('home')" class="nav-link active">Home</a>
+        <a onclick="app.nav('store')" class="nav-link">Store</a>
+        <a onclick="app.nav('important')" class="nav-link">Important</a>
+      </div>
+
+      <!-- RIGHT ACTIONS (Hanya Mobile Toggle) -->
+      <div class="flex items-center gap-4">
+        <!-- Tombol Admin Dihapus dari sini -->
+        
+        <!-- Mobile Menu Btn -->
+        <button id="menuBtn" class="md:hidden text-2xl text-gray-300"><i class="fas fa-bars"></i></button>
+      </div>
+    </div>
+
+    <!-- MOBILE MENU -->
+    <div id="mobileMenu" class="hidden md:hidden bg-dark-bg border-b border-dark-border p-6 space-y-4">
+      <a onclick="app.nav('home'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Home</a>
+      <a onclick="app.nav('store'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Store</a>
+      <a onclick="app.nav('important'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Important</a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT AREA -->
+  <main class="relative z-10 pt-20">
+
+    <!-- ================= HOME SECTION ================= -->
+    <section id="home" class="page-section active">
+      <div class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+          
+          <!-- Hero Text -->
+          <div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/5 text-green-400 text-xs font-mono mb-6">
+              <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              SYSTEM OPERATIONAL
+            </div>
+            <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6">
+              Next Gen <br>
+              <span class="text-gradient">Cloud Hosting</span>
+            </h1>
+            <p class="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg">
+              Performa maksimal, infrastruktur modern. Deploy server VPS, Dedicated, atau Hosting dalam hitungan detik dengan panel kontrol canggih.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <button onclick="app.nav('store')" class="btn-cyber btn-primary">
+                <i class="fas fa-rocket"></i> Get Started
+              </button>
+              <button onclick="app.nav('important')" class="btn-cyber btn-outline">
+                <i class="fas fa-file-contract"></i> Terms of Service
+              </button>
+            </div>
+          </div>
+
+          <!-- Terminal Window -->
+          <div class="terminal">
+            <div class="terminal-header">
+              <div class="terminal-dot bg-red-500"></div>
+              <div class="terminal-dot bg-yellow-500"></div>
+              <div class="terminal-dot bg-green-500"></div>
+              <span class="text-xs text-gray-500 font-mono ml-2">root@kryonix-server:~</span>
+            </div>
+            <div class="terminal-body" id="terminalBody">
+              <!-- JS will type here -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="max-w-4xl mx-auto px-6">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-dark-border border border-dark-border rounded-xl overflow-hidden text-center">
+          <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
+            <div class="text-2xl font-bold font-mono text-green-400">500+</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Users</div>
+          </div>
+          <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
+            <div class="text-2xl font-bold font-mono text-cyan-400">99.9%</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Uptime</div>
+          </div>
+          <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
+            <div class="text-2xl font-bold font-mono text-green-400">24/7</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Support</div>
+          </div>
+          <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
+            <div class="text-2xl font-bold font-mono text-cyan-400">< 10ms</div>
+            <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Latency</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mini Showcase -->
+      <div class="max-w-7xl mx-auto px-6 mt-24">
+        <div class="flex items-center justify-between mb-10">
+          <h3 class="text-2xl font-bold">Featured Services</h3>
+          <a onclick="app.nav('store')" class="text-green-400 text-sm hover:underline cursor-pointer">View All <i class="fas fa-arrow-right ml-1"></i></a>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div class="store-card group cursor-pointer" onclick="app.nav('store')">
+            <div class="card-bar"></div>
+            <div class="p-8 h-full flex flex-col">
+              <i class="fas fa-cube text-3xl text-green-400 mb-4 group-hover:scale-110 transition"></i>
+              <h4 class="text-xl font-bold mb-2">Minecraft Hosting</h4>
+              <p class="text-gray-500 text-sm mb-6 flex-1">Server tanpa lag, panel Pterodactyl, harga mulai Rp 15rb.</p>
+              <div class="flex justify-between items-center text-sm font-mono">
+                <span class="text-gray-400">Starting at</span>
+                <span class="text-green-400 font-bold">Rp15.000</span>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2 -->
+          <div class="store-card group cursor-pointer" onclick="app.nav('store')">
+            <div class="card-bar"></div>
+            <div class="p-8 h-full flex flex-col">
+              <i class="fas fa-server text-3xl text-cyan-400 mb-4 group-hover:scale-110 transition"></i>
+              <h4 class="text-xl font-bold mb-2">VPS Cloud</h4>
+              <p class="text-gray-500 text-sm mb-6 flex-1">Full Root Access, SSD NVMe, Lokasi SG/ID.</p>
+              <div class="flex justify-between items-center text-sm font-mono">
+                <span class="text-gray-400">Starting at</span>
+                <span class="text-cyan-400 font-bold">Rp55.000</span>
+              </div>
+            </div>
+          </div>
+          <!-- Card 3 -->
+          <div class="store-card group cursor-pointer" onclick="app.nav('store')">
+            <div class="card-bar"></div>
+            <div class="p-8 h-full flex flex-col">
+              <i class="fas fa-gamepad text-3xl text-purple-400 mb-4 group-hover:scale-110 transition"></i>
+              <h4 class="text-xl font-bold mb-2">Game Hosting</h4>
+              <p class="text-gray-500 text-sm mb-6 flex-1">Support FiveM, CS2, ARK, dan game lainnya.</p>
+              <div class="flex justify-between items-center text-sm font-mono">
+                <span class="text-gray-400">Starting at</span>
+                <span class="text-purple-400 font-bold">Rp25.000</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= STORE SECTION ================= -->
+    <section id="store" class="page-section">
+      <div class="max-w-7xl mx-auto px-6 py-10">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-bold mb-4">Paket Hosting & VPS</h2>
+          <p class="text-gray-400 max-w-2xl mx-auto">Pilih spesifikasi server yang sesuai dengan kebutuhan project Anda.</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="flex justify-center gap-4 mb-12 flex-wrap">
+          <button class="px-6 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm hover:bg-green-500/20 transition">All Products</button>
+          <button class="px-6 py-2 rounded-full bg-gray-800 border border-dark-border text-gray-400 text-sm hover:border-cyan-500/50 hover:text-cyan-400 transition">VPS</button>
+          <button class="px-6 py-2 rounded-full bg-gray-800 border border-dark-border text-gray-400 text-sm hover:border-purple-500/50 hover:text-purple-400 transition">Game Server</button>
+        </div>
+
+        <!-- Product Grid (Placeholder for Firebase Data) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="product-list">
+          <!-- Data akan di-inject via JS dari Firebase -->
+          <div class="text-center col-span-full text-gray-500 py-20">
+            <i class="fas fa-circle-notch fa-spin text-2xl mb-4 text-green-400"></i>
+            <p>Connecting to Firebase Database...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= IMPORTANT SECTION ================= -->
+    <section id="important" class="page-section">
+      <div class="max-w-4xl mx-auto px-6 py-10">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold mb-4">Important Information</h2>
+          <div class="h-1 w-20 bg-green-500 mx-auto rounded-full"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex justify-center border-b border-dark-border mb-8">
+          <button onclick="app.switchTab('tos')" class="tab-btn active">Terms of Service</button>
+          <button onclick="app.switchTab('privacy')" class="tab-btn">Privacy Policy</button>
+          <button onclick="app.switchTab('faq')" class="tab-btn">FAQ</button>
+        </div>
+
+        <!-- Tab Content: ToS -->
+        <div id="tab-tos" class="tab-content">
+          <div class="bg-dark-card border border-dark-border rounded-xl p-8">
+            <h3 class="text-xl font-bold text-green-400 mb-4">1. Acceptance of Terms</h3>
+            <p class="text-gray-400 mb-4 leading-relaxed">
+              Dengan mengakses atau menggunakan layanan Kryonix, Anda menyetujui untuk terikat oleh syarat dan ketentuan layanan ini. Jika Anda tidak setuju dengan bagian mana pun dari ketentuan ini, maka Anda tidak boleh mengakses layanan.
+            </p>
+            <h3 class="text-xl font-bold text-green-400 mb-4">2. Prohibited Uses</h3>
+            <p class="text-gray-400 mb-4 leading-relaxed">
+              Anda tidak boleh menggunakan layanan untuk tujuan ilegal, termasuk namun tidak terbatas pada: penyimpanan atau distribusi malware, serangan DDoS, spam email, atau pelanggaran hak cipta.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab Content: Privacy -->
+        <div id="tab-privacy" class="tab-content hidden">
+          <div class="bg-dark-card border border-dark-border rounded-xl p-8">
+            <h3 class="text-xl font-bold text-cyan-400 mb-4">Data Collection</h3>
+            <p class="text-gray-400 mb-4 leading-relaxed">
+              Kami mengumpulkan informasi dasar seperti email dan nama saat Anda mendaftar untuk menggunakan layanan kami. Data ini digunakan semata-mata untuk keperluan layanan, pemulihan akun, dan dukungan teknis.
+            </p>
+            <h3 class="text-xl font-bold text-cyan-400 mb-4">Data Security</h3>
+            <p class="text-gray-400 leading-relaxed">
+              Kami menerapkan langkah-langkah keamanan yang wajar untuk melindungi data Anda dari akses yang tidak sah.
+            </p>
+          </div>
+        </div>
+
+        <!-- Tab Content: FAQ -->
+        <div id="tab-faq" class="tab-content hidden">
+          <div class="space-y-4">
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-green-500/30 transition">
+              <h4 class="font-bold mb-2">Bagaimana cara pembayaran?</h4>
+              <p class="text-gray-400 text-sm">Kami menerima pembayaran melalui Transfer Bank (BCA, Mandiri), E-Wallet (Dana, OVO, Gopay), dan QRIS. Pembayaran diarahkan melalui WhatsApp Admin setelah Anda memilih paket.</p>
+            </div>
+            <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-green-500/30 transition">
+              <h4 class="font-bold mb-2">Apakah ada garansi uang kembali?</h4>
+              <p class="text-gray-400 text-sm">Kami memberikan garansi 7 hari jika layanan tidak dapat digunakan sebagaimana mestinya karena kesalahan pihak kami.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ADMIN LOGIN ================= -->
+    <section id="admin-login" class="page-section">
+      <div class="flex items-center justify-center min-h-[60vh]">
+        <div class="w-full max-w-md bg-dark-card border border-dark-border rounded-xl p-8 shadow-2xl shadow-green-900/10">
+          <div class="text-center mb-8">
+            <h2 class="text-2xl font-bold">Admin Access</h2>
+            <p class="text-gray-500 text-sm mt-2">Secure Login Required</p>
+          </div>
+          <form onsubmit="event.preventDefault(); app.loginAdmin();" class="space-y-6">
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-2">USERNAME</label>
+              <input type="text" id="admin-user" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500 transition" placeholder="admin">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-2">PASSWORD</label>
+              <input type="password" id="admin-pass" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-3 text-white focus:outline-none focus:border-green-500 transition" placeholder="admin">
+            </div>
+            <button type="submit" class="w-full btn-cyber btn-primary justify-center">
+              <i class="fas fa-lock"></i> Authenticate
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ADMIN DASHBOARD ================= -->
+    <section id="admin-dashboard" class="page-section">
+      <div class="max-w-7xl mx-auto px-6 py-10">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-2xl font-bold">Admin Dashboard</h2>
+          <button onclick="app.logout()" class="text-red-400 text-sm hover:underline">Logout</button>
+        </div>
+        <div class="bg-dark-card border border-dark-border p-8 rounded-xl text-center">
+          <p class="text-gray-400">Admin Dashboard Content (CRUD Products, Settings) loaded here.</p>
+          <button class="mt-4 px-4 py-2 border border-dark-border rounded hover:bg-dark-bg transition" onclick="app.seedDB()">Seed Database (For Demo)</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="relative z-10 border-t border-dark-border bg-dark-bg pt-16 pb-8">
+    <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+      <div class="col-span-1 md:col-span-2">
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black">K</div>
+          <span class="text-lg font-bold">KRYONIX</span>
+        </div>
+        <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
+          Penyedia layanan Cloud Hosting & VPS berkinerja tinggi. Didukung oleh infrastruktur modern dan tim support 24/7.
+        </p>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4">Menu</h4>
+        <ul class="space-y-2 text-sm text-gray-500">
+          <li><a onclick="app.nav('home')" class="hover:text-green-400 cursor-pointer">Home</a></li>
+          <li><a onclick="app.nav('store')" class="hover:text-green-400 cursor-pointer">Store</a></li>
+          <li><a onclick="app.nav('important')" class="hover:text-green-400 cursor-pointer">Important</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-4">Contact</h4>
+        <ul class="space-y-2 text-sm text-gray-500">
+          <li><i class="fab fa-whatsapp mr-2 text-green-400"></i> +62 812-3456-7890</li>
+          <li><i class="fas fa-envelope mr-2 text-green-400"></i> support@kryonix.com</li>
+        </ul>
+        
+        <!-- SECRET ADMIN LINK (Footer) -->
+        <div class="mt-6 pt-4 border-t border-gray-800">
+          <a onclick="app.nav('admin-login')" class="text-[10px] text-gray-700 hover:text-green-500 cursor-pointer transition flex items-center gap-1">
+            <i class="fas fa-lock"></i> Admin Access
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-dark-border flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
+      <p>&copy; 2023 Kryonix. All rights reserved.</p>
+      <p class="font-mono mt-2 md:mt-0">v1.0.0 // System Online</p>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script>
+    // --- 1. PARTICLES SYSTEM (Canvas) ---
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    for (let i = 0; i < 50; i++) {
+      pArr.push({
+        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+        size: Math.random() * 1.5 + 0.5,
+        speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5,
+        opacity: Math.random() * 0.5 + 0.1
+      });
+    }
+
+    function animP() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pArr.forEach(p => {
+        p.x += p.speedX; p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`;
+        ctx.fill();
+      });
+      // Draw lines
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 120) {
+            ctx.beginPath();
+            ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`;
+            ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+
+    // --- 2. TERMINAL TYPEWRITER ---
+    const termLines = [
+      { type: 'prompt', text: 'kryonix@sys:~$ ' }, { type: 'cmd', text: 'check status --verbose' },
+      { type: 'output', text: '' }, { type: 'success', text: '  [OK] Firewall Active' },
+      { type: 'success', text: '  [OK] Database Connected' },
+      { type: 'success', text: '  [OK] Load Balancer: Operational' },
+      { type: 'output', text: '' }, { type: 'prompt', text: 'kryonix@sys:~$ ' }, { type: 'cmd', text: 'show latency' },
+      { type: 'output', text: '  Singapore: 12ms' }, { type: 'output', text: '  Jakarta: 8ms' },
+      { type: 'output', text: '' }, { type: 'prompt', text: 'kryonix@sys:~$ ' }
+    ];
+    const termBody = document.getElementById('terminalBody');
+    let li = 0;
+    function typeTerm() {
+      if (li >= termLines.length) return;
+      const l = termLines[li], el = document.createElement('div'); el.style.minHeight = '1.5em';
+      if (l.type === 'prompt') { el.innerHTML = `<span class="prompt">${l.text}</span>`; termBody.appendChild(el); li++; 
+        if (li < termLines.length && termLines[li].type === 'cmd') typeCmd(el, termLines[li].text); else setTimeout(typeTerm, 150);
+      } else {
+        el.className = l.type; el.textContent = l.text; termBody.appendChild(el); li++; setTimeout(typeTerm, 80);
+      }
+      termBody.scrollTop = termBody.scrollHeight;
+    }
+    function typeCmd(container, text) {
+      let i = 0; const cursor = document.createElement('span'); cursor.className = 'terminal-cursor'; container.appendChild(cursor);
+      function tc() {
+        if (i < text.length) {
+          container.removeChild(cursor);
+          container.innerHTML = `<span class="prompt">${termLines[li - 1].text}</span><span class="cmd">${text.substring(0, i + 1)}</span>`;
+          container.appendChild(cursor); i++; setTimeout(tc, 30 + Math.random() * 50);
+        } else { container.removeChild(cursor); li++; setTimeout(typeTerm, 250); }
+      } tc();
+    }
+    setTimeout(typeTerm, 1000);
+
+    // --- 3. UI LOGIC ---
+    const toggleMobile = () => document.getElementById('mobileMenu').classList.toggle('hidden');
+    document.getElementById('menuBtn').addEventListener('click', toggleMobile);
+
+    // --- 4. FIREBASE & APP LOGIC ---
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    console.log("Firebase Connected: Kryonix");
+
+    window.app = {
+      nav: (id) => {
+        document.querySelectorAll('.page-section').forEach(el => {
+          el.classList.remove('active');
+          setTimeout(() => {
+            if(!el.classList.contains('active')) el.style.display = 'none';
+          }, 500); 
+        });
+        
+        const target = document.getElementById(id);
+        target.style.display = 'block';
+        // slight delay to allow display block to apply before opacity transition
+        setTimeout(() => target.classList.add('active'), 50);
+        
+        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+        // simplistic highlight logic
+        if(id === 'home') document.querySelectorAll('.nav-link')[0].classList.add('active');
+        
+        window.scrollTo(0,0);
+      },
+
+      switchTab: (tabId) => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+        document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+      },
+
+      loginAdmin: () => {
+        const u = document.getElementById('admin-user').value;
+        const p = document.getElementById('admin-pass').value;
+        if (u === 'admin' && p === 'admin') {
+          window.app.nav('admin-dashboard');
+        } else {
+          alert('Access Denied');
+        }
+      },
+
+      logout: () => {
+        window.app.nav('home');
+      },
+
+      seedDB: async () => {
+        const dummy = [
+          { name: "VPS SG 2GB", price: 55000, category: "vps", desc: "AMD EPYC, 2GB RAM, 40GB NVMe", icon: "fa-server", color: "text-cyan-400" },
+          { name: "MC Premium", price: 25000, category: "game", desc: "Unlimited Slots, Pterodactyl Panel", icon: "fa-cube", color: "text-green-400" },
+          { name: "Dedicated E5", price: 1500000, category: "dedi", desc: "Full Server, 32GB RAM, 1TB SSD", icon: "fa-microchip", color: "text-purple-400" }
+        ];
+        try {
+          for(let p of dummy) await addDoc(collection(db, "products"), p);
+          alert("Database Seeded!");
+          window.location.reload();
+        } catch(e) { console.error(e); alert("Error seeding DB"); }
+      }
+    };
+    
+    // Load products on Store View (Simplified)
+    async function loadProducts() {
+      const container = document.getElementById('product-list');
+      const q = await getDocs(collection(db, "products"));
+      if(q.empty) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">No products found. Login admin to seed data.</div>`;
+        return;
+      }
+      container.innerHTML = '';
+      q.forEach(doc => {
+        const d = doc.data();
+        const html = `
+          <div class="store-card group cursor-pointer">
+            <div class="card-bar"></div>
+            <div class="p-8 h-full flex flex-col">
+              <i class="fas ${d.icon || 'fa-box'} text-3xl ${d.color || 'text-white'} mb-4 group-hover:scale-110 transition"></i>
+              <h4 class="text-xl font-bold mb-2">${d.name}</h4>
+              <p class="text-gray-500 text-sm mb-6 flex-1">${d.desc}</p>
+              <div class="flex justify-between items-center text-sm font-mono">
+                <span class="text-gray-400">Starting at</span>
+                <span class="${d.color || 'text-white'} font-bold">Rp${d.price.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.innerHTML += html;
+      });
+    }
+    // Call load when store is visited (simplified observer)
+    const storeObserver = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.target.id === 'store' && mutation.target.classList.contains('active')) {
+          loadProducts();
+        }
+      });
+    });
+    storeObserver.observe(document.getElementById('store'), { attributes: true });
+
+    // --- SECRET ADMIN TRIGGER (5x Logo Click) ---
+    let logoClicks = 0;
+    let logoTimer;
+    const logoTrigger = document.getElementById('logo-trigger');
+    const logoIcon = document.getElementById('logo-icon');
+
+    logoTrigger.addEventListener('click', (e) => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000); // Reset jika berhenti 2 detik
+
+      if (logoClicks === 5) {
+        e.preventDefault(); // Mencegah pindah ke home di klik ke-5
+        app.nav('admin-login');
+        logoClicks = 0;
+        
+        // Efek visual spin pada logo
+        logoIcon.style.transition = "transform 0.5s";
+        logoIcon.style.transform = "rotate(360deg)";
+        setTimeout(() => { logoIcon.style.transform = "rotate(0deg)"; }, 500);
+      }
+    });
+
+  </script>
+</body>
+</html>
