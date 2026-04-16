@@ -3,23 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRYONIX | ACCESS TERMINAL</title>
+  <title>KRYONIX | SECURE LOGIN</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- STYLE CONFIG (Sama persis dengan index.html) -->
+  <!-- STYLE CONFIG -->
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
           fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: {
-            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
-            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' }
-          }
+          colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff' } }
         }
       }
     }
@@ -28,75 +25,32 @@
   <style>
     :root { --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --green: #00e89d; --border: #152035; }
     body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-
-    /* BACKGROUND FX */
-    .grid-bg {
-      position: fixed; inset: 0; 
-      background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px);
-      background-size: 50px 50px; z-index: 0; pointer-events: none;
-    }
-    .scanline {
-      position: fixed; inset: 0; z-index: 1; pointer-events: none;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
-    }
-    .orb {
-      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
-      animation: orbFloat 10s ease-in-out infinite alternate;
-    }
+    
+    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
+    .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
+    .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
     .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,232,157,0.08), transparent 70%); top: -150px; left: -150px; }
     .orb-2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); bottom: -100px; right: -100px; animation-delay: -5s; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(30px, 50px); } }
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-    /* LOGIN CARD */
-    .login-card {
-      position: relative; z-index: 10; width: 100%; max-width: 420px;
-      background: rgba(12, 18, 32, 0.7); backdrop-filter: blur(20px);
-      border: 1px solid var(--border); border-radius: 20px;
-      padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5);
-    }
+    .login-card { position: relative; z-index: 10; width: 100%; max-width: 420px; background: rgba(12, 18, 32, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
     
-    /* ROLE TOGGLE */
-    .role-btn {
-      flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.9rem;
-      cursor: pointer; transition: all 0.3s; border: 1px solid transparent;
-      background: rgba(255,255,255,0.03); color: #5a6a80;
-    }
-    .role-btn.active {
-      background: rgba(0, 232, 157, 0.1); border-color: rgba(0, 232, 157, 0.3);
-      color: var(--green); box-shadow: 0 0 15px rgba(0,232,157,0.1);
-    }
+    .role-btn { flex: 1; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.3s; border: 1px solid transparent; background: rgba(255,255,255,0.03); color: #5a6a80; }
+    .role-btn.active { background: rgba(0, 232, 157, 0.1); border-color: rgba(0, 232, 157, 0.3); color: var(--green); box-shadow: 0 0 15px rgba(0,232,157,0.1); }
 
-    /* INPUTS */
+    .auth-toggle { font-size: 0.8rem; color: #5a6a80; text-align: center; margin-top: 1rem; cursor: pointer; }
+    .auth-toggle:hover { color: var(--green); text-decoration: underline; }
+
     .input-group { position: relative; margin-bottom: 1.5rem; }
-    .input-field {
-      width: 100%; background: #080c14; border: 1px solid var(--border);
-      padding: 14px 16px; border-radius: 10px; color: white; outline: none;
-      transition: all 0.3s; font-family: 'Space Grotesk';
-    }
-    .input-field:focus {
-      border-color: var(--green); box-shadow: 0 0 0 2px rgba(0,232,157,0.1);
-    }
-    .input-label {
-      position: absolute; left: 16px; top: 14px; color: #5a6a80; font-size: 0.9rem;
-      pointer-events: none; transition: all 0.3s; background: transparent; padding: 0 4px;
-    }
-    .input-field:focus + .input-label,
-    .input-field:not(:placeholder-shown) + .input-label {
-      top: -10px; left: 10px; font-size: 0.75rem; background: var(--bg-card);
-      color: var(--green);
-    }
+    .input-field { width: 100%; background: #080c14; border: 1px solid var(--border); padding: 14px 16px; border-radius: 10px; color: white; outline: none; transition: all 0.3s; font-family: 'Space Grotesk'; }
+    .input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(0,232,157,0.1); }
+    .input-label { position: absolute; left: 16px; top: 14px; color: #5a6a80; font-size: 0.9rem; pointer-events: none; transition: all 0.3s; background: transparent; padding: 0 4px; }
+    .input-field:focus + .input-label, .input-field:not(:placeholder-shown) + .input-label { top: -10px; left: 10px; font-size: 0.75rem; background: var(--bg-card); color: var(--green); }
 
-    /* BUTTON */
-    .btn-login {
-      width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem;
-      background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10;
-      border: none; cursor: pointer; transition: all 0.3s;
-      box-shadow: 0 0 20px rgba(0,232,157,0.2);
-    }
+    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10; border: none; cursor: pointer; transition: all 0.3s; box-shadow: 0 0 20px rgba(0,232,157,0.2); }
     .btn-login:hover { box-shadow: 0 0 30px rgba(0,232,157,0.5); transform: translateY(-2px); }
     
-    /* TABS ANIMATION */
     .form-content { display: none; animation: fadeIn 0.4s ease-out; }
     .form-content.active { display: block; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -115,16 +69,16 @@
   <div class="login-card">
     
     <!-- LOGO -->
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-green-400 to-cyan-500 rounded-2xl mb-4 shadow-lg shadow-green-500/20">
-        <i class="fas fa-shield-halved text-3xl text-black"></i>
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-400 to-cyan-500 rounded-xl mb-3 shadow-lg shadow-green-500/20">
+        <i class="fas fa-user-shield text-2xl text-black"></i>
       </div>
-      <h1 class="text-2xl font-bold tracking-wide">KRYONIX</h1>
-      <p class="text-xs text-gray-500 font-mono mt-1">SECURE ACCESS TERMINAL v2.0</p>
+      <h1 class="text-xl font-bold tracking-wide">KRYONIX</h1>
+      <p class="text-[10px] text-gray-500 font-mono mt-1">SECURE ACCESS PROTOCOL</p>
     </div>
 
     <!-- ROLE SWITCHER -->
-    <div class="flex gap-3 mb-8 bg-dark-bg/50 p-1 rounded-xl border border-dark-border">
+    <div class="flex gap-3 mb-6 bg-dark-bg/50 p-1 rounded-xl border border-dark-border">
       <button onclick="switchRole('admin')" id="btn-admin" class="role-btn active">
         <i class="fas fa-user-lock mr-2"></i> ADMIN
       </button>
@@ -133,153 +87,231 @@
       </button>
     </div>
 
-    <!-- FORMS -->
-    <form onsubmit="handleLogin(event)" id="loginForm">
+    <form onsubmit="handleAuth(event)" id="authForm">
       
-      <!-- ADMIN FORM -->
+      <!-- ADMIN LOGIN ONLY -->
       <div id="form-admin" class="form-content active">
+        <p class="text-xs text-gray-500 mb-4 bg-red-500/10 p-2 rounded border border-red-500/20 text-red-400">
+          <i class="fas fa-exclamation-triangle mr-1"></i> Access Restricted. Authorized Personnel Only.
+        </p>
         <div class="input-group">
           <input type="text" id="admin-user" class="input-field" placeholder=" " required>
-          <label class="input-label">USERNAME</label>
+          <label class="input-label">ADMIN ID</label>
         </div>
         <div class="input-group">
           <input type="password" id="admin-pass" class="input-field" placeholder=" " required>
-          <label class="input-label">PASSWORD</label>
+          <label class="input-label">ACCESS KEY</label>
         </div>
-        <p class="text-[10px] text-gray-600 mb-4 text-center">Default: admin / admin</p>
       </div>
 
-      <!-- BUYER FORM -->
-      <div id="form-buyer" class="form-content">
+      <!-- BUYER LOGIN -->
+      <div id="form-buyer-login" class="form-content">
         <div class="input-group">
-          <input type="text" id="buyer-user" class="input-field" placeholder=" " required>
-          <label class="input-label">EMAIL / USERNAME</label>
+          <input type="text" id="buyer-login-user" class="input-field" placeholder=" " required>
+          <label class="input-label">USERNAME</label>
         </div>
         <div class="input-group">
-          <input type="password" id="buyer-pass" class="input-field" placeholder=" " required>
+          <input type="password" id="buyer-login-pass" class="input-field" placeholder=" " required>
           <label class="input-label">PASSWORD</label>
         </div>
-        <div class="flex justify-between items-center mb-4 text-sm text-gray-500">
-          <label class="flex items-center gap-2 cursor-pointer hover:text-green-400 transition">
-            <input type="checkbox" class="accent-green-500"> Remember me
-          </label>
-          <a href="#" class="hover:text-green-400">Forgot pass?</a>
+        <div class="auth-toggle" onclick="toggleBuyerMode('register')">Belum punya akun? Daftar disini</div>
+      </div>
+
+      <!-- BUYER REGISTER -->
+      <div id="form-buyer-register" class="form-content">
+        <div class="input-group">
+          <input type="text" id="buyer-reg-user" class="input-field" placeholder=" " required>
+          <label class="input-label">BUAT USERNAME</label>
         </div>
+        <div class="input-group">
+          <input type="password" id="buyer-reg-pass" class="input-field" placeholder=" " required>
+          <label class="input-label">BUAT PASSWORD</label>
+        </div>
+        <div class="auth-toggle" onclick="toggleBuyerMode('login')">Sudah punya akun? Login disini</div>
       </div>
 
       <!-- SUBMIT BUTTON -->
       <button type="submit" class="btn-login flex items-center justify-center gap-2">
-        <span id="btn-text">AUTHENTICATE</span>
-        <i class="fas fa-arrow-right" id="btn-icon"></i>
+        <span id="btn-text">INITIALIZE</span>
+        <i class="fas fa-bolt" id="btn-icon"></i>
       </button>
 
     </form>
-
-    <!-- FOOTER LINK -->
-    <div class="mt-8 text-center border-t border-dark-border pt-6">
-      <a href="index.html" class="text-xs text-gray-600 hover:text-green-400 transition flex items-center justify-center gap-2">
-        <i class="fas fa-globe"></i> Back to Home Page
-      </a>
-    </div>
-
   </div>
 
   <!-- SCRIPTS -->
+  <script type="module">
+    // IMPORT FIREBASE
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // --- DAFTAR ADMIN YANG DIPERBOLEHKAN (HARDCODED) ---
+    // Kamu bisa menambah admin lain di sini nanti.
+    const allowedAdmins = [
+      { id: 'admin', key: 'admin' }
+    ];
+
+    // STATE
+    let currentRole = 'admin';
+    let buyerMode = 'login'; // login atau register
+
+    // --- UI FUNCTIONS ---
+    window.switchRole = (role) => {
+      currentRole = role;
+      buyerMode = 'login'; // reset buyer mode
+      updateUI();
+    }
+
+    window.toggleBuyerMode = (mode) => {
+      buyerMode = mode;
+      updateUI();
+    }
+
+    function updateUI() {
+      // Update Buttons
+      document.getElementById('btn-admin').className = currentRole === 'admin' ? 'role-btn active' : 'role-btn';
+      document.getElementById('btn-buyer').className = currentRole === 'buyer' ? 'role-btn active' : 'role-btn';
+
+      // Update Forms
+      document.getElementById('form-admin').className = currentRole === 'admin' ? 'form-content active' : 'form-content';
+      
+      if (currentRole === 'buyer') {
+        if (buyerMode === 'login') {
+          document.getElementById('form-buyer-login').className = 'form-content active';
+          document.getElementById('form-buyer-register').className = 'form-content';
+          document.getElementById('btn-text').innerText = "LOGIN";
+        } else {
+          document.getElementById('form-buyer-login').className = 'form-content';
+          document.getElementById('form-buyer-register').className = 'form-content active';
+          document.getElementById('btn-text').innerText = "REGISTER";
+        }
+      }
+    }
+
+    // --- AUTH LOGIC ---
+    window.handleAuth = async (e) => {
+      e.preventDefault();
+      const btnText = document.getElementById('btn-text');
+      const btnIcon = document.getElementById('btn-icon');
+      
+      btnText.innerText = "PROCESSING...";
+      btnIcon.className = "fas fa-circle-notch fa-spin";
+
+      if (currentRole === 'admin') {
+        const id = document.getElementById('admin-user').value;
+        const key = document.getElementById('admin-pass').value;
+        
+        const isAdminValid = allowedAdmins.some(a => a.id === id && a.key === key);
+        
+        if (isAdminValid) {
+          setTimeout(() => window.location.href = 'admin.html', 1000);
+        } else {
+          alert("ACCESS DENIED: Credentials Not Recognized");
+          resetBtn();
+        }
+
+      } else if (currentRole === 'buyer') {
+        
+        if (buyerMode === 'register') {
+          // REGISTER BUYER
+          const user = document.getElementById('buyer-reg-user').value;
+          const pass = document.getElementById('buyer-reg-pass').value;
+          
+          try {
+            // Cek apakah user sudah ada
+            const docRef = doc(db, "users", user);
+            const docSnap = await getDoc(docRef);
+            
+            if (docSnap.exists()) {
+              alert("Username sudah terpakai!");
+              resetBtn();
+            } else {
+              // Simpan ke Firebase
+              await setDoc(docRef, {
+                username: user,
+                password: pass, // Simpan plain text untuk demo simple ini (Idealnya di-hash)
+                role: 'buyer',
+                createdAt: new Date()
+              });
+              alert("Registrasi Berhasil! Silakan Login.");
+              toggleBuyerMode('login'); // Pindah ke mode login
+              resetBtn();
+            }
+          } catch(err) {
+            console.error(err);
+            alert("Gagal mendaftar.");
+            resetBtn();
+          }
+
+        } else {
+          // LOGIN BUYER
+          const user = document.getElementById('buyer-login-user').value;
+          const pass = document.getElementById('buyer-login-pass').value;
+
+          try {
+            const docRef = doc(db, "users", user);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              if (data.password === pass) {
+                alert("WELCOME BACK, " + user);
+                window.location.href = 'index.html';
+              } else {
+                alert("PASSWORD SALAH!");
+                resetBtn();
+              }
+            } else {
+              alert("USER TIDAK DITEMUKAN. Silakan daftar dulu.");
+              resetBtn();
+            }
+          } catch(err) {
+            alert("Error koneksi database.");
+            resetBtn();
+          }
+        }
+      }
+    }
+
+    function resetBtn() {
+      document.getElementById('btn-text').innerText = buyerMode === 'register' ? "REGISTER" : "INITIALIZE";
+      document.getElementById('btn-icon').className = "fas fa-bolt";
+    }
+  </script>
+
+  <!-- PARTICLES (Visual Only) -->
   <script>
-    // 1. PARTICLE SYSTEM (Reused)
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    for (let i = 0; i < 50; i++) {
-      pArr.push({
-        x: Math.random() * canvas.width, y: Math.random() * canvas.height,
-        size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, opacity: Math.random() * 0.5 + 0.1
-      });
-    }
+    for (let i = 0; i < 50; i++) pArr.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, opacity: Math.random() * 0.5 + 0.1 });
     function animP() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pArr.forEach(p => {
         p.x += p.speedX; p.y += p.speedY;
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
       });
-      for (let i = 0; i < pArr.length; i++) {
-        for (let j = i + 1; j < pArr.length; j++) {
-          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 120) {
-            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
-            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
-          }
-        }
-      }
       requestAnimationFrame(animP);
     }
     animP();
-
-    // 2. ROLE SWITCH LOGIC
-    let currentRole = 'admin';
-    
-    window.switchRole = (role) => {
-      currentRole = role;
-      
-      // Update Button Styles
-      document.getElementById('btn-admin').className = role === 'admin' ? 'role-btn active' : 'role-btn';
-      document.getElementById('btn-buyer').className = role === 'buyer' ? 'role-btn active' : 'role-btn';
-
-      // Toggle Forms
-      document.getElementById('form-admin').className = role === 'admin' ? 'form-content active' : 'form-content';
-      document.getElementById('form-buyer').className = role === 'buyer' ? 'form-content active' : 'form-content';
-
-      // Clear Inputs
-      document.querySelectorAll('.input-field').forEach(i => i.value = '');
-    }
-
-    // 3. LOGIN LOGIC
-    window.handleLogin = (e) => {
-      e.preventDefault();
-      const btnText = document.getElementById('btn-text');
-      const btnIcon = document.getElementById('btn-icon');
-      
-      // Loading Effect
-      btnText.innerText = "VERIFYING...";
-      btnIcon.className = "fas fa-circle-notch fa-spin";
-
-      setTimeout(() => {
-        if (currentRole === 'admin') {
-          const u = document.getElementById('admin-user').value;
-          const p = document.getElementById('admin-pass').value;
-
-          // Hardcoded Admin Login
-          if (u === 'admin' && p === 'admin') {
-            alert("ACCESS GRANTED: ADMIN");
-            window.location.href = 'admin.html';
-          } else {
-            alert("ACCESS DENIED: Invalid Admin Credentials");
-            btnText.innerText = "AUTHENTICATE";
-            btnIcon.className = "fas fa-arrow-right";
-          }
-        } 
-        else if (currentRole === 'buyer') {
-          const u = document.getElementById('buyer-user').value;
-          const p = document.getElementById('buyer-pass').value;
-          
-          // Simulasi Buyer Login (Bisa masuk apa saja asal diisi)
-          if (u && p) {
-            alert("WELCOME BACK, " + u);
-            window.location.href = 'index.html';
-          } else {
-            alert("Please fill in credentials");
-            btnText.innerText = "AUTHENTICATE";
-            btnIcon.className = "fas fa-arrow-right";
-          }
-        }
-      }, 1000); // Fake delay 1 detik biar terasa "hacking"
-    }
   </script>
 </body>
 </html>
