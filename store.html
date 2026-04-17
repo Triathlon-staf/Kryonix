@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORE | KRYONIX</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff' } }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --bg: #060a10; --fg: #e8ecf2'; --green: #00e89d'; --border: '#152035'; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; padding: 4rem 1.5rem; }
+    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
+    
+    .product-card { 
+      background: rgba(12, 18, 32, 0.7); 
+      border: 1px solid var(--border); 
+      border-radius: 20px; 
+      overflow: hidden; 
+      transition: all 0.3s;
+      position: relative;
+    }
+    .product-card:hover { 
+      transform: translateY(-5px); 
+      border-color: var(--green); 
+      box-shadow: 0 10px 40px -10px rgba(0, 232, 157, 0.2);
+    }
+    .product-image { width: 100%; height: 200px; object-fit: cover; background: #1a1f2e; }
+    
+    .btn-buy {
+      width: 100%; padding: 12px; background: linear-gradient(135deg, var(--green), #00c4a0); 
+      color: #060a10; font-weight: 700; border: none; border-radius: 12px;
+      transition: 0.3s;
+    }
+    .btn-buy:hover { box-shadow: 0 0 20px rgba(0,232,157,0.4); }
+    
+    .filter-btn { transition: 0.3s; }
+    .filter-btn.active { background: var(--green); color: #060a10; border-color: var(--green); }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <div class="relative z-10 max-w-7xl mx-auto">
+    <!-- HEADER -->
+    <div class="text-center mb-12">
+      <div class="inline-block px-4 py-1 mb-4 rounded-full border border-green-500/30 text-green-400 text-xs font-mono tracking-widest bg-green-500/5">
+        KRYONIX STORE
+      </div>
+      <h1 class="text-4xl md:text-6xl font-bold mb-4">PILIHAN HOSTING <br/><span class="text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-cyan-400">TERBAIK ANDA</span></h1>
+      <p class="text-gray-400 max-w-2xl mx-auto">Performa tinggi, keamanan maksimal, dan harga transparan. Pilih paket yang sesuai dengan kebutuhan Anda.</p>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="flex justify-center gap-4 mb-10 flex-wrap">
+      <button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">SEMUA</button>
+      <button onclick="filterProducts('hosting')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">HOSTING</button>
+      <button onclick="filterProducts('vps')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">VPS</button>
+      <button onclick="filterProducts('domain')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">DOMAIN</button>
+    </div>
+
+    <!-- PRODUCT GRID -->
+    <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Products will be injected here by JS -->
+      <div class="col-span-full text-center py-20 text-gray-500">
+        <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
+        <p>Memuat produk dari server...</p>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- SCRIPTS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let allProducts = [];
+
+    async function fetchProducts() {
+      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+      const querySnapshot = await getDocs(q);
+      
+      const grid = document.getElementById('productGrid');
+      allProducts = [];
+      grid.innerHTML = '';
+
+      if(querySnapshot.empty) {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">Belum ada produk tersedia saat ini.</div>';
+        return;
+      }
+
+      querySnapshot.forEach((doc) => {
+        const p = doc.data();
+        p.id = doc.id;
+        allProducts.push(p);
+        
+        const card = document.createElement('div');
+        card.className = `product-card`;
+        card.dataset.category = p.category;
+        
+        // Generate Features List HTML
+        const featuresHtml = p.features.map(f => `<li class="text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-check text-green-500 text-xs"></i> ${f}</li>`).join('');
+
+        card.innerHTML = `
+          <div class="relative">
+            <img src="${p.image}" alt="${p.title}" class="product-image">
+            <div class="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-xs font-mono text-white border border-white/10">
+              ${p.category.toUpperCase()}
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-xl font-bold text-white mb-2">${p.title}</h3>
+            <p class="text-sm text-gray-500 mb-4 h-10 line-clamp-2">${p.description}</p>
+            
+            <div class="mb-6">
+              <div class="text-2xl font-bold text-green-400 mb-1">Rp ${parseInt(p.price).toLocaleString('id-ID')}</div>
+              <div class="text-xs text-gray-600">per bulan</div>
+            </div>
+            
+            <ul class="mb-6 space-y-2">
+              ${featuresHtml}
+            </ul>
+            
+            <button class="btn-buy" onclick="buyProduct('${p.id}')">
+              <i class="fas fa-shopping-cart mr-2"></i> BELI SEKARANG
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    window.filterProducts = (category) => {
+      // Update buttons
+      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+      event.target.classList.add('active');
+
+      // Filter Logic
+      const cards = document.querySelectorAll('.product-card');
+      cards.forEach(card => {
+        if(category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    };
+
+    window.buyProduct = (id) => {
+      // Redirect ke login atau langsung ke WhatsApp/Checkout
+      // Disini saya arahkan ke login dulu (sesuai flow sebelumnya)
+      window.location.href = 'login.html';
+    };
+
+    fetchProducts();
+  </script>
+</body>
+</html>
