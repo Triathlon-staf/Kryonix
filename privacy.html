@@ -28,7 +28,6 @@
   <style>
     :root { 
       --bg: #060a10; 
-      --bg-card: #0c1220; 
       --fg: #e8ecf2; 
       --cyan: #00c4ff; 
       --border: #152035; 
@@ -38,312 +37,245 @@
       background: var(--bg); 
       color: var(--fg); 
       font-family: 'Space Grotesk', sans-serif; 
-      overflow: hidden; /* Body tidak scroll, scrollnya di dalam card */
-      height: 100vh; 
+      overflow-x: hidden;
+      padding-bottom: 5rem;
     }
-
-    /* SELECTION TEXT */
-    ::selection { background: rgba(0, 196, 255, 0.2); color: white; }
 
     /* BACKGROUND FX */
     .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,196,255,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,196,255,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
     .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
     
-    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; animation: orbFloat 15s ease-in-out infinite alternate; }
-    .orb-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,196,255,0.1), transparent 70%); top: -150px; right: -150px; }
+    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite alternate; }
+    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); top: -100px; right: -100px; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(40px, 60px); } }
 
-    /* CARD STYLE */
-    .glass-card { 
-      position: relative; 
-      z-index: 10; 
-      width: 100%; 
-      max-width: 850px; 
-      background: rgba(12, 18, 32, 0.9); 
-      backdrop-filter: blur(20px); 
-      border: 1px solid var(--border); 
-      border-radius: 20px; 
-      padding: 2.5rem; 
-      box-shadow: 0 0 60px rgba(0,0,0,0.6); 
-      margin: auto; /* Center vertikal dan horizontal */
-      display: flex;
-      flex-direction: column;
-      height: 90vh; /* Tinggi 90% dari layar */
-    }
+    /* LAYOUT CONTAINER */
+    .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 10; }
 
-    /* SCROLLABLE AREA */
-    .scroll-area {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding-right: 1rem;
-      margin-right: -1rem;
-    }
-    .scroll-area::-webkit-scrollbar { width: 6px; }
-    .scroll-area::-webkit-scrollbar-track { background: transparent; }
-    .scroll-area::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    .scroll-area::-webkit-scrollbar-thumb:hover { background: var(--cyan); }
-
-    /* HEADER STYLE */
-    .header-icon {
-      width: 80px; height: 80px;
-      background: linear-gradient(135deg, rgba(0, 196, 255, 0.1), rgba(0, 232, 157, 0.1));
-      border: 1px solid rgba(0, 196, 255, 0.3);
-      border-radius: 18px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 20px rgba(0, 196, 255, 0.1);
-    }
-
-    /* SECTION TITLES */
-    h2 { 
-      font-family: 'Space Grotesk', sans-serif; 
-      font-size: 1.3rem; 
-      font-weight: 700; 
-      color: white; 
-      margin-top: 2.5rem; 
-      margin-bottom: 1.5rem; 
-      display: flex; 
-      align-items: center; 
-      gap: 1rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    h2 i { 
-      width: 32px; height: 32px;
-      background: rgba(0, 196, 255, 0.1);
-      border: 1px solid rgba(0, 196, 255, 0.3);
-      border-radius: 6px;
-      color: var(--cyan); 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.9rem;
-    }
-    /* Garis connector di samping judul */
-    h2::after {
-      content: '';
-      flex-grow: 1;
-      height: 1px;
-      background: linear-gradient(90deg, var(--border), transparent);
-      opacity: 0.5;
-    }
+    /* HEADER AREA */
+    .page-header { text-align: center; padding-top: 5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); margin-bottom: 4rem; }
     
-    /* TEXT & LIST */
-    p { 
-      color: #cbd5e1; /* Lebih terang agar mudah dibaca */
+    .badge { 
+      display: inline-block; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-size: 0.75rem; 
+      color: var(--accent-cyan); 
+      border: 1px solid rgba(0, 196, 255, 0.3); 
+      padding: 0.25rem 0.75rem; 
+      border-radius: 4px; 
+      margin-bottom: 1rem;
+      background: rgba(0, 196, 255, 0.05);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* SECTIONS */
+    .policy-section { 
+      display: flex; 
+      gap: 2rem; 
+      margin-bottom: 5rem; 
+      opacity: 0; 
+      animation: slideUp 0.6s ease forwards;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* NUMBERING STYLES */
+    .section-number { 
+      flex-shrink: 0; 
+      width: 60px; 
+      text-align: right; 
+      font-family: 'JetBrains Mono', monospace; 
+      font-weight: 700; 
+      font-size: 2rem; 
+      line-height: 1;
+      color: rgba(255, 255, 255, 0.1);
+      position: relative;
+      top: -5px;
+    }
+    .section-number span { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,196,255,0.4); }
+
+    /* CONTENT STYLES */
+    .section-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: white; }
+    .section-content p { 
+      color: #94a3b8; 
       line-height: 1.8; 
       margin-bottom: 1.5rem; 
-      font-size: 0.95rem;
-      font-weight: 300;
+      font-size: 1rem;
     }
-    
-    ul { list-style: none; margin-bottom: 0; padding-left: 1rem; }
-    li { 
+    .section-content ul { list-style: none; margin-bottom: 1rem; }
+    .section-content li { 
       position: relative; 
       padding-left: 1.5rem; 
       margin-bottom: 0.8rem; 
-      color: #e2e8f0; 
+      color: #cbd5e1; 
       line-height: 1.6; 
-      font-weight: 400;
-      transition: transform 0.2s, color 0.2s;
     }
-    li:hover {
-      transform: translateX(5px);
-      color: white;
+    .section-content li::before {
+      content: '•';
+      position: absolute; left: 0; color: var(--accent-cyan);
     }
-    /* Bullet List Custom */
-    li::before {
-      content: '';
-      position: absolute; left: 0; top: 0.6rem;
-      width: 6px; height: 6px;
-      background: var(--cyan);
-      box-shadow: 0 0 8px var(--cyan);
-      border-radius: 50%;
-    }
+    .highlight-text { color: white; font-weight: 600; background: rgba(255,255,255,0.05); padding: 0 4px; border-radius: 2px; }
 
-    /* HIGHLIGHTS */
-    strong { color: white; font-weight: 600; }
-    .highlight { color: var(--accent-red); font-weight: 700; text-shadow: 0 0 10px rgba(255, 71, 87, 0.3); }
-    .text-mono { font-family: 'JetBrains Mono', monospace; }
-    
-    /* STATUS BAR */
-    .status-badge {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 4px 8px;
-      border-radius: 4px;
-      background: rgba(0, 232, 157, 0.1);
-      color: var(--accent-green);
-      border: 1px solid rgba(0, 232, 157, 0.3);
+    /* FOOTER */
+    .footer-card {
+      background: rgba(12, 18, 32, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-top: 6rem;
+      text-align: center;
     }
     
-    /* FOOTER BUTTON */
-    .btn-accept {
-      background: linear-gradient(135deg, var(--cyan), #008bbf); 
-      color: #060a10; 
-      padding: 1rem 2.5rem; 
-      border-radius: 12px; 
-      font-weight: 700; 
-      font-size: 1rem;
-      text-decoration: none; 
-      display: inline-flex; 
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      box-shadow: 0 0 20px rgba(0,196,255,0.3);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
+    .back-btn {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      color: #64748b; text-decoration: none; font-size: 0.9rem;
+      transition: 0.3s;
     }
-    .btn-accept:hover { 
-      transform: translateY(-2px); 
-      box-shadow: 0 0 35px rgba(0,196,255,0.5); 
-    }
-    .btn-accept::before {
-      content: '';
-      position: absolute;
-      top: 0; left: -100%;
-      width: 100%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-      transition: 0.5s;
-    }
-    .btn-accept:hover::before {
-      left: 100%;
-    }
+    .back-btn:hover { color: var(--accent-cyan); transform: translateX(-5px); }
 
+    /* RESPONSIVE */
+    @media (max-width: 640px) {
+      .policy-section { flex-direction: column; gap: 0.5rem; margin-bottom: 4rem; }
+      .section-number { width: auto; text-align: left; font-size: 1.5rem; opacity: 0.5; }
+    }
   </style>
 </head>
 <body>
 
-  <!-- BACKGROUND FX -->
+  <!-- BACKGROUND -->
   <div class="grid-bg"></div>
   <div class="scanline"></div>
   <div class="orb orb-1"></div>
 
-  <!-- MAIN CARD -->
-  <div class="glass-card">
+  <!-- CONTAINER -->
+  <div class="container">
     
-    <!-- HEADER SECTION -->
-    <div class="mb-6 flex-shrink-0">
-      <div class="flex items-center justify-between mb-6">
-        <div class="flex items-center gap-4">
-          <div class="header-icon">
-            <i class="fas fa-shield-halved text-3xl text-cyan-400"></i>
-          </div>
-          <div>
-            <h1 class="text-3xl font-bold tracking-tight leading-none mb-1">KEBIJAKAN PRIVASI</h1>
-            <div class="flex items-center gap-3 text-xs text-mono text-gray-500">
-              <span class="status-badge"><i class="fas fa-circle text-[6px] mr-1"></i> SECURE</span>
-              <span>PROTOCOL V.3.1</span>
-            </div>
-          </div>
+    <!-- HEADER -->
+    <header class="page-header">
+      <a href="index.html" class="back-btn mb-4 inline-block">
+        <i class="fas fa-arrow-left"></i> Back to Home
+      </a>
+      
+      <div class="badge"><== PRIVACY POLICY ==></div>
+      
+      <h1 class="text-4xl md:text-5xl font-bold mb-2 tracking-tight">Kebijakan Privasi</h1>
+      
+      <p class="text-gray-500 text-sm font-mono mb-6">Last Updated: 1 November 2025</p>
+      
+      <p class="text-lg text-white max-w-2xl mx-auto leading-relaxed">
+        Platform cloud yang sederhana dan canggih yang disesuaikan dengan kebutuhan Anda.
+      </p>
+
+      <div class="mt-8 border-t border-dark-border pt-6 max-w-3xl mx-auto">
+        <p class="text-gray-400 leading-relaxed">
+          Selamat datang di <strong class="text-white">Kryonix</strong>. Kami menghormati privasi setiap pengguna dan berkomitmen untuk melindungi data pribadi yang Anda berikan saat menggunakan layanan kami, termasuk situs <span class="text-cyan-400">kryonix.com</span>.
+        </p>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main>
+
+      <!-- 1 -->
+      <section class="policy-section" style="animation-delay: 0.1s;">
+        <div class="section-number">01<span>.</span></div>
+        <div class="section-content">
+          <h3>Informasi yang Kami Kumpulkan</h3>
+          <p>Untuk menyediakan layanan terbaik, kami mengumpulkan data berikut:</p>
+          <ul>
+            <li>Nama, alamat email, nomor telepon, dan informasi akun billing.</li>
+            <li>Data login, IP address, serta log aktivitas server.</li>
+            <li>Informasi teknis seperti sistem operasi, browser, dan perangkat yang digunakan.</li>
+          </ul>
         </div>
-        <!-- Date Badge -->
-        <div class="hidden md:block text-right">
-          <div class="text-xs text-gray-500 uppercase tracking-wider mb-1">Last Updated</div>
-          <div class="text-sm font-mono text-cyan-400 border border-cyan-900/50 px-2 py-1 rounded bg-cyan-900/10">01 NOV 2025</div>
+      </section>
+
+      <!-- 2 -->
+      <section class="policy-section" style="animation-delay: 0.2s;">
+        <div class="section-number">02<span>.</span></div>
+        <div class="section-content">
+          <h3>Penggunaan Informasi</h3>
+          <p>Data Anda digunakan untuk memastikan operasional layanan yang lancar:</p>
+          <ul>
+            <li>Mengelola akun dan menyediakan layanan hosting, VPS, serta domain.</li>
+            <li>Meningkatkan keamanan dan kinerja jaringan.</li>
+            <li>Menangani dukungan teknis serta mencegah penyalahgunaan layanan.</li>
+            <li>Mengirimkan notifikasi sistem, pembaruan, dan tagihan.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 3 -->
+      <section class="policy-section" style="animation-delay: 0.3s;">
+        <div class="section-number">03<span>.</span></div>
+        <div class="section-content">
+          <h3>Keamanan Data</h3>
+          <p>
+            Kami menerapkan perlindungan DDoS berbasis router Arbon dan Juniper, sistem firewall tingkat lanjut, serta enkripsi SSL/TLS di seluruh transaksi. Data pengguna disimpan di server dengan pengawasan 24/7 dan backup terenkripsi secara berkala.
+          </p>
+        </div>
+      </section>
+
+      <!-- 4 -->
+      <section class="policy-section" style="animation-delay: 0.4s;">
+        <div class="section-number">04<span>.</span></div>
+        <div class="section-content">
+          <h3>Pembagian Data</h3>
+          <p>
+            Kryonix tidak menjual, menyewakan, atau membagikan data pribadi tanpa izin. Data hanya dibagikan kepada mitra terpercaya seperti:
+          </p>
+          <ul>
+            <li><strong>Gateway Pembayaran:</strong> Midtrans, PayPal, Tripay.</li>
+            <li><strong>Provider Infrastruktur:</strong> Hetzner, OVH.</li>
+            <li><strong>Penyedia Keamanan:</strong> Cloudflare, Juniper.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 5 -->
+      <section class="policy-section" style="animation-delay: 0.5s;">
+        <div class="section-number">05<span>.</span></div>
+        <div class="section-content">
+          <h3>Hak Pengguna</h3>
+          <p>
+            Pengguna memiliki hak untuk meminta salinan data, memperbarui, atau menghapus informasi pribadi. Untuk permintaan terkait data pribadi, hubungi kami di: <a href="mailto:support@kryonix.com" class="text-cyan-400 hover:underline">support@kryonix.com</a>.
+          </p>
+        </div>
+      </section>
+
+      <!-- 6 -->
+      <section class="policy-section" style="animation-delay: 0.6s;">
+        <div class="section-number">06<span>.</span></div>
+        <div class="section-content">
+          <h3>Perubahan Kebijakan</h3>
+          <p>
+            Kryonix dapat memperbarui kebijakan ini sewaktu-waktu untuk menyesuaikan dengan perubahan sistem dan regulasi. Versi terbaru tersedia di kryonix.com.
+          </p>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <div class="footer-card">
+      <div class="flex items-center justify-center gap-3 mb-6">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30">
+          <i class="fas fa-headset text-cyan-400"></i>
+        </div>
+        <div class="text-left">
+          <div class="font-bold text-white">Kryonix Support Team</div>
+          <div class="text-xs text-gray-500">24/7 System Active</div>
         </div>
       </div>
-      
-      <p class="text-lg font-medium text-white border-l-4 border-cyan-500 pl-4 bg-white/5 py-3 rounded-r-lg">
-        Platform cloud yang sederhana dan canggih yang disesuaikan dengan kebutuhan Anda. Kryonix menghormati privasi setiap pengguna dan berkomitmen untuk melindungi data pribadi yang Anda berikan.
-      </p>
-    </div>
 
-    <!-- SCROLLABLE CONTENT AREA -->
-    <div class="scroll-area custom-scrollbar">
-      
-      <!-- SECTION 1 -->
-      <section>
-        <h2><i class="fas fa-database"></i> Informasi yang Kami Kumpulkan</h2>
-        <p>
-          Kami mengumpulkan informasi berikut untuk menyediakan dan mengelola layanan hosting kami secara efisien dan aman:
-        </p>
-        <ul>
-          <li><strong>Informasi Identitas:</strong> Nama lengkap, alamat email aktif, nomor telepon, dan informasi akun billing untuk proses transaksi.</li>
-          <li><strong>Data Login & Aktivitas:</strong> Log waktu akses, IP address, serta log aktivitas server untuk keamanan dan audit trail.</li>
-          <li><strong>Informasi Teknis:</strong> Sistem operasi yang digunakan, jenis browser, resolusi layar, dan perangkat yang digunakan untuk akses dashboard.</li>
-        </ul>
-      </section>
-
-      <!-- SECTION 2 -->
-      <section>
-        <h2><i class="fas fa-users-cog"></i> Penggunaan Informasi</h2>
-        <p>
-          Data yang kami peroleh digunakan secara etis untuk tujuan operasional dan pengembangan layanan:
-        </p>
-        <ul>
-          <li>Mengelola akses akun dan menyediakan layanan hosting, VPS, serta registrasi domain.</li>
-          <li>Meningkatkan keamanan jaringan dan mengoptimalkan kinerja server.</li>
-          <li>Menangani dukungan teknis (Support Ticket) serta memproses penyewaan layanan dan pembayaran.</li>
-          <li>Mengirimkan notifikasi sistem penting, pembaruan layanan, dan tagihan bulanan.</li>
-        </ul>
-      </section>
-
-      <!-- SECTION 3 -->
-      <section>
-        <h2><i class="fas fa-lock"></i> Keamanan Data</h2>
-        <p>
-          Kami menerapkan standar keamanan tingkat tinggi, termasuk perlindungan DDoS berbasis router Arbor dan Juniper, sistem firewall tingkat lanjut, serta enkripsi SSL/TLS 256-bit di setiap transaksi. Data pengguna disimpan di server dengan pengawasan fisik dan digital 24/7 serta backup terenkripsi secara berkala.
-        </p>
-      </section>
-
-      <!-- SECTION 4 -->
-      <section>
-        <h2><i class="fas fa-share-alt"></i> Pembagian Data</h2>
-        <p>
-          Kryonix menjunjung tinggi kerahasiaan data. Kami <span class="highlight">TIDAK menjual, menyewakan, atau membagikan</span> data pribadi Anda kepada pihak ketiga tanpa izin eksplisit. Data hanya dibagikan kepada mitra terpercaya yang diperlukan untuk operasional layanan, seperti:
-        </p>
-        <ul>
-          <li><strong>Gateway Pembayaran:</strong> Midtrans, PayPal, Tripay (untuk pemrosesan transaksi).</li>
-          <li><strong>Infrastruktur:</strong> Hetzner, OVH (untuk penyediaan server fisik).</li>
-          <li><strong>Keamanan:</strong> Cloudflare, Juniper (untuk mitigasi serangan siber).</li>
-        </ul>
-      </section>
-
-      <!-- SECTION 5 -->
-      <section>
-        <h2><i class="fas fa-user-tag"></i> Hak Pengguna</h2>
-        <p>
-          Pengguna memiliki hak penuh atas data mereka, termasuk hak untuk meminta salinan data, memperbarui informasi yang salah, atau menghapus akun secara permanen. Untuk permintaan terkait hak data pribadi (GDPR/Privasi), silakan hubungi tim kami di <strong>support@kryonix.com</strong>.
-        </p>
-      </section>
-
-      <!-- SECTION 6 -->
-      <section>
-        <h2><i class="fas fa-sync"></i> Perubahan Kebijakan</h2>
-        <p>
-          Kryonix dapat memperbarui kebijakan ini sewaktu-waktu untuk menyesuaikan dengan perubahan sistem, regulasi pemerintah, atau standar industri. Versi terbaru dari kebijakan ini akan selalu tersedia di halaman resmi kryonix.com.
-        </p>
-        <div class="bg-dark-bg/50 p-4 rounded border border-dark-border text-sm text-gray-400 font-mono mt-4">
-          <i class="fas fa-info-circle mr-2 text-cyan-500"></i>
-          Versi terakhir diperbarui: 1 November 2025 — Pembaruan dapat dilakukan tanpa pemberitahuan sebelumnya sesuai kebutuhan keamanan.
-        </div>
-      </section>
-
-    </div>
-
-    <!-- FOOTER SECTION (Fixed at bottom of card) -->
-    <div class="mt-6 pt-6 border-t border-dark-border flex-shrink-0">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-        
-        <!-- Contact Button -->
-        <div class="flex items-center gap-3 w-full md:w-auto">
-          <a href="mailto:support@kryonix.com" class="btn-accept w-full md:w-auto">
-            <i class="fas fa-envelope"></i> CONTACT SUPPORT
-          </a>
-        </div>
-
-        <!-- Back Link -->
-        <div class="w-full md:w-auto text-center md:text-right">
-          <a href="index.html" class="text-gray-500 hover:text-cyan-400 transition text-sm flex items-center justify-center gap-2 group">
-            <i class="fas fa-arrow-left transform group-hover:-translate-x-1 transition-transform"></i> 
-            Back to Home
-          </a>
-        </div>
-
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm font-mono">
+        <a href="mailto:support@kryonix.com" class="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition">
+          <i class="fas fa-envelope"></i> support@kryonix.com
+        </a>
+        <span class="hidden sm:inline text-gray-700">|</span>
+        <a href="https://kryonix.com" class="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition">
+          <i class="fas fa-globe"></i> kryonix.com
+        </a>
       </div>
     </div>
 
