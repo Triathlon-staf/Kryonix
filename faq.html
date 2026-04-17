@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ | KRYONIX</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa', red: '#ff4757' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { 
+      --bg: #060a10; 
+      --bg-card: '#0c1220'; 
+      --fg: #e8ecf2'; 
+      --purple: '#a78bfa'; 
+      --border: '#152035'; 
+    }
+    
+    body { 
+      background: var(--bg); 
+      color: var(--fg); 
+      font-family: 'Space Grotesk', sans-serif; 
+      /* Perbaikan Scroll: Body tidak lagi hidden, tapi auto */
+      overflow-x: hidden; 
+      overflow-y: auto; 
+      min-height: 100vh; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+
+    /* BACKGROUND FX */
+    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
+    .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
+    
+    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite alternate; }
+    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,232,157,0.08), transparent 70%); top: -200px; left: -200px; }
+    .orb-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(167,139,250,0.08), transparent 70%); bottom: -150px; right: -150px; animation-delay: -10s; }
+    
+    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(30px, 50px); } }
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* CARD STYLE */
+    .faq-card { 
+      background: rgba(12, 18, 32, 0.7); 
+      backdrop-filter: blur(15px); 
+      border: 1px solid var(--border); 
+      border-radius: 20px; 
+      padding: 2rem; 
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease-out; 
+      position: relative; 
+      display: flex; 
+      flex-direction: column; 
+      height: 100%; /* Supaya tinggi kartu sama rata */
+      cursor: default;
+    }
+    
+    .faq-card:hover {
+      transform: translateY(-5px);
+      background: rgba(12, 18, 32, 0.9);
+      border-color: rgba(167, 139, 250, 0.4);
+      box-shadow: 0 10px 30px -10px rgba(167, 139, 250, 0.2);
+    }
+
+    /* ICON WRAPPER */
+    .icon-wrap {
+      width: 56px; height: 56px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 1.25rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      transition: all 0.3s;
+    }
+    .faq-card:hover .icon-wrap {
+      background: rgba(167, 139, 250, 0.1);
+      border-color: rgba(167, 139, 250, 0.3);
+    }
+    .icon-wrap i { font-size: 1.5rem; }
+
+    /* CONTENT STYLE */
+    h3 { font-size: 1.15rem; margin-bottom: 0.75rem; font-weight: 600; color: white; line-height: 1.4; }
+    p { color: #94a3b8; font-size: 0.95rem; line-height: 1.7; flex-grow: 1; /* Pushes content down */ }
+
+    /* HIGHLIGHTS */
+    .highlight { color: var(--accent-purple); font-weight: 600; background: rgba(167,139,250,0.1); padding: 2px 6px; border-radius: 4px; }
+
+    /* BUTTONS */
+    .btn-kryonix {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 24px; border-radius: 12px; font-weight: 600; font-size: 0.95rem;
+      transition: all 0.3s; text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-purple), #7c3aed);
+      color: white;
+      box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(167, 139, 250, 0.4);
+    }
+    .btn-secondary {
+      background: rgba(12, 18, 32, 0.6);
+      color: #cbd5e1;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      background: rgba(0, 196, 255, 0.05);
+    }
+
+    /* UTILS */
+    .container { width: 90%; max-width: 1000px; position: relative; z-index: 10; }
+  </style>
+</head>
+<body>
+
+  <!-- BACKGROUND -->
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container">
+    <!-- HEADER -->
+    <div class="text-center mb-16">
+      <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-purple-500/20 to-cyan-500/20 rounded-2xl mb-6 border border-purple-500/30 shadow-[0_0_30px_rgba(167,139,250,0.15)]">
+        <i class="fas fa-question text-4xl text-purple-400"></i>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-bold tracking-tight mb-2">PERTANYAAN UMUM</h1>
+      <div class="flex items-center justify-center gap-2 text-sm font-mono text-gray-500">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+        KRYONIX KNOWLEDGE BASE
+      </div>
+    </div>
+
+    <!-- FAQ GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- ITEM 1 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-purple-400">
+          <i class="fas fa-wallet"></i>
+        </div>
+        <h3>Metode Pembayaran</h3>
+        <p>Kami menerima berbagai metode pembayaran yang aman, mulai dari Transfer Bank (BCA, Mandiri), E-Wallet (Dana, OVO, Gopay), hingga QRIS. Semua transaksi diproses otomatis.</p>
+      </div>
+
+      <!-- ITEM 2 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-cyan-400">
+          <i class="fas fa-clock"></i>
+        </div>
+        <h3>Lama Server Aktif</h3>
+        <p>Servers kami menggunakan sistem instan deploy. Layanan aktif <span class="highlight">dalam hitungan detik</span> setelah pembayaran dikonfirmasi oleh sistem.</p>
+      </div>
+
+      <!-- ITEM 3 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-pink-400">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Garansi Uang Kembali</h3>
+        <p>Kami memberikan garansi 7 hari jika layanan tidak dapat digunakan karena faktor teknis dari pihak kami. Kesalahan pengguna tidak kami cover.</p>
+      </div>
+
+      <!-- ITEM 4 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-green-400">
+          <i class="fas fa-server"></i>
+        </div>
+        <h3>Upgrade Spesifikasi</h3>
+        <p>Bisa. Kami mengizinkan kustomisasi resource (CPU/RAM) tanpa perlu install ulang. Silakan hubungi support melalui WhatsApp Admin.</p>
+      </div>
+
+      <!-- ITEM 5 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-orange-400">
+          <i class="fas fa-globe-asia"></i>
+        </div>
+        <h3>Lokasi Server</h3>
+        <p>Server kami tersebar di <span class="highlight">Singapore (SG)</span>, <span class="highlight">Jakarta (ID)</span>, dan <span class="highlight">Amerika (US)</span> untuk latensi rendah.</p>
+      </div>
+
+      <!-- ITEM 6 -->
+      <div class="faq-card group">
+        <div class="icon-wrap text-blue-400">
+          <i class="fas fa-headset"></i>
+        </div>
+        <h3>Server Down?</h3>
+        <p>Kami menjamin uptime 99.9%. Jika terjadi maintenance terjadwal, kami akan memberitahukan melalui email dan status dashboard.</p>
+      </div>
+
+    </div>
+
+    <!-- FOOTER CTA -->
+    <div class="mt-16 pt-8 border-t border-dark-border flex flex-col md:flex-row items-center justify-center gap-4">
+      <a href="index.html" class="btn-kryonix btn-secondary">
+        <i class="fas fa-arrow-left"></i> Kembali ke Home
+      </a>
+      <a href="login.html" class="btn-kryonix btn-primary">
+        <i class="fas fa-headset"></i> Hubungi Admin / Login
+      </a>
+    </div>
+  </div>
+
+  <!-- PARTICLES SCRIPT (Fixed Math.PI bug) -->
+  <script>
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { 
+      canvas.width = window.innerWidth; 
+      canvas.height = window.innerHeight; 
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    for (let i = 0; i < 50; i++) {
+      pArr.push({ 
+        x: Math.random() * canvas.width, 
+        y: Math.random() * canvas.height, 
+        size: Math.random() * 1.5 + 0.5, 
+        speedX: (Math.random() - 0.5) * 0.5, 
+        speedY: (Math.random() - 0.5) * 0.5, 
+        opacity: Math.random() * 0.5 + 0.1 
+      });
+    }
+    function animP() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pArr.forEach(p => {
+        p.x += p.speedX; p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); 
+        // Perbaikan: Math.PI * 2 (sebelumnya hanya Math * 2)
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; 
+        ctx.fill();
+      });
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 120) {
+            ctx.beginPath(); 
+            ctx.moveTo(pArr[i].x, pArr[i].y); 
+            ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`; 
+            ctx.lineWidth = 0.5; 
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+  </script>
+
+</body>
+</html>
