@@ -22,34 +22,40 @@
   </script>
 
   <style>
-    :root { --bg: #060a10; --fg: #e8ecf2'; --green: #00e89d'; --border: '#152035'; }
+    :root { --bg: #060a10; --fg: #e8ecf2; --green: #00e89d; --border: #152035; }
     body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; padding: 4rem 1.5rem; }
     .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
     
     .product-card { 
-      background: rgba(12, 18, 32, 0.7); 
-      border: 1px solid var(--border); 
-      border-radius: 20px; 
-      overflow: hidden; 
-      transition: all 0.3s;
-      position: relative;
+      background: rgba(12, 18, 32, 0.7); border: 1px solid var(--border); 
+      border-radius: 20px; overflow: hidden; transition: all 0.3s; position: relative;
     }
-    .product-card:hover { 
-      transform: translateY(-5px); 
-      border-color: var(--green); 
-      box-shadow: 0 10px 40px -10px rgba(0, 232, 157, 0.2);
-    }
+    .product-card:hover { transform: translateY(-5px); border-color: var(--green); box-shadow: 0 10px 40px -10px rgba(0, 232, 157, 0.2); }
     .product-image { width: 100%; height: 200px; object-fit: cover; background: #1a1f2e; }
     
     .btn-buy {
       width: 100%; padding: 12px; background: linear-gradient(135deg, var(--green), #00c4a0); 
-      color: #060a10; font-weight: 700; border: none; border-radius: 12px;
-      transition: 0.3s;
+      color: #060a10; font-weight: 700; border: none; border-radius: 12px; transition: 0.3s; cursor: pointer;
     }
     .btn-buy:hover { box-shadow: 0 0 20px rgba(0,232,157,0.4); }
+    .btn-buy:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
     
-    .filter-btn { transition: 0.3s; }
+    .filter-btn { transition: 0.3s; cursor: pointer; }
     .filter-btn.active { background: var(--green); color: #060a10; border-color: var(--green); }
+
+    /* Modal order */
+    .order-modal-backdrop { background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem;
+      border-radius: 12px; font-size: 0.9rem; font-weight: 600;
+      z-index: 9999; transform: translateY(120px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { background: #065f46; color: #6ee7b7; border: 1px solid #10b981; }
+    .toast.error { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
   </style>
 </head>
 <body>
@@ -66,28 +72,69 @@
     </div>
 
     <!-- FILTERS -->
-    <div class="flex justify-center gap-4 mb-10 flex-wrap">
-      <button onclick="filterProducts('all')" class="filter-btn active px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">SEMUA</button>
-      <button onclick="filterProducts('hosting')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">HOSTING</button>
-      <button onclick="filterProducts('vps')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">VPS</button>
-      <button onclick="filterProducts('domain')" class="filter-btn px-6 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">DOMAIN</button>
+    <div class="flex justify-center gap-3 mb-10 flex-wrap" id="filterContainer">
+      <button onclick="filterProducts('all', this)" class="filter-btn active px-5 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">SEMUA</button>
+      <button onclick="filterProducts('hosting', this)" class="filter-btn px-5 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">HOSTING</button>
+      <button onclick="filterProducts('vps', this)" class="filter-btn px-5 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">VPS</button>
+      <button onclick="filterProducts('domain', this)" class="filter-btn px-5 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">DOMAIN</button>
+      <button onclick="filterProducts('game', this)" class="filter-btn px-5 py-2 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">GAME SERVER</button>
     </div>
 
     <!-- PRODUCT GRID -->
     <div id="productGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      <!-- Products will be injected here by JS -->
       <div class="col-span-full text-center py-20 text-gray-500">
         <i class="fas fa-spinner fa-spin text-3xl mb-4"></i>
         <p>Memuat produk dari server...</p>
       </div>
     </div>
-    
   </div>
 
-  <!-- SCRIPTS -->
+  <!-- ==================== ORDER MODAL ==================== -->
+  <div id="orderModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 order-modal-backdrop" onclick="closeOrderModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-6 m-4">
+        <h3 class="text-xl font-bold mb-2">Formulir Pemesanan</h3>
+        <p id="orderProductInfo" class="text-sm text-gray-500 mb-6"></p>
+        
+        <form onsubmit="submitOrder(event)">
+          <input type="hidden" id="orderProductId">
+          <input type="hidden" id="orderProductTitle">
+          
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">NAMA LENGKAP</label>
+              <input type="text" id="orderName" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none" placeholder="John Doe">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">NO. WHATSAPP</label>
+              <input type="text" id="orderWhatsapp" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none" placeholder="6281234567890">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">CATATAN (opsional)</label>
+              <textarea id="orderNote" rows="2" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none resize-none" placeholder="Catatan tambahan..."></textarea>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+              <button type="button" onclick="closeOrderModal()" class="px-4 py-2 rounded-lg border border-dark-border text-gray-400 hover:text-white transition">Batal</button>
+              <button type="submit" class="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-black font-bold transition">Kirim Pesanan</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
+
+  <!-- ==================== SCRIPTS ==================== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+    import { 
+      getFirestore, collection, onSnapshot, addDoc, serverTimestamp,
+      doc, updateDoc, runTransaction
+    } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
@@ -101,85 +148,167 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    let allProducts = [];
 
-    async function fetchProducts() {
-      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-      const querySnapshot = await getDocs(q);
-      
+    // ── TOAST ──
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => { toast.classList.remove('show'); }, 3500);
+    }
+
+    // ── REAL-TIME PRODUCT LOADER (onSnapshot agar stok update langsung) ──
+    onSnapshot(collection(db, "products"), (snapshot) => {
       const grid = document.getElementById('productGrid');
-      allProducts = [];
       grid.innerHTML = '';
 
-      if(querySnapshot.empty) {
+      if (snapshot.empty) {
         grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">Belum ada produk tersedia saat ini.</div>';
         return;
       }
 
-      querySnapshot.forEach((doc) => {
-        const p = doc.data();
-        p.id = doc.id;
-        allProducts.push(p);
-        
+      // Sort by createdAt descending (handle missing timestamp)
+      const docs = snapshot.docs.sort((a, b) => {
+        const ta = a.data().createdAt?.toMillis?.() || 0;
+        const tb = b.data().createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      });
+
+      docs.forEach((docSnap) => {
+        const p = docSnap.data();
+        const pId = docSnap.id;
+
         const card = document.createElement('div');
-        card.className = `product-card`;
+        card.className = 'product-card';
         card.dataset.category = p.category;
-        
-        // Generate Features List HTML
-        const featuresHtml = p.features.map(f => `<li class="text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-check text-green-500 text-xs"></i> ${f}</li>`).join('');
+
+        const outOfStock = (p.stock || 0) <= 0;
+
+        // Features HTML
+        const featuresHtml = (p.features || []).slice(0, 4).map(f => 
+          `<li class="text-sm text-gray-400 flex items-center gap-2"><i class="fas fa-check text-green-500 text-xs"></i> ${f}</li>`
+        ).join('');
 
         card.innerHTML = `
           <div class="relative">
-            <img src="${p.image}" alt="${p.title}" class="product-image">
+            <img src="${p.image || 'https://picsum.photos/seed/default/600/400'}" alt="${p.title}" class="product-image" onerror="this.src='https://picsum.photos/seed/fallback-${pId}/600/400'">
             <div class="absolute top-3 right-3 bg-black/60 backdrop-blur px-3 py-1 rounded-full text-xs font-mono text-white border border-white/10">
               ${p.category.toUpperCase()}
             </div>
+            ${outOfStock ? '<div class="absolute inset-0 bg-black/60 flex items-center justify-center"><span class="text-red-400 font-bold text-lg tracking-widest">HABIS</span></div>' : ''}
           </div>
           <div class="p-6">
-            <h3 class="text-xl font-bold text-white mb-2">${p.title}</h3>
-            <p class="text-sm text-gray-500 mb-4 h-10 line-clamp-2">${p.description}</p>
+            <h3 class="text-xl font-bold text-white mb-2">${p.title || 'Untitled'}</h3>
+            <p class="text-sm text-gray-500 mb-4 h-10 line-clamp-2">${p.description || ''}</p>
             
             <div class="mb-6">
-              <div class="text-2xl font-bold text-green-400 mb-1">Rp ${parseInt(p.price).toLocaleString('id-ID')}</div>
+              <div class="text-2xl font-bold text-green-400 mb-1">Rp ${(p.price || 0).toLocaleString('id-ID')}</div>
               <div class="text-xs text-gray-600">per bulan</div>
             </div>
             
-            <ul class="mb-6 space-y-2">
-              ${featuresHtml}
-            </ul>
+            <ul class="mb-6 space-y-2">${featuresHtml}</ul>
             
-            <button class="btn-buy" onclick="buyProduct('${p.id}')">
-              <i class="fas fa-shopping-cart mr-2"></i> BELI SEKARANG
+            <button class="btn-buy" ${outOfStock ? 'disabled' : ''} onclick="openOrderModal('${pId}', '${(p.title||'').replace(/'/g,"\\'")}', ${p.price})">
+              ${outOfStock ? '<i class="fas fa-ban mr-2"></i> STOK HABIS' : '<i class="fas fa-shopping-cart mr-2"></i> BELI SEKARANG'}
             </button>
           </div>
         `;
         grid.appendChild(card);
       });
-    }
+    });
 
-    window.filterProducts = (category) => {
-      // Update buttons
-      document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-      event.target.classList.add('active');
+    // ── FILTER ──
+    window.filterProducts = (category, btn) => {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-      // Filter Logic
-      const cards = document.querySelectorAll('.product-card');
-      cards.forEach(card => {
-        if(category === 'all' || card.dataset.category === category) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
-        }
+      document.querySelectorAll('.product-card').forEach(card => {
+        card.style.display = (category === 'all' || card.dataset.category === category) ? '' : 'none';
       });
     };
 
-    window.buyProduct = (id) => {
-      // Redirect ke login atau langsung ke WhatsApp/Checkout
-      // Disini saya arahkan ke login dulu (sesuai flow sebelumnya)
-      window.location.href = 'login.html';
-    };
+    // ── ORDER MODAL ──
+    window.openOrderModal = (productId, productTitle, price) => {
+      document.getElementById('orderProductId').value = productId;
+      document.getElementById('orderProductTitle').value = productTitle;
+      document.getElementById('orderProductInfo').innerHTML = `
+        <span class="text-green-400 font-bold">${productTitle}</span> — Rp ${price.toLocaleString('id-ID')}/bulan
+      `;
+      document.getElementById('orderModal').classList.remove('hidden');
+    }
 
-    fetchProducts();
+    window.closeOrderModal = () => {
+      document.getElementById('orderModal').classList.add('hidden');
+    }
+
+    // ── SUBMIT ORDER (dengan kurangi stok secara atomic) ──
+    window.submitOrder = async (e) => {
+      e.preventDefault();
+
+      const productId = document.getElementById('orderProductId').value;
+      const productTitle = document.getElementById('orderProductTitle').value;
+      const buyerName = document.getElementById('orderName').value.trim();
+      const buyerWhatsapp = document.getElementById('orderWhatsapp').value.trim();
+      const orderNote = document.getElementById('orderNote').value.trim();
+
+      // Validasi WhatsApp
+      if (!buyerWhatsapp.match(/^(\+?62|62|0)8\d{8,12}$/)) {
+        showToast("Format nomor WhatsApp tidak valid. Contoh: 6281234567890", "error");
+        return;
+      }
+
+      try {
+        // Gunakan TRANSACTION agar stok tidak bisa minus (race condition safe)
+        const productRef = doc(db, "products", productId);
+        
+        const result = await runTransaction(db, async (transaction) => {
+          const productDoc = await transaction.get(productRef);
+          
+          if (!productDoc.exists()) {
+            throw new Error("Produk tidak ditemukan.");
+          }
+
+          const currentStock = productDoc.data().stock || 0;
+          if (currentStock <= 0) {
+            throw new Error("Stok habis! Produk sudah dibeli orang lain.");
+          }
+
+          // Kurangi stok
+          transaction.update(productRef, { stock: currentStock - 1 });
+
+          // Return info untuk order doc
+          return { newStock: currentStock - 1 };
+        });
+
+        // Setelah stok berhasil dikurangi, simpan order
+        await addDoc(collection(db, "orders"), {
+          productId,
+          productTitle,
+          buyerName,
+          buyerWhatsapp,
+          orderNote,
+          status: 'pending',
+          createdAt: serverTimestamp()
+        });
+
+        closeOrderModal();
+        showToast("Pesanan berhasil dikirim! Kami akan menghubungi Anda via WhatsApp.");
+
+        // Reset form
+        document.getElementById('orderName').value = '';
+        document.getElementById('orderWhatsapp').value = '';
+        document.getElementById('orderNote').value = '';
+
+      } catch (error) {
+        console.error("Order error:", error);
+        if (error.message.includes("Stok habis")) {
+          showToast("Maaf, stok habis! Produk sudah dibeli orang lain.", "error");
+        } else {
+          showToast("Gagal mengirim pesanan. Silakan coba lagi.", "error");
+        }
+      }
+    }
+
   </script>
 </body>
 </html>
