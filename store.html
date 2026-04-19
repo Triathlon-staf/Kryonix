@@ -98,6 +98,7 @@
         <form onsubmit="submitOrder(event)">
           <input type="hidden" id="orderProductId">
           <input type="hidden" id="orderProductTitle">
+          <input type="hidden" id="orderPrice">
           <div class="space-y-4">
             <div>
               <label class="block text-xs font-mono text-gray-400 mb-1">NAMA LENGKAP</label>
@@ -125,7 +126,6 @@
 
   <!-- ==================== SCRIPTS ==================== -->
   <script type="module">
-    // ── IMPORT REALTIME DATABASE ──
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { 
       getDatabase, ref, push, set, update, onValue, 
@@ -146,7 +146,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // ── TOAST ──
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       t.textContent = msg;
@@ -165,7 +164,6 @@
         return;
       }
 
-      // Sort by createdAt descending
       const sorted = Object.keys(raw)
         .map(k => ({ key: k, ...raw[k] }))
         .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -220,6 +218,7 @@
     window.openOrderModal = (productId, productTitle, price) => {
       document.getElementById('orderProductId').value = productId;
       document.getElementById('orderProductTitle').value = productTitle;
+      document.getElementById('orderPrice').value = price;
       document.getElementById('orderProductInfo').innerHTML = `
         <span class="text-green-400 font-bold">${productTitle}</span> — Rp ${price.toLocaleString('id-ID')}/bulan
       `;
@@ -228,11 +227,12 @@
 
     window.closeOrderModal = () => document.getElementById('orderModal').classList.add('hidden');
 
-    // ── SUBMIT ORDER (transaction untuk stok) ──
+    // ── SUBMIT ORDER ──
     window.submitOrder = async (e) => {
       e.preventDefault();
       const productId = document.getElementById('orderProductId').value;
       const productTitle = document.getElementById('orderProductTitle').value;
+      const price = parseInt(document.getElementById('orderPrice').value) || 0;
       const buyerName = document.getElementById('orderName').value.trim();
       const buyerWhatsapp = document.getElementById('orderWhatsapp').value.trim();
       const orderNote = document.getElementById('orderNote').value.trim();
@@ -243,12 +243,10 @@
       }
 
       try {
-        // Transaction: cek & kurangi stok secara atomic
         const productRef = ref(db, `products/${productId}`);
         const result = await runTransaction(productRef, (currentData) => {
-          if (!currentData) return undefined; // abort: produk hilang
-          if ((currentData.stock || 0) <= 0) return undefined; // abort: habis
-          // Return data yang diupdate (spread semua field, override stock)
+          if (!currentData) return undefined;
+          if ((currentData.stock || 0) <= 0) return undefined;
           return { ...currentData, stock: currentData.stock - 1 };
         });
 
@@ -257,11 +255,11 @@
           return;
         }
 
-        // Stok berhasil dikurangi → simpan order
         const orderRef = push(ref(db, "orders"));
         await set(orderRef, {
           productId,
           productTitle,
+          price,
           buyerName,
           buyerWhatsapp,
           orderNote,
@@ -270,10 +268,15 @@
         });
 
         closeOrderModal();
-        showToast("Pesanan berhasil dikirim! Kami akan menghubungi Anda via WhatsApp.");
+        showToast("Pesanan berhasil dikirim!");
         document.getElementById('orderName').value = '';
         document.getElementById('orderWhatsapp').value = '';
         document.getElementById('orderNote').value = '';
+
+        // Redirect ke halaman tracking
+        setTimeout(() => {
+          window.location.href = `track.html?phone=${encodeURIComponent(buyerWhatsapp)}`;
+        }, 1500);
 
       } catch (err) {
         console.error("Order error:", err);
