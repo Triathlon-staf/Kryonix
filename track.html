@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lacak Pesanan | KRYONIX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script>
+    tailwind.config={darkMode:'class',theme:{extend:{fontFamily:{sans:['Space Grotesk','sans-serif'],mono:['JetBrains Mono','monospace']},colors:{dark:{bg:'#060a10',card:'#0c1220',border:'#152035'},accent:{green:'#00e89d',cyan:'#00c4ff'}}}}}
+  </script>
+  <style>
+    :root{--bg:#060a10;--fg:#e8ecf2;--green:#00e89d;--border:#152035}
+    body{background:var(--bg);color:var(--fg);font-family:'Space Grotesk',sans-serif;min-height:100vh;padding:2rem 1.5rem 6rem}
+    .grid-bg{position:fixed;inset:0;background-image:linear-gradient(rgba(0,232,157,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,232,157,.03) 1px,transparent 1px);background-size:50px 50px;z-index:0;pointer-events:none}
+    .toast{position:fixed;bottom:2rem;right:2rem;padding:1rem 1.5rem;border-radius:12px;font-size:.9rem;font-weight:600;z-index:9999;transform:translateY(120px);opacity:0;transition:all .4s cubic-bezier(.16,1,.3,1)}
+    .toast.show{transform:translateY(0);opacity:1}
+    .toast.success{background:#065f46;color:#6ee7b7;border:1px solid #10b981}
+    .toast.error{background:#7f1d1d;color:#fca5a5;border:1px solid #ef4444}
+    .chat-bubble{max-width:80%;animation:fadeUp .25s ease}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    .status-badge{font-size:.7rem;padding:2px 8px;border-radius:9999px;font-weight:700;font-family:'JetBrains Mono',monospace}
+    ::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1e293b;border-radius:3px}
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="relative z-10 max-w-3xl mx-auto">
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <a href="store.html" class="inline-block text-gray-500 hover:text-white text-sm mb-4 transition"><i class="fas fa-arrow-left mr-1"></i> Kembali ke Store</a>
+      <h1 class="text-3xl md:text-4xl font-bold mb-2">Lacak Pesanan</h1>
+      <p class="text-gray-500 text-sm">Masukkan nomor WhatsApp yang digunakan saat memesan.</p>
+    </div>
+
+    <!-- Search -->
+    <div class="bg-dark-card border border-dark-border rounded-2xl p-6 mb-8">
+      <div class="flex gap-3">
+        <div class="flex-1 relative">
+          <i class="fas fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-600 text-sm"></i>
+          <input type="text" id="searchPhone" class="w-full bg-dark-bg border border-dark-border rounded-xl pl-10 pr-4 py-3 text-white outline-none focus:border-green-500 transition placeholder-gray-600" placeholder="6281234567890">
+        </div>
+        <button onclick="searchOrders()" class="px-6 py-3 bg-accent-green hover:brightness-110 text-black font-bold rounded-xl transition flex-shrink-0"><i class="fas fa-search mr-2"></i>Cari</button>
+      </div>
+      <p id="searchError" class="text-red-400 text-xs mt-2 hidden"></p>
+    </div>
+
+    <!-- Results -->
+    <div id="orderResults" class="space-y-4 hidden"></div>
+    <div id="emptyState" class="hidden text-center py-16 text-gray-600">
+      <i class="fas fa-box-open text-4xl mb-4"></i>
+      <p>Tidak ada pesanan ditemukan untuk nomor ini.</p>
+    </div>
+  </div>
+
+  <!-- PANEL: ORDER DETAIL + CHAT -->
+  <div id="orderDetailPanel" class="hidden fixed inset-0 z-40">
+    <div class="absolute inset-0 bg-black/60" onclick="closeOrderDetail()"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-full md:max-w-2xl bg-dark-bg border-l border-dark-border flex flex-col shadow-2xl">
+      <div class="flex-shrink-0 border-b border-dark-border p-4 flex items-center justify-between bg-dark-card">
+        <div>
+          <div class="text-[11px] font-mono text-gray-500 tracking-wider">ORDER #<span id="detailOrderId">-</span></div>
+          <div class="font-bold text-base mt-0.5" id="detailBuyerName">-</div>
+        </div>
+        <button onclick="closeOrderDetail()" class="w-9 h-9 rounded-lg bg-dark-bg border border-dark-border flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="flex-1 overflow-y-auto">
+        <div class="p-4 border-b border-dark-border">
+          <h4 class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-3">Rincian Pesanan</h4>
+          <div class="bg-dark-card border border-dark-border rounded-xl p-4 space-y-3 text-sm">
+            <div class="flex justify-between"><span class="text-gray-500">Produk</span><span class="font-bold text-white" id="detailProduct">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Harga</span><span class="font-mono text-green-400" id="detailPrice">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Catatan</span><span class="text-gray-300 text-right max-w-[60%]" id="detailNote">-</span></div>
+            <div class="flex justify-between"><span class="text-gray-500">Tanggal</span><span class="font-mono text-gray-400" id="detailDate">-</span></div>
+            <div class="flex justify-between items-center"><span class="text-gray-500">Status</span><span class="status-badge border" id="detailStatus">-</span></div>
+          </div>
+        </div>
+        <div class="p-4">
+          <h4 class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-3"><i class="fas fa-comments mr-1"></i> Chat dengan Admin</h4>
+          <div id="chatMessages" class="space-y-3 min-h-[100px]"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
+        </div>
+      </div>
+      <div class="flex-shrink-0 border-t border-dark-border p-4 bg-dark-card">
+        <div class="flex gap-2">
+          <input type="text" id="chatInput" class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500 transition placeholder-gray-600" placeholder="Ketik pesan untuk admin...">
+          <button onclick="sendChat('buyer')" class="px-5 py-2.5 bg-green-600 hover:bg-green-500 text-black font-bold rounded-xl transition flex items-center gap-2"><i class="fas fa-paper-plane text-sm"></i><span class="hidden sm:inline">Kirim</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, push, set, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey:"AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI", authDomain:"kryonix-7c55e.firebaseapp.com",
+      databaseURL:"https://kryonix-7c55e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId:"kryonix-7c55e", storageBucket:"kryonix-7c55e.firebasestorage.app",
+      messagingSenderId:"917095112473", appId:"1:917095112473:web:dd4120a14724e6e6a02f88", measurementId:"G-9Y77T2V6H7"
+    };
+    const app=initializeApp(firebaseConfig), db=getDatabase(app);
+
+    const statusStyles={pending:'bg-yellow-500/10 text-yellow-400 border-yellow-500/20',processing:'bg-blue-500/10 text-blue-400 border-blue-500/20',completed:'bg-green-500/10 text-green-400 border-green-500/20',cancelled:'bg-red-500/10 text-red-400 border-red-500/20'};
+    const statusLabels={pending:'Menunggu',processing:'Diproses',completed:'Selesai',cancelled:'Dibatalkan'};
+
+    function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} show`;setTimeout(()=>t.classList.remove('show'),3000);}
+    function formatTime(ts){if(!ts||typeof ts!=='number')return '';const d=new Date(ts);return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});}
+
+    // Auto-fill dari URL param
+    const urlParams=new URLSearchParams(window.location.search);
+    if(urlParams.get('phone')){document.getElementById('searchPhone').value=urlParams.get('phone');searchOrders();}
+
+    // Enter key di search
+    document.getElementById('searchPhone').addEventListener('keydown',(e)=>{if(e.key==='Enter')searchOrders();});
+
+    window.searchOrders=()=>{
+      const phone=document.getElementById('searchPhone').value.trim().replace(/\D/g,'');
+      const errEl=document.getElementById('searchError');
+      errEl.classList.add('hidden');
+
+      if(!phone||phone.length<10){errEl.textContent='Masukkan nomor WhatsApp yang valid (min. 10 digit).';errEl.classList.remove('hidden');return;}
+
+      onValue(ref(db,"orders"),(snap)=>{
+        const raw=snap.val();
+        const results=document.getElementById('orderResults');
+        const empty=document.getElementById('emptyState');
+        results.innerHTML=''; results.classList.add('hidden'); empty.classList.add('hidden');
+
+        if(!raw){empty.classList.remove('hidden');return;}
+
+        // Filter & sort
+        const matched=Object.keys(raw).map(k=>({key:k,...raw[k]}))
+          .filter(o=>(o.buyerWhatsapp||'').replace(/\D/g,'')===phone)
+          .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+
+        if(matched.length===0){empty.classList.remove('hidden');return;}
+        results.classList.remove('hidden');
+
+        matched.forEach(o=>{
+          const ss=statusStyles[o.status]||statusStyles.pending;
+          const sl=statusLabels[o.status]||o.status;
+          let chatCount=0; if(o.chat) chatCount=Object.keys(o.chat).length;
+
+          const div=document.createElement('div');
+          div.className='bg-dark-card border border-dark-border rounded-2xl p-5 hover:border-green-500/30 transition cursor-pointer';
+          div.onclick=()=>openOrderDetail(o.key);
+          div.innerHTML=`
+            <div class="flex items-start justify-between mb-3">
+              <div>
+                <h3 class="font-bold text-white text-lg">${o.productTitle||'-'}</h3>
+                <p class="text-green-400 font-mono text-sm">Rp ${(o.price||0).toLocaleString('id-ID')}/bln</p>
+              </div>
+              <span class="status-badge border ${ss}">${sl}</span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-gray-500">
+              <span><i class="far fa-calendar mr-1"></i>${formatTime(o.createdAt)}</span>
+              <span class="flex items-center gap-1 ${chatCount?'text-cyan-400':'text-gray-600'}"><i class="fas fa-comments"></i> ${chatCount} pesan</span>
+            </div>
+          `;
+          results.appendChild(div);
+        });
+      },{onlyOnce:true});
+    }
+
+    // ── ORDER DETAIL + CHAT ──
+    let currentChatOrderId=null, unsubOrder=null, unsubChat=null;
+
+    window.openOrderDetail=(orderId)=>{
+      currentChatOrderId=orderId;
+      document.getElementById('orderDetailPanel').classList.remove('hidden');
+      document.getElementById('chatMessages').innerHTML='<div class="text-center text-gray-600 text-sm py-8"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat...</div>';
+      document.getElementById('chatInput').value='';
+
+      unsubOrder=onValue(ref(db,`orders/${orderId}`),(snap)=>{
+        const o=snap.val(); if(!o)return;
+        document.getElementById('detailOrderId').textContent=orderId.slice(-6).toUpperCase();
+        document.getElementById('detailBuyerName').textContent=o.buyerName||'-';
+        document.getElementById('detailProduct').textContent=o.productTitle||'-';
+        document.getElementById('detailPrice').textContent='Rp '+(o.price||0).toLocaleString('id-ID')+'/bln';
+        document.getElementById('detailNote').textContent=o.orderNote||'-';
+        document.getElementById('detailDate').textContent=formatTime(o.createdAt);
+        const ss=statusStyles[o.status]||statusStyles.pending;
+        const sl=statusLabels[o.status]||o.status;
+        const statusEl=document.getElementById('detailStatus');
+        statusEl.textContent=sl; statusEl.className=`status-badge border ${ss}`;
+      });
+
+      unsubChat=onValue(ref(db,`orders/${orderId}/chat`),(snap)=>{
+        const container=document.getElementById('chatMessages');
+        const raw=snap.val(); container.innerHTML='';
+        if(!raw){container.innerHTML='<div class="text-center text-gray-600 text-sm py-8">Belum ada pesan. Tanyakan sesuatu ke admin.</div>';return;}
+        const msgs=Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+        msgs.forEach(m=>{
+          const isMe=m.sender==='buyer';
+          const div=document.createElement('div');
+          div.className=`flex ${isMe?'justify-end':'justify-start'}`;
+          div.innerHTML=`<div class="chat-bubble ${isMe?'bg-green-500/10 border-green-500/20':'bg-dark-card border-dark-border'} border rounded-2xl ${isMe?'rounded-br-sm':'rounded-bl-sm'} px-4 py-2.5">
+            <p class="text-sm text-gray-200 break-words">${m.text}</p>
+            <p class="text-[10px] ${isMe?'text-green-500/50':'text-gray-600'} mt-1 text-right">${formatTime(m.timestamp)}</p>
+          </div>`;
+          container.appendChild(div);
+        });
+        container.scrollTop=container.scrollHeight;
+      });
+    }
+
+    window.closeOrderDetail=()=>{
+      if(unsubOrder)unsubOrder(); if(unsubChat)unsubChat();
+      currentChatOrderId=null;
+      document.getElementById('orderDetailPanel').classList.add('hidden');
+    }
+
+    window.sendChat=async(sender)=>{
+      const input=document.getElementById('chatInput');
+      const text=input.value.trim(); if(!text||!currentChatOrderId)return;
+      input.value='';
+      try{
+        const chatRef=push(ref(db,`orders/${currentChatOrderId}/chat`));
+        await set(chatRef,{sender,text,timestamp:serverTimestamp()});
+      }catch(e){console.error(e);showToast("Gagal kirim pesan.","error");}
+    }
+
+    document.getElementById('chatInput').addEventListener('keydown',(e)=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat('buyer');}});
+  </script>
+</body>
+</html>
