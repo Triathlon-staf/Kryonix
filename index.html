@@ -5,35 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KRYONIX | NEXT GEN HOSTING</title>
   
-  <!-- LIBRARIES -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- TAILWIND CONFIG & CUSTOM CSS -->
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Space Grotesk', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace'],
-          },
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
           colors: {
-            dark: {
-              bg: '#060a10',
-              card: '#0c1220',
-              border: '#152035',
-            },
-            accent: {
-              green: '#00e89d',
-              cyan: '#00c4ff',
-              purple: '#a78bfa',
-            }
-          },
-          animation: {
-            'spin-slow': 'spin 3s linear infinite',
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' }
           }
         }
       }
@@ -41,28 +25,15 @@
   </script>
 
   <style>
-    /* --- CORE VARIABLES --- */
     :root {
-      --bg: #060a10;
-      --bg-card: #0c1220;
-      --fg: #e8ecf2;
-      --muted: #5a6a80;
-      --green: #00e89d;
-      --cyan: #00c4ff;
-      --border: #152035;
+      --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --muted: #5a6a80;
+      --green: #00e89d; --cyan: #00c4ff; --border: #152035;
     }
-    
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { 
-      font-family: 'Space Grotesk', sans-serif; 
-      background: var(--bg); 
-      color: var(--fg); 
-      overflow-x: hidden; 
-    }
+    body { font-family: 'Space Grotesk', sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
 
-    /* --- BACKGROUND EFFECTS --- */
     .grid-bg {
-      position: fixed; inset: 0; 
+      position: fixed; inset: 0;
       background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px);
       background-size: 50px 50px; z-index: 0; pointer-events: none;
     }
@@ -79,15 +50,10 @@
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 40px); } }
 
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-    
-    /* --- UI COMPONENTS --- */
-    .glass-nav {
-      backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border);
-    }
-    
-    .nav-link { 
-      position: relative; color: var(--muted); font-size: 0.9rem; transition: 0.3s; cursor: pointer;
-    }
+
+    .glass-nav { backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border); }
+
+    .nav-link { position: relative; color: var(--muted); font-size: 0.9rem; transition: 0.3s; cursor: pointer; }
     .nav-link:hover, .nav-link.active { color: var(--green); }
     .nav-link::after {
       content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s;
@@ -99,18 +65,11 @@
       font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.3s;
       position: relative; overflow: hidden; border: none; cursor: pointer;
     }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10;
-      box-shadow: 0 0 20px rgba(0,232,157,0.2);
-    }
+    .btn-primary { background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10; box-shadow: 0 0 20px rgba(0,232,157,0.2); }
     .btn-primary:hover { box-shadow: 0 0 30px rgba(0,232,157,0.5); transform: translateY(-2px); }
-    
-    .btn-outline {
-      background: transparent; border: 1px solid var(--border); color: var(--fg);
-    }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--fg); }
     .btn-outline:hover { border-color: var(--green); background: rgba(0,232,157,0.05); color: var(--green); }
 
-    /* --- TERMINAL STYLE --- */
     .terminal {
       background: #080c14; border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
       box-shadow: 0 20px 50px rgba(0,0,0,0.5);
@@ -133,7 +92,6 @@
     }
     @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0; } }
 
-    /* --- CARD STORE --- */
     .store-card {
       position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
       overflow: hidden; transition: all 0.4s; display: flex; flex-direction: column;
@@ -148,21 +106,40 @@
     }
     .store-card:hover .card-bar { transform: scaleX(1); }
 
-    /* --- IMPORTANT TABS --- */
     .tab-btn {
       background: transparent; border: none; color: var(--muted); padding: 10px 20px;
       font-family: 'Space Grotesk'; cursor: pointer; border-bottom: 2px solid transparent; transition: 0.3s;
     }
     .tab-btn.active { color: var(--green); border-bottom-color: var(--green); }
 
-    /* --- UTILS --- */
     .text-gradient {
       background: linear-gradient(135deg, var(--green), var(--cyan));
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
-    .page-section { display: none; opacity: 0; transition: opacity 0.5s ease-in-out; position: relative; z-index: 2; padding-bottom: 80px; padding-top: 20px;}
+    .page-section {
+      display: none; opacity: 0; transition: opacity 0.5s ease-in-out; position: relative; z-index: 2;
+      padding-bottom: 80px; padding-top: 20px;
+    }
     .page-section.active { display: block; opacity: 1; animation: fadeUp 0.6s ease-out; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* User dropdown */
+    .user-menu { position: relative; }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0; min-width: 200px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6); padding: 6px;
+      opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s ease;
+    }
+    .user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .user-dropdown a, .user-dropdown button {
+      display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px;
+      border-radius: 8px; font-size: 0.85rem; color: var(--muted); text-decoration: none;
+      background: transparent; border: none; cursor: pointer; transition: 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .user-dropdown a:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
+    .user-dropdown button.logout-btn:hover { background: rgba(239,68,68,0.08); color: #f87171; }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
@@ -171,7 +148,6 @@
 </head>
 <body>
 
-  <!-- BACKGROUND FX -->
   <div class="grid-bg"></div>
   <canvas id="particles"></canvas>
   <div class="scanline"></div>
@@ -181,69 +157,98 @@
   <!-- NAVBAR -->
   <nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
     <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      
-      <!-- LOGO (Dengan ID Rahasia) -->
       <a href="#" id="logo-trigger" onclick="app.nav('home')" class="flex items-center gap-3 group cursor-pointer">
         <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-xl transition-transform duration-500" id="logo-icon">K</div>
         <span class="text-xl font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
       </a>
 
-      <!-- DESKTOP MENU (Tombol Admin Dihapus) -->
+      <!-- Desktop Menu -->
       <div class="hidden md:flex items-center gap-8">
         <a onclick="app.nav('home')" class="nav-link active">Home</a>
         <a onclick="app.nav('store')" class="nav-link">Store</a>
         <a onclick="app.nav('important')" class="nav-link">Important</a>
       </div>
 
-      <!-- RIGHT ACTIONS (Hanya Mobile Toggle) -->
-      <div class="flex items-center gap-4">
-        <!-- Tombol Admin Dihapus dari sini -->
-        
-        <!-- Mobile Menu Btn -->
-        <button id="menuBtn" class="md:hidden text-2xl text-gray-300"><i class="fas fa-bars"></i></button>
+      <!-- Right Side -->
+      <div class="flex items-center gap-3">
+        <!-- SUDAH LOGIN: dropdown user -->
+        <div id="userMenu" class="user-menu hidden">
+          <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition">
+            <div class="w-7 h-7 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
+            <span class="text-sm text-gray-300 hidden sm:inline" id="navName">User</span>
+            <i class="fas fa-chevron-down text-[10px] text-gray-600 transition" id="dropdownChevron"></i>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="px-4 py-2 border-b border-dark-border mb-1">
+              <div class="text-sm font-semibold text-white" id="dropdownName">User</div>
+              <div class="text-xs text-gray-500 truncate" id="dropdownEmail">user@email.com</div>
+            </div>
+            <a href="store.html"><i class="fas fa-shopping-cart w-4 text-center text-green-500/60"></i> Store</a>
+            <a href="track.html"><i class="fas fa-search w-4 text-center text-cyan-500/60"></i> Lacak Pesanan</a>
+            <div class="h-px bg-dark-border my-1"></div>
+            <button onclick="handleLogout()" class="logout-btn"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
+          </div>
+        </div>
+
+        <!-- BELUM LOGIN: tombol login -->
+        <a id="loginBtn" href="login-buyer.html" class="btn-cyber btn-outline text-sm !px-5 !py-2">
+          <i class="fas fa-user"></i><span class="hidden sm:inline"> Login</span>
+        </a>
+
+        <!-- Mobile hamburger -->
+        <button id="menuBtn" class="md:hidden text-2xl text-gray-300 ml-1"><i class="fas fa-bars"></i></button>
       </div>
     </div>
 
-    <!-- MOBILE MENU -->
+    <!-- Mobile Menu -->
     <div id="mobileMenu" class="hidden md:hidden bg-dark-bg border-b border-dark-border p-6 space-y-4">
-      <a onclick="app.nav('home'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Home</a>
-      <a onclick="app.nav('store'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Store</a>
-      <a onclick="app.nav('important'); toggleMobile()" class="block text-gray-400 hover:text-green-400">Important</a>
+      <a onclick="app.nav('home'); toggleMobile()" class="block text-gray-400 hover:text-green-400 cursor-pointer">Home</a>
+      <a onclick="app.nav('store'); toggleMobile()" class="block text-gray-400 hover:text-green-400 cursor-pointer">Store</a>
+      <a onclick="app.nav('important'); toggleMobile()" class="block text-gray-400 hover:text-green-400 cursor-pointer">Important</a>
+      <div class="h-px bg-dark-border"></div>
+
+      <!-- Mobile: sudah login -->
+      <div id="mobileUserInfo" class="hidden">
+        <div class="flex items-center gap-3 mb-3 p-3 rounded-lg bg-dark-card border border-dark-border">
+          <div class="w-10 h-10 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 font-bold" id="mobileAvatar">?</div>
+          <div class="min-w-0">
+            <div class="text-sm text-white font-semibold truncate" id="mobileName">User</div>
+            <div class="text-xs text-gray-500 truncate" id="mobileEmail">user@email.com</div>
+          </div>
+        </div>
+        <a href="store.html" class="block text-sm text-gray-400 hover:text-green-400 py-2 px-3 rounded-lg hover:bg-white/5"><i class="fas fa-shopping-cart mr-2 text-xs w-4 text-center"></i>Store</a>
+        <a href="track.html" class="block text-sm text-gray-400 hover:text-green-400 py-2 px-3 rounded-lg hover:bg-white/5"><i class="fas fa-search mr-2 text-xs w-4 text-center"></i>Lacak Pesanan</a>
+        <button onclick="handleLogout()" class="block w-full text-left text-sm text-red-400 hover:text-red-300 hover:bg-red-500/5 py-2 px-3 rounded-lg"><i class="fas fa-sign-out-alt mr-2 text-xs w-4 text-center"></i>Logout</button>
+      </div>
+
+      <!-- Mobile: belum login -->
+      <a id="mobileLoginBtn" href="login-buyer.html" class="block text-sm text-green-400 hover:text-green-300 py-2 px-3 rounded-lg hover:bg-green-500/5"><i class="fas fa-user mr-2 text-xs w-4 text-center"></i>Login / Register</a>
     </div>
   </nav>
 
-  <!-- MAIN CONTENT AREA -->
+  <!-- MAIN -->
   <main class="relative z-10 pt-20">
 
-    <!-- ================= HOME SECTION ================= -->
+    <!-- ================= HOME ================= -->
     <section id="home" class="page-section active">
       <div class="max-w-7xl mx-auto px-6 py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          
-          <!-- Hero Text -->
           <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-green-500/20 bg-green-500/5 text-green-400 text-xs font-mono mb-6">
               <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
               SYSTEM OPERATIONAL
             </div>
             <h1 class="text-5xl md:text-7xl font-bold leading-tight mb-6">
-              Next Gen <br>
-              <span class="text-gradient">Cloud Hosting</span>
+              Next Gen <br><span class="text-gradient">Cloud Hosting</span>
             </h1>
             <p class="text-gray-400 text-lg mb-8 leading-relaxed max-w-lg">
               Performa maksimal, infrastruktur modern. Deploy server VPS, Dedicated, atau Hosting dalam hitungan detik dengan panel kontrol canggih.
             </p>
             <div class="flex flex-wrap gap-4">
-              <button onclick="app.nav('store')" class="btn-cyber btn-primary">
-                <i class="fas fa-rocket"></i> Get Started
-              </button>
-              <button onclick="app.nav('important')" class="btn-cyber btn-outline">
-                <i class="fas fa-file-contract"></i> Terms of Service
-              </button>
+              <button onclick="app.nav('store')" class="btn-cyber btn-primary"><i class="fas fa-rocket"></i> Get Started</button>
+              <button onclick="app.nav('important')" class="btn-cyber btn-outline"><i class="fas fa-file-contract"></i> Terms of Service</button>
             </div>
           </div>
-
-          <!-- Terminal Window -->
           <div class="terminal">
             <div class="terminal-header">
               <div class="terminal-dot bg-red-500"></div>
@@ -251,15 +256,12 @@
               <div class="terminal-dot bg-green-500"></div>
               <span class="text-xs text-gray-500 font-mono ml-2">root@kryonix-server:~</span>
             </div>
-            <div class="terminal-body" id="terminalBody">
-              <!-- JS will type here -->
-            </div>
+            <div class="terminal-body" id="terminalBody"></div>
           </div>
-
         </div>
       </div>
 
-      <!-- Stats Bar -->
+      <!-- Stats -->
       <div class="max-w-4xl mx-auto px-6">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-dark-border border border-dark-border rounded-xl overflow-hidden text-center">
           <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
@@ -275,20 +277,19 @@
             <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Support</div>
           </div>
           <div class="bg-dark-bg p-6 hover:bg-dark-card transition">
-            <div class="text-2xl font-bold font-mono text-cyan-400">< 10ms</div>
+            <div class="text-2xl font-bold font-mono text-cyan-400">&lt; 10ms</div>
             <div class="text-xs text-gray-500 mt-1 uppercase tracking-wider">Latency</div>
           </div>
         </div>
       </div>
 
-      <!-- Mini Showcase -->
+      <!-- Featured -->
       <div class="max-w-7xl mx-auto px-6 mt-24">
         <div class="flex items-center justify-between mb-10">
           <h3 class="text-2xl font-bold">Featured Services</h3>
           <a onclick="app.nav('store')" class="text-green-400 text-sm hover:underline cursor-pointer">View All <i class="fas fa-arrow-right ml-1"></i></a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Card 1 -->
           <div class="store-card group cursor-pointer" onclick="app.nav('store')">
             <div class="card-bar"></div>
             <div class="p-8 h-full flex flex-col">
@@ -301,7 +302,6 @@
               </div>
             </div>
           </div>
-          <!-- Card 2 -->
           <div class="store-card group cursor-pointer" onclick="app.nav('store')">
             <div class="card-bar"></div>
             <div class="p-8 h-full flex flex-col">
@@ -314,7 +314,6 @@
               </div>
             </div>
           </div>
-          <!-- Card 3 -->
           <div class="store-card group cursor-pointer" onclick="app.nav('store')">
             <div class="card-bar"></div>
             <div class="p-8 h-full flex flex-col">
@@ -331,81 +330,55 @@
       </div>
     </section>
 
-    <!-- ================= STORE SECTION ================= -->
+    <!-- ================= STORE ================= -->
     <section id="store" class="page-section">
       <div class="max-w-7xl mx-auto px-6 py-10">
-        <div class="text-center mb-16">
+        <div class="text-center mb-8">
           <h2 class="text-4xl font-bold mb-4">Paket Hosting & VPS</h2>
-          <p class="text-gray-400 max-w-2xl mx-auto">Pilih spesifikasi server yang sesuai dengan kebutuhan project Anda.</p>
+          <p class="text-gray-400 max-w-2xl mx-auto mb-6">Pilih spesifikasi server yang sesuai dengan kebutuhan project Anda.</p>
+          <a href="store.html" class="btn-cyber btn-primary inline-flex"><i class="fas fa-shopping-cart"></i> Login & Beli Sekarang</a>
         </div>
-
-        <!-- Filters -->
-        <div class="flex justify-center gap-4 mb-12 flex-wrap">
-          <button class="px-6 py-2 rounded-full bg-green-500/10 border border-green-500/30 text-green-400 text-sm hover:bg-green-500/20 transition">All Products</button>
-          <button class="px-6 py-2 rounded-full bg-gray-800 border border-dark-border text-gray-400 text-sm hover:border-cyan-500/50 hover:text-cyan-400 transition">VPS</button>
-          <button class="px-6 py-2 rounded-full bg-gray-800 border border-dark-border text-gray-400 text-sm hover:border-purple-500/50 hover:text-purple-400 transition">Game Server</button>
-        </div>
-
-        <!-- Product Grid (Placeholder for Firebase Data) -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="product-list">
-          <!-- Data akan di-inject via JS dari Firebase -->
           <div class="text-center col-span-full text-gray-500 py-20">
             <i class="fas fa-circle-notch fa-spin text-2xl mb-4 text-green-400"></i>
-            <p>Connecting to Firebase Database...</p>
+            <p>Connecting to database...</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ================= IMPORTANT SECTION ================= -->
+    <!-- ================= IMPORTANT ================= -->
     <section id="important" class="page-section">
       <div class="max-w-4xl mx-auto px-6 py-10">
         <div class="text-center mb-12">
           <h2 class="text-3xl font-bold mb-4">Important Information</h2>
           <div class="h-1 w-20 bg-green-500 mx-auto rounded-full"></div>
         </div>
-
-        <!-- Tabs -->
         <div class="flex justify-center border-b border-dark-border mb-8">
           <button onclick="app.switchTab('tos')" class="tab-btn active">Terms of Service</button>
           <button onclick="app.switchTab('privacy')" class="tab-btn">Privacy Policy</button>
           <button onclick="app.switchTab('faq')" class="tab-btn">FAQ</button>
         </div>
-
-        <!-- Tab Content: ToS -->
         <div id="tab-tos" class="tab-content">
           <div class="bg-dark-card border border-dark-border rounded-xl p-8">
-            <h3 class="text-xl font-bold text-green-400 mb-4">1. Acceptance of Terms</h3>
-            <p class="text-gray-400 mb-4 leading-relaxed">
-              Dengan mengakses atau menggunakan layanan Kryonix, Anda menyetujui untuk terikat oleh syarat dan ketentuan layanan ini. Jika Anda tidak setuju dengan bagian mana pun dari ketentuan ini, maka Anda tidak boleh mengakses layanan.
-            </p>
-            <h3 class="text-xl font-bold text-green-400 mb-4">2. Prohibited Uses</h3>
-            <p class="text-gray-400 mb-4 leading-relaxed">
-              Anda tidak boleh menggunakan layanan untuk tujuan ilegal, termasuk namun tidak terbatas pada: penyimpanan atau distribusi malware, serangan DDoS, spam email, atau pelanggaran hak cipta.
-            </p>
+            <div id="tos-content">
+              <p class="text-gray-500 text-sm"><i class="fas fa-spinner fa-spin mr-2"></i>Memuat Terms of Service...</p>
+            </div>
           </div>
         </div>
-
-        <!-- Tab Content: Privacy -->
         <div id="tab-privacy" class="tab-content hidden">
           <div class="bg-dark-card border border-dark-border rounded-xl p-8">
             <h3 class="text-xl font-bold text-cyan-400 mb-4">Data Collection</h3>
-            <p class="text-gray-400 mb-4 leading-relaxed">
-              Kami mengumpulkan informasi dasar seperti email dan nama saat Anda mendaftar untuk menggunakan layanan kami. Data ini digunakan semata-mata untuk keperluan layanan, pemulihan akun, dan dukungan teknis.
-            </p>
+            <p class="text-gray-400 mb-4 leading-relaxed">Kami mengumpulkan informasi dasar seperti email dan nama saat Anda mendaftar. Data ini digunakan semata-mata untuk keperluan layanan, pemulihan akun, dan dukungan teknis.</p>
             <h3 class="text-xl font-bold text-cyan-400 mb-4">Data Security</h3>
-            <p class="text-gray-400 leading-relaxed">
-              Kami menerapkan langkah-langkah keamanan yang wajar untuk melindungi data Anda dari akses yang tidak sah.
-            </p>
+            <p class="text-gray-400 leading-relaxed">Kami menerapkan langkah-langkah keamanan yang wajar untuk melindungi data Anda dari akses yang tidak sah.</p>
           </div>
         </div>
-
-        <!-- Tab Content: FAQ -->
         <div id="tab-faq" class="tab-content hidden">
           <div class="space-y-4">
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-green-500/30 transition">
               <h4 class="font-bold mb-2">Bagaimana cara pembayaran?</h4>
-              <p class="text-gray-400 text-sm">Kami menerima pembayaran melalui Transfer Bank (BCA, Mandiri), E-Wallet (Dana, OVO, Gopay), dan QRIS. Pembayaran diarahkan melalui WhatsApp Admin setelah Anda memilih paket.</p>
+              <p class="text-gray-400 text-sm">Kami menerima Transfer Bank (BCA, Mandiri), E-Wallet (Dana, OVO, Gopay), dan QRIS. Pembayaran diarahkan melalui WhatsApp Admin.</p>
             </div>
             <div class="bg-dark-card border border-dark-border rounded-xl p-6 hover:border-green-500/30 transition">
               <h4 class="font-bold mb-2">Apakah ada garansi uang kembali?</h4>
@@ -414,11 +387,6 @@
           </div>
         </div>
       </div>
-    </section>
-
-    <!-- ================= ADMIN LOGIN (Legacy Section - Hidden but kept just in case) ================= -->
-    <section id="admin-login" class="page-section" style="display:none;"> 
-      <!-- Section ini disembunyikan karena login sudah pindah ke admin.html -->
     </section>
 
   </main>
@@ -431,15 +399,13 @@
           <div class="w-8 h-8 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black">K</div>
           <span class="text-lg font-bold">KRYONIX</span>
         </div>
-        <p class="text-gray-500 text-sm leading-relaxed max-w-sm">
-          Penyedia layanan Cloud Hosting & VPS berkinerja tinggi. Didukung oleh infrastruktur modern dan tim support 24/7.
-        </p>
+        <p class="text-gray-500 text-sm leading-relaxed max-w-sm">Penyedia layanan Cloud Hosting & VPS berkinerja tinggi. Didukung oleh infrastruktur modern dan tim support 24/7.</p>
       </div>
       <div>
         <h4 class="font-bold mb-4">Menu</h4>
         <ul class="space-y-2 text-sm text-gray-500">
           <li><a onclick="app.nav('home')" class="hover:text-green-400 cursor-pointer">Home</a></li>
-          <li><a onclick="app.nav('store')" class="hover:text-green-400 cursor-pointer">Store</a></li>
+          <li><a href="store.html" class="hover:text-green-400">Store</a></li>
           <li><a onclick="app.nav('important')" class="hover:text-green-400 cursor-pointer">Important</a></li>
         </ul>
       </div>
@@ -449,31 +415,124 @@
           <li><i class="fab fa-whatsapp mr-2 text-green-400"></i> +62 812-3456-7890</li>
           <li><i class="fas fa-envelope mr-2 text-green-400"></i> support@kryonix.com</li>
         </ul>
-        
-        <!-- SECRET ADMIN LINK (Footer) - DIUBAH KE HREF -->
         <div class="mt-6 pt-4 border-t border-gray-800">
-          <a href="admin.html" class="text-[10px] text-gray-700 hover:text-green-500 cursor-pointer transition flex items-center gap-1">
-            <i class="fas fa-lock"></i> Admin Access
-          </a>
+          <a href="login-admin.html" class="text-[10px] text-gray-700 hover:text-green-500 cursor-pointer transition flex items-center gap-1"><i class="fas fa-lock"></i> Admin Access</a>
         </div>
       </div>
     </div>
     <div class="max-w-7xl mx-auto px-6 pt-8 border-t border-dark-border flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
-      <p>&copy; 2023 Kryonix. All rights reserved.</p>
+      <p>&copy; 2025 Kryonix. All rights reserved.</p>
       <p class="font-mono mt-2 md:mt-0">v1.0.0 // System Online</p>
     </div>
   </footer>
 
-  <!-- SCRIPTS -->
-  <script>
-    // --- 1. PARTICLES SYSTEM (Canvas) ---
+  <!-- ==================== SCRIPTS ==================== -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      databaseURL: "https://kryonix-7c55e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
+    const auth = getAuth(fbApp);
+
+    // ═══════════════════════════════════
+    // AUTH: cek login status → toggle UI
+    // ═══════════════════════════════════
+    onAuthStateChanged(auth, async (user) => {
+      const userMenu     = document.getElementById('userMenu');
+      const loginBtn     = document.getElementById('loginBtn');
+      const mobileUser   = document.getElementById('mobileUserInfo');
+      const mobileLogin  = document.getElementById('mobileLoginBtn');
+
+      if (user) {
+        // SUDAH LOGIN → tampilkan user menu, sembunyikan login
+        userMenu.classList.remove('hidden');
+        loginBtn.classList.add('hidden');
+        mobileUser.classList.remove('hidden');
+        mobileLogin.classList.add('hidden');
+
+        // Ambil nama dari RTDB, fallback ke email
+        let displayName = user.email?.split('@')[0] || 'User';
+        try {
+          const snap = await get(ref(db, `users/${user.uid}/name`));
+          if (snap.exists()) displayName = snap.val();
+        } catch(e) {}
+
+        const initial = displayName.charAt(0).toUpperCase();
+        const email = user.email || '';
+
+        // Desktop
+        document.getElementById('navAvatar').textContent = initial;
+        document.getElementById('navName').textContent = displayName;
+        document.getElementById('dropdownName').textContent = displayName;
+        document.getElementById('dropdownEmail').textContent = email;
+
+        // Mobile
+        document.getElementById('mobileAvatar').textContent = initial;
+        document.getElementById('mobileName').textContent = displayName;
+        document.getElementById('mobileEmail').textContent = email;
+
+      } else {
+        // BELUM LOGIN → tampilkan login, sembunyikan user menu
+        userMenu.classList.add('hidden');
+        loginBtn.classList.remove('hidden');
+        mobileUser.classList.add('hidden');
+        mobileLogin.classList.remove('hidden');
+      }
+    });
+
+    // ═══════════════════════════════════
+    // DROPDOWN TOGGLE
+    // ═══════════════════════════════════
+    window.toggleDropdown = () => {
+      const dd = document.getElementById('userDropdown');
+      const chevron = document.getElementById('dropdownChevron');
+      dd.classList.toggle('open');
+      chevron.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+    };
+
+    // Tutup dropdown kalau klik di luar
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('userMenu');
+      if (!menu.contains(e.target)) {
+        document.getElementById('userDropdown').classList.remove('open');
+        document.getElementById('dropdownChevron').style.transform = '';
+      }
+    });
+
+    // ═══════════════════════════════════
+    // LOGOUT
+    // ═══════════════════════════════════
+    window.handleLogout = async () => {
+      try {
+        await signOut(auth);
+        window.location.reload();
+      } catch(e) {
+        console.error(e);
+      }
+    };
+
+    // ═══════════════════════════════════
+    // PARTICLES
+    // ═══════════════════════════════════
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
     function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-
     for (let i = 0; i < 50; i++) {
       pArr.push({
         x: Math.random() * canvas.width, y: Math.random() * canvas.height,
@@ -482,27 +541,21 @@
         opacity: Math.random() * 0.5 + 0.1
       });
     }
-
     function animP() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pArr.forEach(p => {
         p.x += p.speedX; p.y += p.speedY;
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`;
-        ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
       });
-      // Draw lines
       for (let i = 0; i < pArr.length; i++) {
         for (let j = i + 1; j < pArr.length; j++) {
           const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y, d = Math.sqrt(dx * dx + dy * dy);
           if (d < 120) {
-            ctx.beginPath();
-            ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
-            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`;
-            ctx.lineWidth = 0.5; ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,232,157,${0.05 * (1 - d / 120)})`; ctx.lineWidth = 0.5; ctx.stroke();
           }
         }
       }
@@ -510,7 +563,9 @@
     }
     animP();
 
-    // --- 2. TERMINAL TYPEWRITER ---
+    // ═══════════════════════════════════
+    // TERMINAL TYPEWRITER
+    // ═══════════════════════════════════
     const termLines = [
       { type: 'prompt', text: 'kryonix@sys:~$ ' }, { type: 'cmd', text: 'check status --verbose' },
       { type: 'output', text: '' }, { type: 'success', text: '  [OK] Firewall Active' },
@@ -525,68 +580,49 @@
     function typeTerm() {
       if (li >= termLines.length) return;
       const l = termLines[li], el = document.createElement('div'); el.style.minHeight = '1.5em';
-      if (l.type === 'prompt') { el.innerHTML = `<span class="prompt">${l.text}</span>`; termBody.appendChild(el); li++; 
-        if (li < termLines.length && termLines[li].type === 'cmd') typeCmd(el, termLines[li].text); else setTimeout(typeTerm, 150);
+      if (l.type === 'prompt') {
+        el.innerHTML = `<span class="prompt">${l.text}</span>`; termBody.appendChild(el); li++;
+        if (li < termLines.length && termLines[li].type === 'cmd') typeCmd(el, termLines[li].text);
+        else setTimeout(typeTerm, 150);
       } else {
         el.className = l.type; el.textContent = l.text; termBody.appendChild(el); li++; setTimeout(typeTerm, 80);
       }
       termBody.scrollTop = termBody.scrollHeight;
     }
     function typeCmd(container, text) {
-      let i = 0; const cursor = document.createElement('span'); cursor.className = 'terminal-cursor'; container.appendChild(cursor);
+      let i = 0;
+      const cursor = document.createElement('span'); cursor.className = 'terminal-cursor'; container.appendChild(cursor);
       function tc() {
         if (i < text.length) {
           container.removeChild(cursor);
           container.innerHTML = `<span class="prompt">${termLines[li - 1].text}</span><span class="cmd">${text.substring(0, i + 1)}</span>`;
           container.appendChild(cursor); i++; setTimeout(tc, 30 + Math.random() * 50);
         } else { container.removeChild(cursor); li++; setTimeout(typeTerm, 250); }
-      } tc();
+      }
+      tc();
     }
     setTimeout(typeTerm, 1000);
 
-    // --- 3. UI LOGIC ---
-    const toggleMobile = () => document.getElementById('mobileMenu').classList.toggle('hidden');
-    document.getElementById('menuBtn').addEventListener('click', toggleMobile);
-
-    // --- 4. FIREBASE & APP LOGIC ---
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
-      authDomain: "kryonix-7c55e.firebaseapp.com",
-      projectId: "kryonix-7c55e",
-      storageBucket: "kryonix-7c55e.firebasestorage.app",
-      messagingSenderId: "917095112473",
-      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
-      measurementId: "G-9Y77T2V6H7"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-    console.log("Firebase Connected: Kryonix");
+    // ═══════════════════════════════════
+    // NAVIGATION
+    // ═══════════════════════════════════
+    window.toggleMobile = () => document.getElementById('mobileMenu').classList.toggle('hidden');
+    document.getElementById('menuBtn').addEventListener('click', window.toggleMobile);
 
     window.app = {
       nav: (id) => {
         document.querySelectorAll('.page-section').forEach(el => {
           el.classList.remove('active');
-          setTimeout(() => {
-            if(!el.classList.contains('active')) el.style.display = 'none';
-          }, 500); 
+          setTimeout(() => { if (!el.classList.contains('active')) el.style.display = 'none'; }, 500);
         });
-        
         const target = document.getElementById(id);
         target.style.display = 'block';
-        // slight delay to allow display block to apply before opacity transition
         setTimeout(() => target.classList.add('active'), 50);
-        
         document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        // simplistic highlight logic
-        if(id === 'home') document.querySelectorAll('.nav-link')[0].classList.add('active');
-        
-        window.scrollTo(0,0);
+        const navMap = { home: 0, store: 1, important: 2 };
+        if (navMap[id] !== undefined) document.querySelectorAll('.nav-link')[navMap[id]].classList.add('active');
+        window.scrollTo(0, 0);
       },
-
       switchTab: (tabId) => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
@@ -594,69 +630,84 @@
         document.getElementById(`tab-${tabId}`).classList.remove('hidden');
       }
     };
-    
-    // Load products on Store View (Simplified)
-    async function loadProducts() {
+
+    // ═══════════════════════════════════
+    // LOAD PRODUCTS (preview dari RTDB)
+    // ═══════════════════════════════════
+    onValue(ref(db, "products"), (snapshot) => {
       const container = document.getElementById('product-list');
-      const q = await getDocs(collection(db, "products"));
-      if(q.empty) {
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">No products found. Login admin to seed data.</div>`;
+      const raw = snapshot.val();
+      if (!raw) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-500">Belum ada produk tersedia.</div>`;
         return;
       }
       container.innerHTML = '';
-      q.forEach(doc => {
-        const d = doc.data();
-        const html = `
-          <div class="store-card group cursor-pointer">
-            <div class="card-bar"></div>
-            <div class="p-8 h-full flex flex-col">
-              <i class="fas ${d.icon || 'fa-box'} text-3xl ${d.color || 'text-white'} mb-4 group-hover:scale-110 transition"></i>
-              <h4 class="text-xl font-bold mb-2">${d.name}</h4>
-              <p class="text-gray-500 text-sm mb-6 flex-1">${d.desc}</p>
-              <div class="flex justify-between items-center text-sm font-mono">
-                <span class="text-gray-400">Starting at</span>
-                <span class="${d.color || 'text-white'} font-bold">Rp${d.price.toLocaleString()}</span>
-              </div>
+      const sorted = Object.keys(raw).map(k => ({ key: k, ...raw[k] })).sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+      sorted.forEach(p => {
+        const oos = (p.stock || 0) <= 0;
+        const featHtml = (p.features || []).slice(0, 3).map(f =>
+          `<li class="text-sm text-gray-500 flex items-center gap-2"><i class="fas fa-check text-green-500/60 text-xs"></i>${f}</li>`
+        ).join('');
+        const card = document.createElement('div');
+        card.className = 'store-card group';
+        card.innerHTML = `
+          <div class="card-bar"></div>
+          <div class="p-8 h-full flex flex-col">
+            <div class="flex items-start justify-between mb-4">
+              <i class="fas ${p.icon || 'fa-box'} text-3xl ${p.color || 'text-white'} group-hover:scale-110 transition"></i>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-dark-bg border border-dark-border text-gray-500">${p.category || ''}</span>
             </div>
-          </div>
-        `;
-        container.innerHTML += html;
-      });
-    }
-    // Call load when store is visited (simplified observer)
-    const storeObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.target.id === 'store' && mutation.target.classList.contains('active')) {
-          loadProducts();
-        }
+            <h4 class="text-xl font-bold mb-2">${p.title || 'Untitled'}</h4>
+            <p class="text-gray-500 text-sm mb-4 flex-1 line-clamp-2">${p.description || ''}</p>
+            <ul class="mb-6 space-y-1">${featHtml}</ul>
+            <div class="flex justify-between items-center text-sm font-mono mb-4">
+              <span class="text-gray-400">Starting at</span>
+              <span class="${p.color || 'text-white'} font-bold">Rp${(p.price || 0).toLocaleString('id-ID')}</span>
+            </div>
+            <a href="store.html" class="btn-cyber btn-primary justify-center text-sm ${oos ? 'opacity-30 pointer-events-none' : ''}">
+              ${oos ? '<i class="fas fa-ban"></i> STOK HABIS' : '<i class="fas fa-shopping-cart"></i> Beli Sekarang'}
+            </a>
+          </div>`;
+        container.appendChild(card);
       });
     });
-    storeObserver.observe(document.getElementById('store'), { attributes: true });
 
-    // --- SECRET ADMIN TRIGGER (5x Logo Click) - DIUBAH KE REDIRECT ---
-    let logoClicks = 0;
-    let logoTimer;
-    const logoTrigger = document.getElementById('logo-trigger');
-    const logoIcon = document.getElementById('logo-icon');
-
-    logoTrigger.addEventListener('click', (e) => {
-      logoClicks++;
-      clearTimeout(logoTimer);
-      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000); // Reset jika berhenti 2 detik
-
-      if (logoClicks === 5) {
-        e.preventDefault(); // Mencegah pindah ke home di klik ke-5
-        // Di sini kita arahkan ke file admin.html
-        window.location.href = 'admin.html';
-        logoClicks = 0;
-        
-        // Efek visual spin pada logo
-        logoIcon.style.transition = "transform 0.5s";
-        logoIcon.style.transform = "rotate(360deg)";
-        setTimeout(() => { logoIcon.style.transform = "rotate(0deg)"; }, 500);
+    // ═══════════════════════════════════
+    // LOAD ToS (dynamic dari RTDB)
+    // ═══════════════════════════════════
+    onValue(ref(db, "settings/site_info/tos"), (snapshot) => {
+      const el = document.getElementById('tos-content');
+      const text = snapshot.val();
+      if (text && text.trim()) {
+        el.innerHTML = text.split('\n').filter(l => l.trim()).map(p => `<p class="text-gray-400 mb-4 leading-relaxed">${p}</p>`).join('');
+      } else {
+        el.innerHTML = `
+          <h3 class="text-xl font-bold text-green-400 mb-4">1. Acceptance of Terms</h3>
+          <p class="text-gray-400 mb-4 leading-relaxed">Dengan mengakses atau menggunakan layanan Kryonix, Anda menyetujui untuk terikat oleh syarat dan ketentuan layanan ini.</p>
+          <h3 class="text-xl font-bold text-green-400 mb-4">2. Prohibited Uses</h3>
+          <p class="text-gray-400 mb-4 leading-relaxed">Anda tidak boleh menggunakan layanan untuk tujuan ilegal, termasuk namun tidak terbatas pada: penyimpanan atau distribusi malware, serangan DDoS, spam email, atau pelanggaran hak cipta.</p>
+          <p class="text-gray-600 text-xs mt-6 italic">* Terms of Service belum diatur oleh admin.</p>`;
       }
     });
 
+    // ═══════════════════════════════════
+    // SECRET ADMIN TRIGGER (5x logo)
+    // ═══════════════════════════════════
+    let logoClicks = 0, logoTimer;
+    document.getElementById('logo-trigger').addEventListener('click', (e) => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 2000);
+      if (logoClicks === 5) {
+        e.preventDefault();
+        window.location.href = 'login-admin.html';
+        logoClicks = 0;
+        const icon = document.getElementById('logo-icon');
+        icon.style.transition = "transform 0.5s";
+        icon.style.transform = "rotate(360deg)";
+        setTimeout(() => { icon.style.transform = "rotate(0deg)"; }, 500);
+      }
+    });
   </script>
 </body>
 </html>
