@@ -35,6 +35,9 @@
     .chat-bubble{max-width:75%;animation:fadeUp .25s ease}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .status-badge{font-size:.7rem;padding:2px 8px;border-radius:9999px;font-weight:700;font-family:'JetBrains Mono',monospace}
+    .source-badge{font-size:.6rem;padding:2px 7px;border-radius:9999px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:.03em}
+    .source-buyer{background:rgba(0,232,157,.1);color:#00e89d;border:1px solid rgba(0,232,157,.2)}
+    .source-admin{background:rgba(0,196,255,.1);color:#00c4ff;border:1px solid rgba(0,196,255,.2)}
     .partner-logo{width:36px;height:36px;border-radius:8px;object-fit:contain;background:rgba(255,255,255,.03);border:1px solid var(--border);padding:4px;flex-shrink:0}
     .img-preview-bar{background:rgba(0,232,157,.05);border:1px dashed rgba(0,232,157,.3);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:10px}
     .img-preview-bar img{height:48px;border-radius:6px;object-fit:cover;border:1px solid var(--border)}
@@ -57,10 +60,15 @@
         <span id="orderBadge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
       </button>
       <button onclick="switchTab('partners')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-handshake w-5"></i> Partners</button>
+      <button onclick="switchTab('testimoni')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white transition relative">
+        <i class="fas fa-star w-5"></i> Testimoni
+        <span id="testiPendingBadge" class="hidden absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 bg-yellow-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center">0</span>
+      </button>
       <button onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-400 hover:text-white transition"><i class="fas fa-cog w-5"></i> Settings</button>
     </div>
     <div class="p-4 border-t border-dark-border">
       <a href="store.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:text-white hover:bg-green-500/10 transition cursor-pointer"><i class="fas fa-store"></i> View Store</a>
+      <a href="testimoni.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:text-white hover:bg-green-500/10 transition cursor-pointer"><i class="fas fa-external-link-alt text-xs"></i> Testimoni Page</a>
       <a href="index.html" class="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-500 hover:text-white hover:bg-green-500/10 transition cursor-pointer"><i class="fas fa-home"></i> Home</a>
     </div>
   </aside>
@@ -125,6 +133,28 @@
             <table class="w-full admin-table">
               <thead><tr><th>Partner</th><th>Category</th><th>Website</th><th class="text-center">Actions</th></tr></thead>
               <tbody id="partners-tbody"><tr><td colspan="4" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: TESTIMONI -->
+      <div id="tab-testimoni" class="tab-content hidden">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+          <div><h2 class="text-2xl font-bold">Testimoni Management</h2><p class="text-sm text-gray-500">Kelola dan moderasi testimoni pelanggan.</p></div>
+          <button onclick="openTestiModal()" class="bg-accent-green hover:brightness-110 text-black font-bold px-6 py-2 rounded-lg flex items-center gap-2 transition shadow-lg shadow-accent-green/20"><i class="fas fa-plus"></i> Add Testimoni</button>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div class="bg-dark-card border border-dark-border rounded-xl p-4"><div class="text-xs text-gray-500 font-mono uppercase mb-1">Total</div><div id="stat-testi-total" class="text-2xl font-bold text-white">0</div></div>
+          <div class="bg-dark-card border border-dark-border rounded-xl p-4"><div class="text-xs text-gray-500 font-mono uppercase mb-1">Approved</div><div id="stat-testi-approved" class="text-2xl font-bold text-green-400">0</div></div>
+          <div class="bg-dark-card border border-dark-border rounded-xl p-4"><div class="text-xs text-gray-500 font-mono uppercase mb-1">Pending</div><div id="stat-testi-pending" class="text-2xl font-bold text-yellow-400">0</div></div>
+          <div class="bg-dark-card border border-dark-border rounded-xl p-4"><div class="text-xs text-gray-500 font-mono uppercase mb-1">Avg Rating</div><div id="stat-testi-avg" class="text-2xl font-bold text-cyan-400">0.0</div></div>
+        </div>
+        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl">
+          <div class="overflow-x-auto">
+            <table class="w-full admin-table">
+              <thead><tr><th>Review</th><th class="text-center">Rating</th><th class="text-center">Source</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr></thead>
+              <tbody id="testi-tbody"><tr><td colspan="5" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -217,6 +247,35 @@
     </div>
   </div>
 
+  <!-- MODAL: TESTIMONI -->
+  <div id="testiModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 modal-backdrop" onclick="closeTestiModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
+      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-6 m-4 max-h-[90vh] overflow-y-auto">
+        <h3 id="testiModalTitle" class="text-xl font-bold mb-6">Add Testimoni</h3>
+        <form id="testiFormAdmin" onsubmit="handleTestiSubmit(event)">
+          <input type="hidden" id="testiId">
+          <div class="space-y-4">
+            <div><label class="block text-xs font-mono text-gray-400 mb-1">NAMA</label><input type="text" id="testiNameA" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm" placeholder="Nama reviewer"></div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="block text-xs font-mono text-gray-400 mb-1">PRODUK</label><input type="text" id="testiProductA" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm" placeholder="VPS Cloud"></div>
+              <div><label class="block text-xs font-mono text-gray-400 mb-1">RATING</label><select id="testiRatingA" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm"><option value="5">5 Bintang</option><option value="4">4 Bintang</option><option value="3">3 Bintang</option><option value="2">2 Bintang</option><option value="1">1 Bintang</option></select></div>
+            </div>
+            <div><label class="block text-xs font-mono text-gray-400 mb-1">TESTIMONI</label><textarea id="testiTextA" required rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none resize-none text-sm" placeholder="Isi testimoni..."></textarea></div>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="testiApprovedA" checked class="accent-green-500 w-4 h-4">
+              <label for="testiApprovedA" class="text-sm text-gray-400 cursor-pointer">Langsung tampilkan (approved)</label>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+              <button type="button" onclick="closeTestiModal()" class="px-4 py-2 rounded-lg border border-dark-border text-gray-400 hover:text-white transition text-sm">Cancel</button>
+              <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-black font-bold transition text-sm">Save</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- PANEL: ORDER DETAIL + CHAT -->
   <div id="orderDetailPanel" class="hidden fixed inset-0 z-40">
     <div class="absolute inset-0 bg-black/60" onclick="closeOrderDetail()"></div>
@@ -253,7 +312,6 @@
           <div id="chatMessages" class="space-y-3 min-h-[100px]"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
         </div>
       </div>
-      <!-- CHAT INPUT BAR -->
       <div class="flex-shrink-0 border-t border-dark-border p-4 bg-dark-card space-y-2">
         <div id="chatImagePreview" class="hidden img-preview-bar">
           <img id="chatPreviewImg" src="" alt="preview">
@@ -306,7 +364,7 @@
     function formatTime(ts) { if(!ts||typeof ts!=='number') return ''; const d=new Date(ts); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
     function esc(t) { const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
 
-    // ══ IMAGE STORE (for lightbox) ══
+    // ══ IMAGE STORE ══
     const imageStore = {};
     window.viewImage = (key) => { if(imageStore[key]){ document.getElementById('lightboxImg').src=imageStore[key]; document.getElementById('imageLightbox').classList.remove('hidden'); } };
     window.closeLightbox = () => document.getElementById('imageLightbox').classList.add('hidden');
@@ -336,7 +394,7 @@
       });
     }
 
-    // ══ QRIS UPLOAD (Settings tab) ══
+    // ══ QRIS UPLOAD ══
     let qrisBase64 = null;
     document.getElementById('qrisFileInput').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if(!file) return;
@@ -351,7 +409,6 @@
       } catch(err) { showToast(typeof err==='string'?err:'Gagal memproses gambar.', 'error'); }
       e.target.value = '';
     });
-
     window.sendQrisToChat = async () => {
       if(!qrisBase64 || !currentChatOrderId) { showToast('Buka chat order dulu.', 'error'); return; }
       try {
@@ -361,7 +418,7 @@
       } catch(e) { showToast('Gagal mengirim.', 'error'); }
     };
 
-    // ══ CHAT IMAGE (dari panel chat) ══
+    // ══ CHAT IMAGE ══
     let pendingChatImage = null;
     document.getElementById('chatImageInput').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if(!file) return;
@@ -374,10 +431,7 @@
       } catch(err) { showToast(typeof err==='string'?err:'Gagal.', 'error'); }
       e.target.value = '';
     });
-    window.clearChatImage = () => {
-      pendingChatImage = null;
-      document.getElementById('chatImagePreview').classList.add('hidden');
-    };
+    window.clearChatImage = () => { pendingChatImage = null; document.getElementById('chatImagePreview').classList.add('hidden'); };
 
     // ══ AUTH GUARD ══
     if (sessionStorage.getItem('kryonix_admin') !== 'granted') { window.location.href = 'login-admin.html'; }
@@ -388,7 +442,7 @@
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
       const tabs = document.querySelectorAll('.nav-item');
-      const map = { products: 0, orders: 1, partners: 2, settings: 3 };
+      const map = { products: 0, orders: 1, partners: 2, testimoni: 3, settings: 4 };
       if (map[tab] !== undefined) tabs[map[tab]].classList.add('active');
       if (tab === 'settings') loadSettings();
     };
@@ -510,6 +564,96 @@
     });
 
     // ═══════════════════════════════════
+    // TESTIMONI
+    // ═══════════════════════════════════
+    const testiModal = document.getElementById('testiModal');
+    const testiFormA = document.getElementById('testiFormAdmin');
+
+    window.openTestiModal = (isEdit=false, data=null) => {
+      testiModal.classList.remove('hidden');
+      document.getElementById('testiModalTitle').textContent = isEdit ? "Edit Testimoni" : "Add Testimoni";
+      if (isEdit && data) {
+        document.getElementById('testiId').value = data.id;
+        document.getElementById('testiNameA').value = data.name;
+        document.getElementById('testiProductA').value = data.product || '';
+        document.getElementById('testiRatingA').value = data.rating;
+        document.getElementById('testiTextA').value = data.text;
+        document.getElementById('testiApprovedA').checked = data.approved !== false;
+      } else { testiFormA.reset(); document.getElementById('testiId').value = ''; document.getElementById('testiApprovedA').checked = true; }
+    };
+    window.closeTestiModal = () => testiModal.classList.add('hidden');
+
+    window.handleTestiSubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('testiId').value;
+      const data = {
+        name: document.getElementById('testiNameA').value.trim(),
+        product: document.getElementById('testiProductA').value.trim(),
+        rating: parseInt(document.getElementById('testiRatingA').value),
+        text: document.getElementById('testiTextA').value.trim(),
+        source: 'admin',
+        approved: document.getElementById('testiApprovedA').checked
+      };
+      try {
+        if (id) { await update(ref(db, `testimonials/${id}`), data); showToast("Testimoni diupdate!"); }
+        else { const r = push(ref(db, "testimonials")); data.createdAt = serverTimestamp(); await set(r, data); showToast("Testimoni ditambahkan!"); }
+        closeTestiModal();
+      } catch(e) { console.error(e); showToast("Gagal.", "error"); }
+    };
+
+    window.toggleTestiApproval = async (id, current) => {
+      try { await update(ref(db, `testimonials/${id}`), { approved: !current }); showToast(current ? "Testimoni disembunyikan." : "Testimoni ditampilkan!"); }
+      catch(e) { showToast("Gagal.", "error"); }
+    };
+
+    window.deleteTesti = async (id) => {
+      if (!confirm("Hapus testimoni ini?")) return;
+      try { await remove(ref(db, `testimonials/${id}`)); showToast("Testimoni dihapus."); }
+      catch(e) { showToast("Gagal.", "error"); }
+    };
+
+    onValue(ref(db, "testimonials"), (snap) => {
+      const tbody = document.getElementById('testi-tbody'); tbody.innerHTML = '';
+      const raw = snap.val();
+      let total=0, approved=0, pending=0, sumRating=0;
+
+      if (!raw) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada testimoni.</td></tr>'; }
+      else {
+        const sorted = Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+        sorted.forEach(t => {
+          total++; sumRating+=(t.rating||0);
+          const isApproved = t.approved !== false;
+          if (isApproved) approved++; else pending++;
+          let starsH = '';
+          for(let i=1;i<=5;i++) starsH += `<i class="fas fa-star text-[10px] ${i<=(t.rating||0)?'text-yellow-400':'text-gray-700'}"></i>`;
+          const sd = { id:t.key, name:(t.name||'').replace(/'/g,"\\'"), product:(t.product||'').replace(/'/g,"\\'"), text:(t.text||'').replace(/'/g,"\\'"), rating:t.rating, approved:isApproved };
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-bold text-sm text-white truncate">${esc(t.name||'Anonim')}</span><span class="source-badge ${t.source==='admin'?'source-admin':'source-buyer'}">${t.source==='admin'?'VERIFIED':'USER'}</span></div><div class="text-xs text-gray-500 truncate max-w-[220px]">${esc(t.text||'')}</div>${t.product?`<div class="text-[10px] text-gray-600 mt-0.5 font-mono">${esc(t.product)}</div>`:''}</div></td>
+            <td class="text-center"><div class="flex justify-center gap-0.5">${starsH}</div></td>
+            <td class="text-center"><span class="source-badge ${t.source==='admin'?'source-admin':'source-buyer'}">${t.source==='admin'?'VERIFIED':'USER'}</span></td>
+            <td class="text-center">
+              <button onclick="toggleTestiApproval('${t.key}',${isApproved})" class="status-badge border ${isApproved?'bg-green-500/10 text-green-400 border-green-500/20':'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'} cursor-pointer hover:opacity-80 transition">${isApproved?'APPROVED':'PENDING'}</button>
+            </td>
+            <td class="text-center whitespace-nowrap">
+              <button onclick='openTestiModal(true,${JSON.stringify(sd)})' class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition"><i class="fas fa-edit"></i></button>
+              <button onclick="deleteTesti('${t.key}')" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fas fa-trash"></i></button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('stat-testi-total').textContent = total;
+      document.getElementById('stat-testi-approved').textContent = approved;
+      document.getElementById('stat-testi-pending').textContent = pending;
+      document.getElementById('stat-testi-avg').textContent = total > 0 ? (sumRating/total).toFixed(1) : '0.0';
+
+      const badge = document.getElementById('testiPendingBadge');
+      if (pending > 0) { badge.classList.remove('hidden'); badge.textContent = pending > 99 ? '99+' : pending; }
+      else { badge.classList.add('hidden'); }
+    });
+
+    // ═══════════════════════════════════
     // ORDERS
     // ═══════════════════════════════════
     onValue(ref(db, "orders"), (snap) => {
@@ -540,7 +684,7 @@
     window.deleteOrder = async (k) => { if(!confirm("Hapus order ini?"))return; try{await remove(ref(db,`orders/${k}`));showToast("Order dihapus.");}catch(e){showToast("Gagal.","error");} };
 
     // ═══════════════════════════════════
-    // ORDER DETAIL + CHAT (dengan gambar)
+    // ORDER DETAIL + CHAT
     // ═══════════════════════════════════
     let currentChatOrderId = null, unsubOrder = null, unsubChat = null;
 
@@ -577,7 +721,6 @@
           const isMe = m.sender === 'admin';
           const div = document.createElement('div');
           div.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-
           let contentHtml = '';
           if (m.text) contentHtml += `<p class="text-sm text-gray-200 break-words">${m.text}</p>`;
           if (m.image) {
@@ -586,7 +729,6 @@
             contentHtml += `<img src="${m.image}" loading="lazy" class="rounded-lg mt-1.5 max-w-[260px] cursor-pointer hover:brightness-110 transition border border-white/5" onclick="viewImage('${imgKey}')">`;
           }
           contentHtml += `<p class="text-[10px] ${isMe?'text-green-500/50':'text-gray-600'} mt-1 text-right">${formatTime(m.timestamp)}</p>`;
-
           div.innerHTML = `<div class="chat-bubble ${isMe?'bg-green-500/10 border-green-500/20':'bg-dark-card border-dark-border'} border rounded-2xl ${isMe?'rounded-br-sm':'rounded-bl-sm'} px-4 py-2.5">${contentHtml}</div>`;
           container.appendChild(div);
         });
