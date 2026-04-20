@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Public Chat | KRYONIX</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            wa: { dark: '#0b141a', sidebar: '#111b21', chat: '#0b141a', input: '#1e2b33', bubble: '#005c4b', bubbleme: '#005c4b', header: '#1f2c33', border: '#2a3942', green: '#00a884', greenDark: '#008069', text: '#e9edef', muted: '#8696a0', time: '#667781' }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root { --wa-dark: #0b141a; --wa-sidebar: #111b21; --wa-header: #1f2c33; --wa-border: #2a3942; --wa-green: #00a884; --wa-bubble: #005c4b; --wa-text: #e9edef; --wa-muted: #8696a0; --wa-time: #667781; --wa-input: #1e2b33; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--wa-dark); color: var(--wa-text); font-family: 'Space Grotesk', sans-serif; height: 100vh; overflow: hidden; }
+
+    /* Chat wallpaper pattern */
+    .chat-bg {
+      position: fixed; inset: 0;
+      background-color: #0b141a;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      z-index: 0;
+    }
+
+    .msg-bubble {
+      max-width: 65%; padding: 6px 8px 8px; border-radius: 8px; position: relative;
+      animation: msgIn 0.2s ease;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.13);
+    }
+    .msg-other { background: var(--wa-bubble); border-top-left-radius: 0; }
+    .msg-me { background: var(--wa-bubble); border-top-right-radius: 0; }
+    .msg-me::after {
+      content: ''; position: absolute; top: 0; right: -8px;
+      border-width: 0 0 8px 8px; border-style: solid; border-color: transparent transparent transparent var(--wa-bubble);
+    }
+    .msg-other::after {
+      content: ''; position: absolute; top: 0; left: -8px;
+      border-width: 0 8px 8px 0; border-style: solid; border-color: transparent var(--wa-bubble) transparent transparent;
+    }
+    @keyframes msgIn { from { opacity: 0; transform: translateY(8px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+    .date-sep { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
+    .date-sep::before, .date-sep::after { content: ''; flex: 1; height: 1px; background: var(--wa-border); }
+    .date-sep span { font-size: 11px; color: var(--wa-muted); white-space: nowrap; padding: 0 8px; }
+
+    .chat-input-wrap {
+      background: var(--wa-input); border-top: 1px solid var(--wa-border);
+      padding: 10px 16px; display: flex; align-items: flex-end; gap: 10px;
+    }
+    .chat-input {
+      flex: 1; background: var(--wa-dark); border: none; border-radius: 8px;
+      padding: 10px 16px; color: var(--wa-text); font-size: 0.95rem; outline: none;
+      font-family: 'Space Grotesk', sans-serif; resize: none; max-height: 120px; min-height: 42px; line-height: 1.4;
+    }
+    .chat-input::placeholder { color: var(--wa-muted); }
+    .send-btn {
+      width: 42px; height: 42px; border-radius: 50%; border: none;
+      background: var(--wa-green); color: white; cursor: pointer; display: flex;
+      align-items: center; justify-content: center; flex-shrink: 0; transition: 0.15s;
+    }
+    .send-btn:hover { background: var(--wa-greenDark); transform: scale(1.05); }
+    .send-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+
+    .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wa-green); flex-shrink: 0; }
+    .online-dot.pulse { animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    .avatar {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700;
+    }
+
+    .typing-indicator span {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--wa-muted); animation: typingBounce 1.4s ease-in-out infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+    .loading-screen {
+      position: fixed; inset: 0; background: var(--wa-dark); z-index: 99999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.5s;
+    }
+    .loading-screen.hide { opacity: 0; pointer-events: none; }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--wa-border); border-radius: 3px; }
+
+    /* Navbar override for this page */
+    .nav-link { position: relative; color: var(--wa-muted); font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
+    .nav-link:hover { color: var(--wa-green); }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--wa-green); transition: 0.3s; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active-link { color: var(--wa-green); }
+    .nav-link.active-link::after { width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- Loading -->
+  <div id="loadingScreen" class="loading-screen">
+    <div class="w-10 h-10 border-2 border-green-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+    <p class="text-sm text-gray-500 font-mono">VERIFYING ACCESS...</p>
+  </div>
+
+  <div class="chat-bg"></div>
+
+  <!-- LAYOUT -->
+  <div class="relative z-10 flex flex-col h-screen">
+
+    <!-- NAVBAR -->
+    <nav class="flex-shrink-0 border-b border-wa-border" style="background: rgba(31,44,51,0.95); backdrop-filter: blur(12px);">
+      <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+        <a href="index.html" class="flex items-center gap-2.5 group">
+          <div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-base">K</div>
+          <span class="text-base font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
+        </a>
+        <div class="hidden md:flex items-center gap-6">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="store.html" class="nav-link">Store</a>
+          <a href="tos.html" class="nav-link">Important</a>
+          <a href="chat.html" class="nav-link active-link">Chat</a>
+        </div>
+        <div class="flex items-center gap-2">
+          <div id="userMenu" class="relative hidden">
+            <button onclick="toggleDropdown()" class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition">
+              <div class="w-7 h-7 rounded-full bg-green-500/20 border border-green-500/30 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
+              <span class="text-sm text-gray-300 hidden sm:inline" id="navName">User</span>
+              <i class="fas fa-chevron-down text-[10px] text-gray-500 transition" id="dropdownChevron"></i>
+            </button>
+            <div class="user-dropdown" id="userDropdown" style="position:absolute;top:calc(100% + 6px);right:0;min-width:190px;background:var(--wa-sidebar);border:1px solid var(--wa-border);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.5);padding:5px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:all 0.2s ease;">
+              <div class="px-3 py-2 border-b border-wa-border mb-1">
+                <div class="text-sm font-semibold text-white" id="dropdownName">User</div>
+                <div class="text-xs text-gray-500 truncate" id="dropdownEmail">user@email.com</div>
+              </div>
+              <a href="store.html" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:var(--wa-muted);text-decoration:none;background:transparent;border:none;cursor:pointer;transition:0.15s;font-family:'Space Grotesk',sans-serif;"><i class="fas fa-shopping-cart w-4 text-center text-green-500/60"></i> Store</a>
+              <a href="track.html" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:var(--wa-muted);text-decoration:none;background:transparent;border:none;cursor:pointer;transition:0.15s;font-family:'Space Grotesk',sans-serif;"><i class="fas fa-search w-4 text-center text-cyan-500/60"></i> Lacak Pesanan</a>
+              <div style="height:1px;background:var(--wa-border);margin:4px 0;"></div>
+              <button onclick="handleLogout()" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:#f87171;text-decoration:none;background:transparent;border:none;cursor:pointer;transition:0.15s;font-family:'Space Grotesk',sans-serif;"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
+            </div>
+          </div>
+          <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition"><i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span></a>
+          <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
+        </div>
+      </div>
+      <div id="mobileMenu" class="hidden md:hidden border-t border-wa-border p-4 space-y-3" style="background:var(--wa-sidebar);">
+        <a href="index.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Home</a>
+        <a href="store.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Store</a>
+        <a href="tos.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Important</a>
+        <a href="chat.html" class="block text-green-400 font-semibold text-sm">Chat</a>
+      </div>
+    </nav>
+
+    <!-- CHAT HEADER -->
+    <div class="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b border-wa-border" style="background: var(--wa-header);">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center">
+          <i class="fas fa-comments text-black text-sm"></i>
+        </div>
+        <div>
+          <div class="font-bold text-sm text-white">KRYONIX Public Chat</div>
+          <div class="flex items-center gap-1.5 text-xs text-wa-muted">
+            <div class="online-dot pulse"></div>
+            <span id="onlineCount">0 online</span>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <div id="typingStatus" class="text-xs text-wa-muted hidden">
+          <span class="typing-indicator"><span></span><span></span><span></span></span>
+          <span id="typingName" class="ml-1">seseorang</span> sedang mengetik...
+        </div>
+      </div>
+    </div>
+
+    <!-- MESSAGES AREA -->
+    <div class="flex-1 overflow-y-auto px-4 py-2" id="chatArea">
+      <div class="flex justify-center py-16">
+        <i class="fas fa-circle-notch fa-spin text-2xl text-wa-green"></i>
+      </div>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="chat-input-wrap flex-shrink-0">
+      <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1"></textarea>
+      <button id="sendBtn" class="send-btn" disabled>
+        <i class="fas fa-paper-plane text-sm"></i>
+      </button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      databaseURL: "https://kryonix-7c55e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kryonix-7c55e",
+      storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473",
+      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
+      measurementId: "G-9Y77T2V6H7"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
+    const auth = getAuth(fbApp);
+
+    let myUid = null, myName = 'User', myInitial = '?';
+    const chatArea = document.getElementById('chatArea');
+    const msgInput = document.getElementById('msgInput');
+    const sendBtn = document.getElementById('sendBtn');
+    let lastMsgDate = '';
+    let typingTimeout = null;
+
+    // ── AUTH GUARD ──
+    onAuthStateChanged(auth, async (user) => {
+      const loader = document.getElementById('loadingScreen');
+      if (!user) { window.location.href = 'login-buyer.html'; return; }
+
+      myUid = user.uid;
+      myName = user.email?.split('@')[0] || 'User';
+      try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) myName = s.val(); } catch(e) {}
+      myInitial = myName.charAt(0).toUpperCase();
+
+      // Update navbar
+      document.getElementById('userMenu').classList.remove('hidden');
+      document.getElementById('loginBtn').classList.add('hidden');
+      document.getElementById('navAvatar').textContent = myInitial;
+      document.getElementById('navName').textContent = myName;
+      document.getElementById('dropdownName').textContent = myName;
+      document.getElementById('dropdownEmail').textContent = user.email || '';
+
+      loader.classList.add('hide');
+      setTimeout(() => loader.remove(), 500);
+
+      // Set online presence
+      setupPresence();
+      // Listen messages
+      loadMessages();
+      // Listen online count
+      listenOnline();
+      // Listen typing
+      listenTyping();
+    });
+
+    // ── PRESENCE ──
+    function setupPresence() {
+      const myPresenceRef = ref(db, `chat_online/${myUid}`);
+      set(myPresenceRef, { name: myName, lastSeen: Date.now() });
+      onDisconnect(myPresenceRef).remove();
+
+      // Heartbeat setiap 30 detik
+      setInterval(() => {
+        update(myPresenceRef, { lastSeen: Date.now() });
+      }, 30000);
+    }
+
+    // ── ONLINE COUNT ──
+    function listenOnline() {
+      const cutoff = Date.now() - 120000; // 2 menit dianggap offline
+      onValue(ref(db, "chat_online"), (snap) => {
+        const raw = snap.val();
+        if (!raw) { document.getElementById('onlineCount').textContent = '0 online'; return; }
+        let count = 0;
+        Object.values(raw).forEach(u => { if (u.lastSeen > cutoff) count++; });
+        document.getElementById('onlineCount').textContent = `${count} online`;
+      });
+    }
+
+    // ── TYPING INDICATOR ──
+    function listenTyping() {
+      onValue(ref(db, "chat_typing"), (snap) => {
+        const raw = snap.val();
+        const el = document.getElementById('typingStatus');
+        const nameEl = document.getElementById('typingName');
+        if (!raw || raw.uid === myUid || Date.now() - raw.timestamp > 3000) {
+          el.classList.add('hidden');
+          return;
+        }
+        nameEl.textContent = raw.name;
+        el.classList.remove('hidden');
+      });
+    }
+
+    // Broadcast typing saat user mengetik
+    msgInput.addEventListener('input', () => {
+      if (msgInput.value.trim()) {
+        set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
+      }
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        // Hapus typing setelah 2 detik berhenti
+        const typingRef = ref(db, "chat_typing");
+        get(typingRef).then(s => {
+          if (s.exists() && s.val().uid === myUid) set(typingRef, null);
+        });
+      }, 2000);
+    });
+
+    // ── LOAD MESSAGES ──
+    function loadMessages() {
+      // Load last 100 messages
+      const msgRef = ref(db, "public_chat");
+      const q = query(msgRef, orderByChild("timestamp"), limitToLast(100));
+      
+      onChildAdded(q, (snap) => {
+        appendMessage(snap.val(), snap.key);
+        scrollBottom();
+      });
+
+      onChildChanged(q, (snap) => {
+        const el = document.getElementById(`msg-${snap.key}`);
+        if (el) el.remove();
+        appendMessage(snap.val(), snap.key);
+      });
+
+      onChildRemoved(q, (snap) => {
+        const el = document.getElementById(`msg-${snap.key}`);
+        if (el) el.remove();
+      });
+
+      // Also listen for deletes (admin bisa hapus pesan)
+      onChildRemoved(ref(db, "public_chat"), (snap) => {
+        const el = document.getElementById(`msg-${snap.key}`);
+        if (el) el.remove();
+      });
+    }
+
+    function appendMessage(msg, key) {
+      if (!msg) return;
+      const isMe = msg.senderUid === myUid;
+      const time = msg.timestamp ? formatTime(msg.timestamp) : '';
+      const date = msg.timestamp ? formatDate(msg.timestamp) : '';
+
+      // Date separator
+      if (date && date !== lastMsgDate) {
+        lastMsgDate = date;
+        const sep = document.createElement('div');
+        sep.className = 'date-sep';
+        sep.innerHTML = `<span>${date}</span>`;
+        chatArea.appendChild(sep);
+      }
+
+      const wrapper = document.createElement('div');
+      wrapper.id = `msg-${key}`;
+      wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'} mb-1`;
+
+      // Avatar colors berdasarkan nama
+      const hue = hashCode(msg.senderName || '?') % 360;
+      const avatarBg = `hsl(${hue}, 50%, 25%)`;
+      const avatarColor = `hsl(${hue}, 70%, 65%)`;
+
+      wrapper.innerHTML = `
+        ${!isMe ? `<div class="avatar mr-2 mt-auto" style="background:${avatarBg};color:${avatarColor};font-size:13px;">${(msg.senderName || '?').charAt(0).toUpperCase()}</div>` : ''}
+        <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-other'}">
+          ${!isMe ? `<div class="text-xs font-semibold mb-0.5" style="color:${avatarColor}">${escapeHtml(msg.senderName || 'Anon')}</div>` : ''}
+          <div class="text-sm leading-relaxed break-words" style="color:#e9edef;">${linkify(escapeHtml(msg.text || ''))}</div>
+          <div class="text-right mt-0.5"><span class="text-[10px]" style="color:rgba(255,255,255,0.45);">${time}${isMe ? ' <i class="fas fa-check-double text-[9px]" style="color:rgba(79,195,247,0.7);"></i>' : ''}</span></div>
+        </div>
+        ${isMe ? `<div class="avatar ml-2 mt-auto" style="background:${avatarBg};color:${avatarColor};font-size:13px;">${myInitial}</div>` : ''}
+      `;
+
+      chatArea.appendChild(wrapper);
+    }
+
+    // ── SEND MESSAGE ──
+    function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text || !myUid) return;
+
+      // Max 500 karakter
+      const trimmed = text.substring(0, 500);
+
+      push(ref(db, "public_chat"), {
+        senderUid: myUid,
+        senderName: myName,
+        text: trimmed,
+        timestamp: Date.now()
+      });
+
+      msgInput.value = '';
+      msgInput.style.height = 'auto';
+      sendBtn.disabled = true;
+      scrollBottom();
+
+      // Hapus typing
+      set(ref(db, "chat_typing"), null);
+    }
+
+    sendBtn.addEventListener('click', sendMessage);
+    msgInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // Auto-resize textarea
+    msgInput.addEventListener('input', () => {
+      msgInput.style.height = 'auto';
+      msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+      sendBtn.disabled = !msgInput.value.trim();
+    });
+
+    function scrollBottom() {
+      requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+    }
+
+    // ── UTILS ──
+    function formatTime(ts) {
+      if (typeof ts !== 'number') return '';
+      const d = new Date(ts);
+      return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function formatDate(ts) {
+      if (typeof ts !== 'number') return '';
+      const d = new Date(ts);
+      const today = new Date();
+      const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+
+      if (d.toDateString() === today.toDateString()) return 'HARI INI';
+      if (d.toDateString() === yesterday.toDateString()) return 'KEMARIN';
+      return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s]+)/g;
+      return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener" style="color:#53bdeb;text-decoration:underline;">$1</a>');
+    }
+
+    function hashCode(str) {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        const char = str.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash |= 0;
+      }
+      return Math.abs(hash);
+    }
+
+    // ── NAV UI ──
+    window.toggleDropdown = () => {
+      const dd = document.getElementById('userDropdown');
+      const ch = document.getElementById('dropdownChevron');
+      dd.classList.toggle('open');
+      dd.style.opacity = dd.classList.contains('open') ? '1' : '0';
+      dd.style.visibility = dd.classList.contains('open') ? 'visible' : 'hidden';
+      dd.style.transform = dd.classList.contains('open') ? 'translateY(0)' : 'translateY(-6px)';
+      ch.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+    };
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('userMenu').contains(e.target)) {
+        const dd = document.getElementById('userDropdown');
+        dd.classList.remove('open');
+        dd.style.opacity = '0'; dd.style.visibility = 'hidden'; dd.style.transform = 'translateY(-6px)';
+        document.getElementById('dropdownChevron').style.transform = '';
+      }
+    });
+
+    window.handleLogout = async () => {
+      // Hapus online presence
+      if (myUid) remove(ref(db, `chat_online/${myUid}`));
+      try { await signOut(auth); location.reload(); } catch(e) { console.error(e); }
+    };
+
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+
+    // Import orderBy & limitToLast
+    import { orderByChild, limitToLast, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+  </script>
+</body>
+</html>
