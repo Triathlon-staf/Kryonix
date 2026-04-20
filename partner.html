@@ -7,92 +7,45 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: {
-            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
-            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' }
-          }
-        }
-      }
+      theme: { extend: {
+        fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+        colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff' } }
+      }}
     }
   </script>
-
   <style>
     :root { --bg: #060a10; --bg-card: #0c1220; --border: #152035; --green: #00e89d; --cyan: #00c4ff; }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--bg); color: #e8ecf2; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
-
     .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
     .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
     .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,232,157,0.06), transparent 70%); top: -100px; right: -100px; }
     .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,196,255,0.05), transparent 70%); bottom: -50px; left: -100px; animation-delay: -5s; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 30px); } }
-
-    .glass-nav { backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border); }
+    .partner-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: all 0.4s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
+    .partner-card:hover { transform: translateY(-6px); border-color: rgba(0,232,157,0.3); box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 15px rgba(0,232,157,0.08); }
+    .partner-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--green), var(--cyan)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+    .partner-card:hover::before { transform: scaleX(1); }
+    .partner-logo { width: 80px; height: 80px; border-radius: 16px; object-fit: contain; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px; margin-bottom: 1.25rem; }
+    .text-gradient { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .nav-link { position: relative; color: #5a6a80; font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
     .nav-link:hover, .nav-link.active { color: var(--green); }
     .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s; }
     .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-
-    .partner-card {
-      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
-      padding: 2rem; transition: all 0.4s; display: flex; flex-direction: column; align-items: center;
-      text-align: center; position: relative; overflow: hidden;
-    }
-    .partner-card:hover {
-      transform: translateY(-6px); border-color: rgba(0,232,157,0.3);
-      box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 15px rgba(0,232,157,0.08);
-    }
-    .partner-card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--green), var(--cyan));
-      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
-    }
-    .partner-card:hover::before { transform: scaleX(1); }
-
-    .partner-logo {
-      width: 80px; height: 80px; border-radius: 16px; object-fit: contain;
-      background: rgba(255,255,255,0.03); border: 1px solid var(--border);
-      padding: 12px; margin-bottom: 1.25rem;
-    }
-
-    .admin-table th { text-align: left; padding: 0.75rem 1rem; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #5a6a80; border-bottom: 1px solid var(--border); }
-    .admin-table td { padding: 0.75rem 1rem; border-bottom: 1px solid #1e293b; font-size: 0.875rem; vertical-align: middle; }
-    .admin-table tr:hover td { background: rgba(0, 232, 157, 0.02); }
-
-    .modal-backdrop { background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); }
-
-    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 0.875rem 1.25rem; border-radius: 12px; font-size: 0.875rem; font-weight: 600; z-index: 9999; transform: translateY(120px); opacity: 0; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { background: #065f46; color: #6ee7b7; border: 1px solid #10b981; }
-    .toast.error { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
-
-    .text-gradient { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
 <body>
-
   <div class="grid-bg"></div>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
 
-  <!-- NAVBAR -->
-  <nav class="fixed w-full top-0 z-50 glass-nav">
+  <nav class="fixed w-full top-0 z-50 glass-nav border-b border-dark-border" style="backdrop-filter:blur(16px);background:rgba(6,10,16,0.85);">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-2.5 group">
-        <div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-base">K</div>
-        <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
-      </a>
+      <a href="index.html" class="flex items-center gap-2.5 group"><div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-base">K</div><span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span></a>
       <div class="hidden md:flex items-center gap-6">
         <a href="index.html" class="nav-link">Home</a>
         <a href="store.html" class="nav-link">Store</a>
@@ -100,27 +53,8 @@
         <a href="chat.html" class="nav-link">Chat</a>
         <a href="partners.html" class="nav-link active">Partners</a>
       </div>
-      <div class="flex items-center gap-2">
-        <div id="userMenu" class="relative hidden">
-          <button onclick="toggleDropdown()" class="flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-white/5 transition">
-            <div class="w-7 h-7 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
-            <span class="text-sm text-gray-300 hidden sm:inline" id="navName">User</span>
-            <i class="fas fa-chevron-down text-[10px] text-gray-600 transition" id="ddChev"></i>
-          </button>
-          <div id="userDropdown" style="position:absolute;top:calc(100% + 6px);right:0;min-width:200px;background:var(--bg-card);border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 30px rgba(0,0,0,0.5);padding:5px;opacity:0;visibility:hidden;transform:translateY(-6px);transition:all 0.2s;">
-            <div class="px-3 py-2 border-b border-dark-border mb-1">
-              <div class="text-sm font-semibold text-white" id="ddName">User</div>
-              <div class="text-xs text-gray-500 truncate" id="ddEmail">-</div>
-            </div>
-            <a href="store.html" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:#5a6a80;text-decoration:none;background:transparent;border:none;cursor:pointer;font-family:'Space Grotesk'"><i class="fas fa-shopping-cart w-4 text-center text-green-500/60"></i> Store</a>
-            <a href="track.html" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:#5a6a80;text-decoration:none;background:transparent;border:none;cursor:pointer;font-family:'Space Grotesk'"><i class="fas fa-search w-4 text-center text-cyan-500/60"></i> Lacak Pesanan</a>
-            <div style="height:1px;background:var(--border);margin:4px 0;"></div>
-            <button onclick="handleLogout()" style="display:flex;align-items:center;gap:10px;width:100%;padding:8px 12px;border-radius:6px;font-size:0.82rem;color:#f87171;text-decoration:none;background:transparent;border:none;cursor:pointer;font-family:'Space Grotesk'"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
-          </div>
-        </div>
-        <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition"><i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span></a>
-        <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
-      </div>
+      <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition"><i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span></a>
+      <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
     </div>
     <div id="mobileMenu" class="hidden md:hidden border-t border-dark-border p-4 space-y-3" style="background:var(--bg-card);">
       <a href="index.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Home</a>
@@ -131,264 +65,57 @@
     </div>
   </nav>
 
-  <!-- MAIN -->
   <main class="relative z-10 pt-24 pb-16 px-4 md:px-8">
     <div class="max-w-7xl mx-auto">
-
-      <!-- HEADER -->
       <div class="text-center mb-12">
         <div class="inline-block px-4 py-1 mb-4 rounded-full border border-green-500/30 text-green-400 text-xs font-mono tracking-widest bg-green-500/5">TRUSTED PARTNERS</div>
         <h1 class="text-4xl md:text-5xl font-bold mb-4">KOLABORASI <span class="text-gradient">STRATEGIS</span></h1>
         <p class="text-gray-400 max-w-xl mx-auto">Kami bekerja sama dengan berbagai provider infrastruktur dan platform terkemuka untuk memberikan layanan terbaik.</p>
       </div>
-
-      <!-- PUBLIC GRID -->
-      <div id="partnerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 mb-16">
-        <div class="col-span-full text-center py-16 text-gray-500">
-          <i class="fas fa-spinner fa-spin text-2xl mb-3 text-green-400"></i>
-          <p>Loading partners...</p>
-        </div>
+      <div id="partnerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+        <div class="col-span-full text-center py-16 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-3 text-green-400"></i><p>Loading partners...</p></div>
       </div>
-
-      <!-- ═══ ADMIN SECTION ═══ -->
-      <div id="adminSection" class="hidden border-t border-dark-border pt-12">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <div class="flex items-center gap-2 mb-1">
-              <i class="fas fa-shield-alt text-green-400 text-sm"></i>
-              <h2 class="text-xl font-bold">Partner Management</h2>
-            </div>
-            <p class="text-sm text-gray-500">Kelola daftar partner. Hanya terlihat oleh admin.</p>
-          </div>
-          <button onclick="openModal()" class="bg-accent-green hover:brightness-110 text-black font-bold px-5 py-2 rounded-lg flex items-center gap-2 transition shadow-lg shadow-accent-green/20 text-sm">
-            <i class="fas fa-plus"></i> Add Partner
-          </button>
-        </div>
-
-        <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden">
-          <div class="overflow-x-auto">
-            <table class="w-full admin-table">
-              <thead>
-                <tr>
-                  <th>Partner</th>
-                  <th>Category</th>
-                  <th>Website</th>
-                  <th class="text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="partners-tbody">
-                <tr><td colspan="4" class="text-center py-8 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
     </div>
   </main>
 
-  <!-- MODAL -->
-  <div id="partnerModal" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 modal-backdrop" onclick="closeModal()"></div>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
-      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-6 m-4 max-h-[90vh] overflow-y-auto">
-        <h3 id="modalTitle" class="text-lg font-bold mb-6">Add Partner</h3>
-        <form id="partnerForm" onsubmit="handleSubmit(event)">
-          <input type="hidden" id="pId">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-1">NAMA PARTNER</label>
-              <input type="text" id="pName" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm" placeholder="Contoh: Cloudflare">
-            </div>
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-1">LOGO URL</label>
-              <input type="url" id="pLogo" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm" placeholder="https://example.com/logo.png">
-              <p class="text-[10px] text-gray-600 mt-1">Kosongkan untuk menggunakan icon default.</p>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-xs font-mono text-gray-400 mb-1">CATEGORY</label>
-                <select id="pCat" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm">
-                  <option value="infrastructure">Infrastructure</option>
-                  <option value="payment">Payment</option>
-                  <option value="security">Security</option>
-                  <option value="cdn">CDN</option>
-                  <option value="domain">Domain</option>
-                  <option value="game">Game Panel</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <label class="block text-xs font-mono text-gray-400 mb-1">ICON (FontAwesome)</label>
-                <input type="text" id="pIcon" placeholder="fa-server" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm">
-              </div>
-            </div>
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-1">WEBSITE URL</label>
-              <input type="url" id="pWebsite" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none text-sm" placeholder="https://partner.com">
-            </div>
-            <div>
-              <label class="block text-xs font-mono text-gray-400 mb-1">DESCRIPTION</label>
-              <textarea id="pDesc" rows="2" class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2 text-white focus:border-green-500 outline-none resize-none text-sm" placeholder="Deskripsi singkat partnership"></textarea>
-            </div>
-            <div class="flex justify-end gap-3 pt-4">
-              <button type="button" onclick="closeModal()" class="px-4 py-2 rounded-lg border border-dark-border text-gray-400 hover:text-white transition text-sm">Cancel</button>
-              <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-black font-bold transition text-sm">Save</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast"></div>
-
-  <!-- SCRIPTS -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, update, remove, onValue, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
       authDomain: "kryonix-7c55e.firebaseapp.com",
       databaseURL: "https://kryonix-7c55e-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "kryonix-7c55e",
-      storageBucket: "kryonix-7c55e.firebasestorage.app",
-      messagingSenderId: "917095112473",
-      appId: "1:917095112473:web:dd4120a14724e6e6a02f88",
-      measurementId: "G-9Y77T2V6H7"
+      projectId: "kryonix-7c55e", storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473", appId: "1:917095112473:web:dd4120a14724e6e6a02f88", measurementId: "G-9Y77T2V6H7"
     };
 
     const fbApp = initializeApp(firebaseConfig);
     const db = getDatabase(fbApp);
     const auth = getAuth(fbApp);
 
-    const categoryIcons = { infrastructure: 'fa-server', payment: 'fa-credit-card', security: 'fa-shield-alt', cdn: 'fa-bolt', domain: 'fa-globe', game: 'fa-gamepad', other: 'fa-star' };
-    const categoryColors = { infrastructure: 'text-cyan-400', payment: 'text-green-400', security: 'text-purple-400', cdn: 'text-yellow-400', domain: 'text-blue-400', game: 'text-pink-400', other: 'text-gray-400' };
+    const partnerCatIcons = { infrastructure:'fa-server', payment:'fa-credit-card', security:'fa-shield-alt', cdn:'fa-bolt', domain:'fa-globe', game:'fa-gamepad', other:'fa-star' };
+    const partnerCatColors = { infrastructure:'text-cyan-400', payment:'text-green-400', security:'text-purple-400', cdn:'text-yellow-400', domain:'text-blue-400', game:'text-pink-400', other:'text-gray-400' };
 
-    function showToast(msg, type = 'success') {
-      const t = document.getElementById('toast');
-      t.textContent = msg; t.className = `toast ${type} show`;
-      setTimeout(() => t.classList.remove('show'), 3000);
-    }
-
-    function escapeHtml(t) { const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
-
-    // ── AUTH: cek admin ──
     onAuthStateChanged(auth, async (user) => {
-      const userMenu = document.getElementById('userMenu');
-      const loginBtn = document.getElementById('loginBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
-      const mobileLogin = document.getElementById('mobileLoginBtn');
-
-      if (user) {
-        userMenu.classList.remove('hidden');
-        loginBtn.classList.add('hidden');
-        if (mobileLogin) mobileLogin.classList.add('hidden');
-
-        let name = user.email?.split('@')[0] || 'User';
-        try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) name = s.val(); } catch(e) {}
-        document.getElementById('navAvatar').textContent = name.charAt(0).toUpperCase();
-        document.getElementById('navName').textContent = name;
-        document.getElementById('ddName').textContent = name;
-        document.getElementById('ddEmail').textContent = user.email || '';
-      } else {
-        userMenu.classList.add('hidden');
-        loginBtn.classList.remove('hidden');
-      }
+      const btn = document.getElementById('loginBtn');
+      if (user) btn.classList.add('hidden');
+      else btn.classList.remove('hidden');
     });
 
-    // ── Cek apakah admin (untuk tampilkan section management) ──
-    function checkAdmin() {
-      const isAdmin = sessionStorage.getItem('kryonix_admin') === 'granted';
-      document.getElementById('adminSection').classList.toggle('hidden', !isAdmin);
-    }
-    checkAdmin();
-    setInterval(checkAdmin, 1000);
-
-    // ── MODAL ──
-    const modal = document.getElementById('partnerModal');
-    const form = document.getElementById('partnerForm');
-
-    window.openModal = (isEdit = false, data = null) => {
-      modal.classList.remove('hidden');
-      document.getElementById('modalTitle').textContent = isEdit ? 'Edit Partner' : 'Add Partner';
-      if (isEdit && data) {
-        document.getElementById('pId').value = data.id;
-        document.getElementById('pName').value = data.name;
-        document.getElementById('pLogo').value = data.logo || '';
-        document.getElementById('pCat').value = data.category;
-        document.getElementById('pIcon').value = data.icon || '';
-        document.getElementById('pWebsite').value = data.website || '';
-        document.getElementById('pDesc').value = data.description || '';
-      } else {
-        form.reset();
-        document.getElementById('pId').value = '';
-      }
-    }
-
-    window.closeModal = () => modal.classList.add('hidden');
-
-    // ── SUBMIT ──
-    window.handleSubmit = async (e) => {
-      e.preventDefault();
-      const id = document.getElementById('pId').value;
-      const cat = document.getElementById('pCat').value;
-
-      const data = {
-        name: document.getElementById('pName').value.trim(),
-        logo: document.getElementById('pLogo').value.trim(),
-        category: cat,
-        icon: document.getElementById('pIcon').value.trim() || categoryIcons[cat] || 'fa-star',
-        website: document.getElementById('pWebsite').value.trim(),
-        description: document.getElementById('pDesc').value.trim()
-      };
-
-      try {
-        if (id) {
-          await update(ref(db, `partners/${id}`), data);
-          showToast("Partner diupdate!");
-        } else {
-          const newRef = push(ref(db, "partners"));
-          await set(newRef, data);
-          showToast("Partner ditambahkan!");
-        }
-        closeModal();
-      } catch (e) {
-        console.error(e);
-        showToast("Gagal menyimpan.", "error");
-      }
-    }
-
-    window.deletePartner = async (id) => {
-      if (!confirm("Hapus partner ini?")) return;
-      try {
-        await remove(ref(db, `partners/${id}`));
-        showToast("Partner dihapus.");
-      } catch (e) { showToast("Gagal menghapus.", "error"); }
-    }
-
-    // ── REAL-TIME LISTENER ──
     onValue(ref(db, "partners"), (snap) => {
-      const raw = snap.val();
       const grid = document.getElementById('partnerGrid');
-      const tbody = document.getElementById('partners-tbody');
-
-      // ── Public Grid ──
+      const raw = snap.val();
       grid.innerHTML = '';
       if (!raw) {
         grid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-600"><i class="fas fa-handshake text-3xl mb-3"></i><p>Belum ada partner.</p></div>';
-        tbody.innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">Belum ada partner.</td></tr>';
         return;
       }
-
-      const entries = Object.keys(raw).map(k => ({ key: k, ...raw[k] }));
-
-      grid.innerHTML = '';
-      entries.forEach(p => {
-        const color = categoryColors[p.category] || 'text-gray-400';
-        const icon = p.icon || categoryIcons[p.category] || 'fa-star';
+      Object.keys(raw).forEach(k => {
+        const p = raw[k];
+        const color = partnerCatColors[p.category] || 'text-gray-400';
+        const icon = p.icon || partnerCatIcons[p.category] || 'fa-star';
         const card = document.createElement('a');
         card.href = p.website || '#';
         card.target = p.website ? '_blank' : '';
@@ -396,74 +123,16 @@
         card.className = 'partner-card';
         card.innerHTML = `
           ${p.logo
-            ? `<img src="${p.logo}" alt="${escapeHtml(p.name)}" class="partner-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="partner-logo flex-col items-center justify-center" style="display:none"><i class="fas ${icon} text-2xl ${color}"></i></div>`
+            ? `<img src="${p.logo}" alt="${p.name}" class="partner-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="partner-logo flex-col items-center justify-center" style="display:none"><i class="fas ${icon} text-2xl ${color}"></i></div>`
             : `<div class="partner-logo flex items-center justify-center"><i class="fas ${icon} text-2xl ${color}"></i></div>`
           }
-          <h3 class="font-bold text-sm text-white mb-1">${escapeHtml(p.name)}</h3>
-          <p class="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">${escapeHtml(p.description || '')}</p>
+          <h3 class="font-bold text-sm text-white mb-1">${p.name}</h3>
+          <p class="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">${p.description || ''}</p>
           <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase bg-dark-bg border border-dark-border ${color}">${p.category}</span>
         `;
         grid.appendChild(card);
       });
-
-      // ── Admin Table ──
-      tbody.innerHTML = '';
-      entries.forEach(p => {
-        const color = categoryColors[p.category] || 'text-gray-400';
-        const icon = p.icon || categoryIcons[p.category] || 'fa-star';
-        const safe = {
-          id: p.key,
-          name: (p.name || '').replace(/'/g, "\\'"),
-          logo: (p.logo || '').replace(/'/g, "\\'"),
-          category: p.category,
-          icon: (p.icon || '').replace(/'/g, "\\'"),
-          website: (p.website || '').replace(/'/g, "\\'"),
-          description: (p.description || '').replace(/'/g, "\\'")
-        };
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>
-            <div class="flex items-center gap-3">
-              ${p.logo
-                ? `<img src="${p.logo}" class="w-8 h-8 rounded-lg object-contain bg-dark-bg border border-dark-border p-1" onerror="this.outerHTML='<div class=\\'w-8 h-8 rounded-lg bg-dark-bg border border-dark-border flex items-center justify-center\\'><i class=\\'fas ${icon} ${color} text-xs\\'></i></div>'">`
-                : `<div class="w-8 h-8 rounded-lg bg-dark-bg border border-dark-border flex items-center justify-center"><i class="fas ${icon} ${color} text-xs"></i></div>`
-              }
-              <div class="min-w-0">
-                <div class="font-bold text-sm text-white truncate">${escapeHtml(p.name)}</div>
-                <div class="text-xs text-gray-500 truncate max-w-[150px]">${escapeHtml(p.description || '-')}</div>
-              </div>
-            </div>
-          </td>
-          <td><span class="px-2 py-0.5 rounded text-[10px] bg-dark-bg border border-dark-border text-gray-400 uppercase font-mono">${p.category}</span></td>
-          <td>${p.website ? `<a href="${p.website}" target="_blank" class="text-cyan-400 hover:text-cyan-300 text-xs font-mono truncate block max-w-[120px]">${escapeHtml(p.website.replace(/^https?:\/\//, ''))}</a>` : '<span class="text-gray-600 text-xs">-</span>'}</td>
-          <td class="text-center whitespace-nowrap">
-            <button onclick='openModal(true, ${JSON.stringify(safe)})' class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition" title="Edit"><i class="fas fa-edit"></i></button>
-            <button onclick="deletePartner('${p.key}')" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition" title="Delete"><i class="fas fa-trash"></i></button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
     });
-
-    // ── NAV UI ──
-    window.toggleDropdown = () => {
-      const dd = document.getElementById('userDropdown');
-      const ch = document.getElementById('ddChev');
-      const open = dd.style.visibility === 'visible';
-      dd.style.opacity = open ? '0' : '1';
-      dd.style.visibility = open ? 'hidden' : 'visible';
-      dd.style.transform = open ? 'translateY(-6px)' : 'translateY(0)';
-      ch.style.transform = open ? '' : 'rotate(180deg)';
-    };
-    document.addEventListener('click', (e) => {
-      if (!document.getElementById('userMenu').contains(e.target)) {
-        const dd = document.getElementById('userDropdown');
-        dd.style.opacity = '0'; dd.style.visibility = 'hidden'; dd.style.transform = 'translateY(-6px)';
-        document.getElementById('ddChev').style.transform = '';
-      }
-    });
-
-    window.handleLogout = async () => { try { await signOut(auth); location.reload(); } catch(e) {} };
 
     document.getElementById('menuBtn').addEventListener('click', () => {
       document.getElementById('mobileMenu').classList.toggle('hidden');
