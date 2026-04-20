@@ -15,54 +15,100 @@
       theme: {
         extend: {
           fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' } }
+          colors: {
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' },
+            wa: { green: '#00a884', muted: '#8696a0', border: '#2a3942' }
+          }
         }
       }
     }
   </script>
 
   <style>
-    :root { --bg: #060a10; --fg: #e8ecf2; --green: #00e89d; --cyan: #00c4ff; --border: #152035; }
+    :root {
+      --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --muted: #5a6a80;
+      --green: #00e89d; --cyan: #00c4ff; --purple: #a78bfa; --border: #152035;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; min-height: 100vh; overflow-x: hidden; }
 
-    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
-    .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px); }
-    .orb { position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0; animation: orbFloat 12s ease-in-out infinite alternate; }
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0; pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.06) 2px, rgba(0,0,0,0.06) 4px);
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(90px); pointer-events: none; z-index: 0;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+    }
     .orb-1 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(0,232,157,0.07), transparent 70%); top: -80px; right: -80px; }
     .orb-2 { width: 280px; height: 280px; background: radial-gradient(circle, rgba(0,196,255,0.05), transparent 70%); bottom: 10%; left: -100px; animation-delay: -6s; }
+    .orb-3 { width: 220px; height: 220px; background: radial-gradient(circle, rgba(251,191,36,0.04), transparent 70%); top: 35%; left: 50%; animation-delay: -4s; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(25px, 45px); } }
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
     .glass-nav { backdrop-filter: blur(20px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border); }
-    .nav-link { position: relative; color: #5a6a80; font-size: 0.875rem; transition: 0.3s; text-decoration: none; }
+    .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; transition: transform 0.5s; }
+    .nav-link { position: relative; color: var(--muted); font-size: 0.875rem; transition: 0.3s; text-decoration: none; }
     .nav-link:hover { color: var(--green); }
     .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s; }
     .nav-link:hover::after { width: 100%; }
+    .nav-link.active { color: var(--green); }
+    .nav-link.active::after { width: 100%; }
     .text-gradient { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
     .user-menu { position: relative; }
-    .user-dropdown { position: absolute; top: calc(100% + 8px); right: 0; min-width: 210px; background: rgba(12,18,32,0.95); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 16px 48px rgba(0,0,0,0.7); padding: 6px; opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s ease; }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0; min-width: 210px;
+      background: rgba(12,18,32,0.95); backdrop-filter: blur(20px);
+      border: 1px solid var(--border); border-radius: 14px;
+      box-shadow: 0 16px 48px rgba(0,0,0,0.7); padding: 6px;
+      opacity: 0; visibility: hidden; transform: translateY(-8px); transition: all 0.2s ease;
+    }
     .user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
-    .user-dropdown a, .user-dropdown button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px; border-radius: 10px; font-size: 0.85rem; color: #5a6a80; text-decoration: none; background: transparent; border: none; cursor: pointer; transition: 0.15s; font-family: 'Space Grotesk', sans-serif; }
+    .user-dropdown a, .user-dropdown button {
+      display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px;
+      border-radius: 10px; font-size: 0.85rem; color: var(--muted); text-decoration: none;
+      background: transparent; border: none; cursor: pointer; transition: 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
     .user-dropdown a:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
     .user-dropdown button.logout-btn:hover { background: rgba(239,68,68,0.08); color: #f87171; }
 
-    /* Rating stars interactive */
     .star-input { display: flex; gap: 4px; direction: rtl; justify-content: flex-end; }
     .star-input input { display: none; }
     .star-input label { cursor: pointer; font-size: 1.75rem; color: #1e293b; transition: 0.15s; }
-    .star-input label:hover, .star-input label:hover ~ label, .star-input input:checked ~ label { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3); }
+    .star-input label:hover, .star-input label:hover ~ label, .star-input input:checked ~ label {
+      color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.3);
+    }
 
-    /* Testimonial card */
     .testi-card {
       background: rgba(12,18,32,0.6); border: 1px solid var(--border); border-radius: 20px;
       padding: 1.75rem; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
       opacity: 0; transform: translateY(25px); position: relative; overflow: hidden;
     }
     .testi-card.visible { opacity: 1; transform: translateY(0); }
-    .testi-card:hover { border-color: rgba(0,232,157,0.3); transform: translateY(-4px); box-shadow: 0 12px 40px -10px rgba(0,0,0,0.5); }
-    .testi-card .quote-mark { position: absolute; top: 12px; right: 16px; font-size: 3rem; line-height: 1; color: rgba(0,232,157,0.06); font-family: Georgia, serif; pointer-events: none; }
+    .testi-card:hover {
+      border-color: rgba(0,232,157,0.3); transform: translateY(-4px);
+      box-shadow: 0 12px 40px -10px rgba(0,0,0,0.5);
+    }
+    .testi-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .testi-card:hover::before { transform: scaleX(1); }
+    .testi-card .quote-mark {
+      position: absolute; top: 12px; right: 16px; font-size: 3rem; line-height: 1;
+      color: rgba(0,232,157,0.06); font-family: Georgia, serif; pointer-events: none;
+    }
 
     .star-display { color: #fbbf24; font-size: 0.75rem; letter-spacing: 1px; }
     .star-display .empty { color: #1e293b; }
@@ -71,17 +117,60 @@
     .filter-star:hover { transform: scale(1.15); }
     .filter-star.active { transform: scale(1.1); filter: drop-shadow(0 0 4px rgba(251,191,36,0.4)); }
 
-    .source-badge { font-size: 0.6rem; padding: 2px 7px; border-radius: 9999px; font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.03em; }
+    .source-badge {
+      font-size: 0.6rem; padding: 2px 7px; border-radius: 9999px;
+      font-weight: 700; font-family: 'JetBrains Mono', monospace; letter-spacing: 0.03em;
+    }
     .source-buyer { background: rgba(0,232,157,0.1); color: #00e89d; border: 1px solid rgba(0,232,157,0.2); }
     .source-admin { background: rgba(0,196,255,0.1); color: #00c4ff; border: 1px solid rgba(0,196,255,0.2); }
 
-    .toast { position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem; border-radius: 14px; font-size: 0.9rem; font-weight: 600; z-index: 9999; transform: translateY(120px); opacity: 0; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); backdrop-filter: blur(10px); }
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem; padding: 1rem 1.5rem;
+      border-radius: 14px; font-size: 0.9rem; font-weight: 600;
+      z-index: 9999; transform: translateY(120px); opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1); backdrop-filter: blur(10px);
+    }
     .toast.show { transform: translateY(0); opacity: 1; }
     .toast.success { background: rgba(6,95,70,0.9); color: #6ee7b7; border: 1px solid #10b981; }
     .toast.error { background: rgba(127,29,29,0.9); color: #fca5a5; border: 1px solid #ef4444; }
 
-    .footer-link { color: #475569; transition: 0.2s; text-decoration: none; }
-    .footer-link:hover { color: var(--green); }
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ═══ FOOTER ═══ */
+    .site-footer {
+      position: relative; z-index: 10; width: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(6,10,16,0.98) 100px);
+    }
+    .footer-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,232,157,0.2), rgba(251,191,36,0.15), transparent);
+    }
+    .footer-link {
+      color: #64748b; font-size: 0.875rem; text-decoration: none; transition: 0.25s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .footer-link:hover { color: #00e89d; }
+    .footer-link i { font-size: 0.6rem; opacity: 0; transform: translateX(-4px); transition: 0.25s; }
+    .footer-link:hover i { opacity: 1; transform: translateX(0); }
+    .footer-social {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      color: #64748b; font-size: 0.95rem; transition: all 0.3s; text-decoration: none;
+    }
+    .footer-social:hover {
+      color: #00e89d; border-color: rgba(0,232,157,0.3); background: rgba(0,232,157,0.06);
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,232,157,0.1);
+    }
+    .footer-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;
+      background: rgba(0,232,157,0.06); border: 1px solid rgba(0,232,157,0.15);
+      color: rgba(0,232,157,0.7);
+    }
+    .footer-logo-img { width: 32px; height: 32px; object-fit: cover; border-radius: 8px; }
 
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -95,24 +184,26 @@
   <canvas id="particles"></canvas>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
   <!-- ═══════════ NAVBAR ═══════════ -->
   <nav class="fixed top-0 left-0 right-0 z-50 glass-nav">
-    <div class="max-w-7xl mx-auto px-4 md:px-8 h-20 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3 group">
-        <div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-lg transition-transform duration-500 group-hover:rotate-12">K</div>
-        <span class="font-bold text-lg tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
+        <span class="font-bold text-lg tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
       </a>
-      <div class="hidden md:flex items-center gap-8">
+      <div class="hidden md:flex items-center gap-6">
         <a href="index.html" class="nav-link">Home</a>
         <a href="store.html" class="nav-link">Store</a>
-        <a href="testimoni.html" class="nav-link" style="color:var(--green);">Testimoni</a>
+        <a href="testimoni.html" class="nav-link active">Testimoni</a>
         <a href="track.html" class="nav-link">Lacak Pesanan</a>
+        <a href="faq.html" class="nav-link">FAQ</a>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2">
         <div id="userMenu" class="user-menu hidden">
-          <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-white/5 transition border border-transparent hover:border-dark-border">
-            <div class="w-8 h-8 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
+          <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition">
+            <div class="w-7 h-7 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
             <span class="text-sm text-gray-300 hidden sm:inline" id="navName">User</span>
             <i class="fas fa-chevron-down text-[10px] text-gray-600 transition" id="dropdownChevron"></i>
           </button>
@@ -127,8 +218,8 @@
             <button onclick="handleLogout()" class="logout-btn"><i class="fas fa-sign-out-alt w-4 text-center"></i> Logout</button>
           </div>
         </div>
-        <a id="loginBtn" href="login-buyer.html" class="flex items-center gap-2 px-4 py-2 rounded-xl border border-dark-border text-sm text-gray-400 hover:text-white hover:border-green-500/50 transition">
-          <i class="fas fa-user text-xs"></i><span class="hidden sm:inline">Login</span>
+        <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition">
+          <i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span>
         </a>
         <button id="menuBtn" class="md:hidden text-xl text-gray-300 ml-1 w-9 h-9 rounded-lg hover:bg-white/5 flex items-center justify-center transition"><i class="fas fa-bars"></i></button>
       </div>
@@ -139,6 +230,7 @@
         <a href="store.html" class="block text-gray-400 hover:text-white py-2.5 px-4 rounded-xl hover:bg-white/5 transition text-sm"><i class="fas fa-store mr-3 text-xs w-4 text-center"></i>Store</a>
         <a href="testimoni.html" class="block text-green-400 font-semibold py-2.5 px-4 rounded-xl bg-green-500/5 text-sm"><i class="fas fa-star mr-3 text-xs w-4 text-center"></i>Testimoni</a>
         <a href="track.html" class="block text-gray-400 hover:text-white py-2.5 px-4 rounded-xl hover:bg-white/5 transition text-sm"><i class="fas fa-search mr-3 text-xs w-4 text-center"></i>Lacak Pesanan</a>
+        <a href="faq.html" class="block text-gray-400 hover:text-white py-2.5 px-4 rounded-xl hover:bg-white/5 transition text-sm"><i class="fas fa-question-circle mr-3 text-xs w-4 text-center"></i>FAQ</a>
         <div class="h-px bg-dark-border my-2"></div>
         <div id="mobileUserInfo" class="hidden">
           <div class="flex items-center gap-3 mb-3 p-3 rounded-xl bg-dark-card border border-dark-border">
@@ -153,10 +245,10 @@
   </nav>
 
   <!-- ═══════════ MAIN ═══════════ -->
-  <main class="relative z-10 pt-20">
+  <main class="relative z-10 pt-16">
 
     <!-- HERO -->
-    <section class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center">
+    <section class="max-w-7xl mx-auto px-4 md:px-8 py-16 md:py-24 text-center reveal">
       <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-6 rounded-full border border-yellow-500/20 text-yellow-400 text-xs font-mono tracking-widest bg-yellow-500/5">
         <i class="fas fa-star text-[10px]"></i> TESTIMONI PELANGGAN
       </div>
@@ -184,12 +276,12 @@
         </div>
       </div>
 
-      <!-- Star Distribution Bar -->
+      <!-- Star Distribution -->
       <div class="max-w-md mx-auto space-y-2" id="starDistribution"></div>
     </section>
 
     <!-- FILTER -->
-    <section class="max-w-7xl mx-auto px-4 md:px-8 mb-10">
+    <section class="max-w-7xl mx-auto px-4 md:px-8 mb-10 reveal" style="transition-delay:0.1s;">
       <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-500 font-mono mr-1">FILTER:</span>
@@ -221,7 +313,7 @@
     </section>
 
     <!-- SUBMIT FORM -->
-    <section id="formSection" class="max-w-2xl mx-auto px-4 md:px-8 pb-20">
+    <section id="formSection" class="max-w-2xl mx-auto px-4 md:px-8 pb-20 reveal" style="transition-delay:0.1s;">
       <div class="bg-dark-card border border-dark-border rounded-2xl p-6 md:p-8 relative overflow-hidden">
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 via-cyan-500 to-purple-500"></div>
         <div class="flex items-center gap-3 mb-6">
@@ -272,36 +364,78 @@
   </main>
 
   <!-- ═══════════ FOOTER ═══════════ -->
-  <footer class="relative z-10 border-t border-dark-border bg-dark-bg pt-14 pb-8">
-    <div class="max-w-7xl mx-auto px-4 md:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-        <div class="col-span-1 md:col-span-2">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-cyan-500 rounded-xl flex items-center justify-center font-bold text-black text-xl">K</div>
-            <div><span class="text-lg font-bold tracking-wide">KRYONIX</span><p class="text-[10px] text-gray-600 font-mono -mt-0.5">NEXT GEN HOSTING</p></div>
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <div class="max-w-7xl mx-auto px-4 md:px-8 pt-14 pb-0">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10">
+
+        <div class="md:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4 group">
+            <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="footer-logo-img">
+            <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+          </a>
+          <p class="text-sm text-gray-500 leading-relaxed mb-4" style="max-width:240px;">
+            Penyedia layanan Cloud Hosting & VPS berkinerja tinggi dengan dukungan 24/7.
+          </p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="footer-badge">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+              ALL SYSTEMS ONLINE
+            </span>
           </div>
-          <p class="text-gray-500 text-sm leading-relaxed max-w-sm">Penyedia layanan Cloud Hosting & VPS berkinerja tinggi. Didukung infrastruktur modern dan tim support 24/7.</p>
         </div>
+
         <div>
-          <h4 class="font-bold text-sm mb-4 uppercase tracking-wider text-gray-300">Menu</h4>
-          <ul class="space-y-2.5">
-            <li><a href="index.html" class="footer-link text-sm flex items-center gap-2"><i class="fas fa-chevron-right text-[8px] text-green-500/40"></i> Home</a></li>
-            <li><a href="store.html" class="footer-link text-sm flex items-center gap-2"><i class="fas fa-chevron-right text-[8px] text-green-500/40"></i> Store</a></li>
-            <li><a href="testimoni.html" class="footer-link text-sm flex items-center gap-2"><i class="fas fa-chevron-right text-[8px] text-green-500/40"></i> Testimoni</a></li>
-            <li><a href="track.html" class="footer-link text-sm flex items-center gap-2"><i class="fas fa-chevron-right text-[8px] text-green-500/40"></i> Lacak Pesanan</a></li>
-          </ul>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Navigasi</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="index.html" class="footer-link"><i class="fas fa-chevron-right"></i> Home</a>
+            <a href="store.html" class="footer-link"><i class="fas fa-chevron-right"></i> Store</a>
+            <a href="testimoni.html" class="footer-link"><i class="fas fa-chevron-right"></i> Testimoni</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Public Chat</a>
+            <a href="faq.html" class="footer-link"><i class="fas fa-chevron-right"></i> FAQ</a>
+          </div>
         </div>
+
         <div>
-          <h4 class="font-bold text-sm mb-4 uppercase tracking-wider text-gray-300">Contact</h4>
-          <ul class="space-y-2.5">
-            <li><a href="https://wa.me/6281234567890" target="_blank" class="footer-link text-sm flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-green-500/10 border border-green-500/15 flex items-center justify-center flex-shrink-0"><i class="fab fa-whatsapp text-green-400 text-sm"></i></div> +62 812-3456-7890</a></li>
-            <li><a href="mailto:support@kryonix.com" class="footer-link text-sm flex items-center gap-3"><div class="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/15 flex items-center justify-center flex-shrink-0"><i class="fas fa-envelope text-cyan-400 text-sm"></i></div> support@kryonix.com</a></li>
-          </ul>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Legal</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+            <a href="privacy.html" class="footer-link"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Refund Policy</a>
+            <a href="partner.html" class="footer-link"><i class="fas fa-chevron-right"></i> Partners</a>
+          </div>
         </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Support</div>
+          <div class="flex flex-col gap-2.5 mb-5">
+            <a href="login-buyer.html" class="footer-link"><i class="fas fa-chevron-right"></i> Login Akun</a>
+            <a href="track.html" class="footer-link"><i class="fas fa-chevron-right"></i> Lacak Pesanan</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Hubungi Admin</a>
+          </div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">Sosial Media</div>
+          <div class="flex items-center gap-2">
+            <a href="#" class="footer-social" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="#" class="footer-social" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="footer-social" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social" title="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
       </div>
-      <div class="pt-7 border-t border-dark-border flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-gray-600">
-        <p>&copy; 2025 Kryonix. All rights reserved.</p>
-        <p class="font-mono">v1.0.0 // System Online</p>
+
+      <div class="footer-divider"></div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
+        <p class="text-xs text-gray-600 font-mono">&copy; 2025 KRYONIX. All rights reserved.</p>
+        <div class="flex items-center gap-3">
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Terms</a>
+          <span class="text-gray-800">·</span>
+          <a href="privacy.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Privacy</a>
+          <span class="text-gray-800">·</span>
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Refund</a>
+          <span class="text-gray-800">·</span>
+          <a href="login-admin.html" class="text-[10px] text-gray-700 hover:text-green-500 transition font-mono flex items-center gap-1"><i class="fas fa-lock"></i> Admin</a>
+        </div>
       </div>
     </div>
   </footer>
@@ -336,14 +470,36 @@
     let pArr = [];
     function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
     addEventListener('resize', resizeCanvas); resizeCanvas();
-    for (let i = 0; i < 35; i++) pArr.push({ x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5+.5, speedX: (Math.random()-.5)*.35, speedY: (Math.random()-.5)*.35, opacity: Math.random()*.35+.08 });
+    for (let i = 0; i < 35; i++) pArr.push({
+      x: Math.random()*canvas.width, y: Math.random()*canvas.height,
+      size: Math.random()*1.5+.5, speedX: (Math.random()-.5)*.35, speedY: (Math.random()-.5)*.35,
+      opacity: Math.random()*.35+.08
+    });
     function animP() {
       ctx.clearRect(0,0,canvas.width,canvas.height);
-      pArr.forEach(p => { p.x+=p.speedX; p.y+=p.speedY; if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0; if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0; ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2); ctx.fillStyle=`rgba(0,232,157,${p.opacity})`; ctx.fill(); });
-      for(let i=0;i<pArr.length;i++) for(let j=i+1;j<pArr.length;j++){ const dx=pArr[i].x-pArr[j].x,dy=pArr[i].y-pArr[j].y,d=Math.sqrt(dx*dx+dy*dy); if(d<120){ctx.beginPath();ctx.moveTo(pArr[i].x,pArr[i].y);ctx.lineTo(pArr[j].x,pArr[j].y);ctx.strokeStyle=`rgba(0,232,157,${0.03*(1-d/120)})`;ctx.lineWidth=.5;ctx.stroke();} }
+      pArr.forEach(p => {
+        p.x+=p.speedX; p.y+=p.speedY;
+        if(p.x<0)p.x=canvas.width; if(p.x>canvas.width)p.x=0;
+        if(p.y<0)p.y=canvas.height; if(p.y>canvas.height)p.y=0;
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
+        ctx.fillStyle=`rgba(0,232,157,${p.opacity})`; ctx.fill();
+      });
+      for(let i=0;i<pArr.length;i++) for(let j=i+1;j<pArr.length;j++){
+        const dx=pArr[i].x-pArr[j].x, dy=pArr[i].y-pArr[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          ctx.beginPath(); ctx.moveTo(pArr[i].x,pArr[i].y); ctx.lineTo(pArr[j].x,pArr[j].y);
+          ctx.strokeStyle=`rgba(0,232,157,${0.03*(1-d/120)})`; ctx.lineWidth=.5; ctx.stroke();
+        }
+      }
       requestAnimationFrame(animP);
     }
     animP();
+
+    // ══ SCROLL REVEAL ══
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
 
     // ══ AUTH ══
     onAuthStateChanged(auth, async (user) => {
@@ -363,7 +519,11 @@
         testiForm.classList.remove('hidden');
 
         let name = user.email?.split('@')[0] || 'User';
-        try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) name = s.val(); buyerProfile = { name }; } catch(e){}
+        try {
+          const s = await get(ref(db, `users/${user.uid}/name`));
+          if (s.exists()) name = s.val();
+          buyerProfile = { name };
+        } catch(e){}
         document.getElementById('testiName').value = name;
         const ini = name.charAt(0).toUpperCase();
         document.getElementById('navAvatar').textContent = ini;
@@ -384,17 +544,30 @@
     });
 
     // ══ NAV ══
-    window.toggleDropdown = () => { const dd=document.getElementById('userDropdown'),ch=document.getElementById('dropdownChevron'); dd.classList.toggle('open'); ch.style.transform=dd.classList.contains('open')?'rotate(180deg)':''; };
-    document.addEventListener('click', (e) => { if(!document.getElementById('userMenu').contains(e.target)){document.getElementById('userDropdown').classList.remove('open');document.getElementById('dropdownChevron').style.transform='';} });
+    window.toggleDropdown = () => {
+      const dd = document.getElementById('userDropdown'), ch = document.getElementById('dropdownChevron');
+      dd.classList.toggle('open');
+      ch.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+    };
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('userMenu').contains(e.target)) {
+        document.getElementById('userDropdown').classList.remove('open');
+        document.getElementById('dropdownChevron').style.transform = '';
+      }
+    });
     document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
-    window.handleLogout = async () => { try{await signOut(auth);location.reload();}catch(e){} };
+    window.handleLogout = async () => { try { await signOut(auth); location.reload(); } catch(e){} };
     window.scrollToForm = () => document.getElementById('formSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
     window.updateCharCount = () => { document.getElementById('charCount').textContent = document.getElementById('testiText').value.length; };
 
     // ══ TOAST ══
-    function showToast(msg, type='success') { const t=document.getElementById('toast'); t.textContent=msg; t.className=`toast ${type} show`; setTimeout(()=>t.classList.remove('show'),3500); }
+    function showToast(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
 
-    // ══ STAR HTML HELPER ══
+    // ══ STAR HTML ══
     function starsHtml(rating, size='text-sm') {
       let h = '';
       for (let i = 1; i <= 5; i++) h += `<i class="fas fa-star ${size} ${i <= rating ? '' : 'empty'}"></i>`;
@@ -407,14 +580,19 @@
       allTestimonials = [];
 
       if (!raw) {
-        document.getElementById('testiGrid').innerHTML = '<div class="col-span-full text-center py-20"><i class="fas fa-comments text-5xl text-gray-700 mb-5"></i><p class="text-gray-500 text-lg">Belum ada testimoni.</p><p class="text-gray-600 text-sm mt-2 font-mono">Jadilah yang pertama!</p></div>';
+        document.getElementById('testiGrid').innerHTML = `
+          <div class="col-span-full text-center py-20">
+            <i class="fas fa-comments text-5xl text-gray-700 mb-5"></i>
+            <p class="text-gray-500 text-lg">Belum ada testimoni.</p>
+            <p class="text-gray-600 text-sm mt-2 font-mono">Jadilah yang pertama!</p>
+          </div>`;
         updateStats();
         return;
       }
 
       Object.keys(raw).forEach(k => {
         const t = raw[k];
-        if (t.approved === false) return; // skip yang belum di-approve
+        if (t.approved === false) return;
         allTestimonials.push({ key: k, ...t });
       });
 
@@ -433,7 +611,6 @@
       document.getElementById('totalReviews').textContent = total;
       document.getElementById('fiveStarCount').textContent = fiveCount;
 
-      // Distribution bars
       const distEl = document.getElementById('starDistribution');
       let distHtml = '';
       for (let s = 5; s >= 1; s--) {
@@ -460,10 +637,7 @@
 
       const filtered = activeFilter === 0 ? allTestimonials : allTestimonials.filter(t => t.rating === activeFilter);
 
-      if (filtered.length === 0) {
-        empty.classList.remove('hidden');
-        return;
-      }
+      if (filtered.length === 0) { empty.classList.remove('hidden'); return; }
 
       filtered.forEach((t, idx) => {
         const card = document.createElement('div');
@@ -471,7 +645,11 @@
         const src = t.source === 'admin' ? 'admin' : 'buyer';
         const srcLabel = t.source === 'admin' ? 'VERIFIED' : 'USER';
         const initial = (t.name || '?').charAt(0).toUpperCase();
-        const avatarColors = ['from-green-400 to-cyan-500','from-cyan-400 to-blue-500','from-purple-400 to-pink-500','from-amber-400 to-orange-500','from-emerald-400 to-teal-500'];
+        const avatarColors = [
+          'from-green-400 to-cyan-500', 'from-cyan-400 to-blue-500',
+          'from-purple-400 to-pink-500', 'from-amber-400 to-orange-500',
+          'from-emerald-400 to-teal-500'
+        ];
         const ac = avatarColors[t.name ? t.name.charCodeAt(0) % avatarColors.length : 0];
 
         card.innerHTML = `
@@ -502,7 +680,11 @@
       renderCards();
     };
 
-    function formatTime(ts) { if(!ts||typeof ts!=='number') return ''; const d=new Date(ts); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); }
+    function formatTime(ts) {
+      if (!ts || typeof ts !== 'number') return '';
+      const d = new Date(ts);
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    }
 
     // ══ SUBMIT ══
     window.submitTestimoni = async (e) => {
