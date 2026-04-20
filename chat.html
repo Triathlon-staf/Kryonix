@@ -28,7 +28,6 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { background: var(--wa-dark); color: var(--wa-text); font-family: 'Space Grotesk', sans-serif; height: 100vh; overflow: hidden; }
 
-    /* Chat wallpaper pattern */
     .chat-bg {
       position: fixed; inset: 0;
       background-color: #0b141a;
@@ -104,13 +103,16 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--wa-border); border-radius: 3px; }
 
-    /* Navbar override for this page */
     .nav-link { position: relative; color: var(--wa-muted); font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
     .nav-link:hover { color: var(--wa-green); }
     .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--wa-green); transition: 0.3s; }
     .nav-link:hover::after { width: 100%; }
     .nav-link.active-link { color: var(--wa-green); }
     .nav-link.active-link::after { width: 100%; }
+
+    .logo-img {
+      width: 36px; height: 36px; object-fit: cover; border-radius: 8px;
+    }
   </style>
 </head>
 <body>
@@ -130,7 +132,7 @@
     <nav class="flex-shrink-0 border-b border-wa-border" style="background: rgba(31,44,51,0.95); backdrop-filter: blur(12px);">
       <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-2.5 group">
-          <div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-base">K</div>
+          <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
           <span class="text-base font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
         </a>
         <div class="hidden md:flex items-center gap-6">
@@ -209,7 +211,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, serverTimestamp, onDisconnect } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, remove, serverTimestamp, onDisconnect, orderByChild, limitToLast, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -255,13 +257,9 @@
       loader.classList.add('hide');
       setTimeout(() => loader.remove(), 500);
 
-      // Set online presence
       setupPresence();
-      // Listen messages
       loadMessages();
-      // Listen online count
       listenOnline();
-      // Listen typing
       listenTyping();
     });
 
@@ -270,8 +268,6 @@
       const myPresenceRef = ref(db, `chat_online/${myUid}`);
       set(myPresenceRef, { name: myName, lastSeen: Date.now() });
       onDisconnect(myPresenceRef).remove();
-
-      // Heartbeat setiap 30 detik
       setInterval(() => {
         update(myPresenceRef, { lastSeen: Date.now() });
       }, 30000);
@@ -279,7 +275,7 @@
 
     // ── ONLINE COUNT ──
     function listenOnline() {
-      const cutoff = Date.now() - 120000; // 2 menit dianggap offline
+      const cutoff = Date.now() - 120000;
       onValue(ref(db, "chat_online"), (snap) => {
         const raw = snap.val();
         if (!raw) { document.getElementById('onlineCount').textContent = '0 online'; return; }
@@ -304,14 +300,12 @@
       });
     }
 
-    // Broadcast typing saat user mengetik
     msgInput.addEventListener('input', () => {
       if (msgInput.value.trim()) {
         set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
       }
       clearTimeout(typingTimeout);
       typingTimeout = setTimeout(() => {
-        // Hapus typing setelah 2 detik berhenti
         const typingRef = ref(db, "chat_typing");
         get(typingRef).then(s => {
           if (s.exists() && s.val().uid === myUid) set(typingRef, null);
@@ -321,10 +315,9 @@
 
     // ── LOAD MESSAGES ──
     function loadMessages() {
-      // Load last 100 messages
       const msgRef = ref(db, "public_chat");
       const q = query(msgRef, orderByChild("timestamp"), limitToLast(100));
-      
+
       onChildAdded(q, (snap) => {
         appendMessage(snap.val(), snap.key);
         scrollBottom();
@@ -340,12 +333,6 @@
         const el = document.getElementById(`msg-${snap.key}`);
         if (el) el.remove();
       });
-
-      // Also listen for deletes (admin bisa hapus pesan)
-      onChildRemoved(ref(db, "public_chat"), (snap) => {
-        const el = document.getElementById(`msg-${snap.key}`);
-        if (el) el.remove();
-      });
     }
 
     function appendMessage(msg, key) {
@@ -354,7 +341,6 @@
       const time = msg.timestamp ? formatTime(msg.timestamp) : '';
       const date = msg.timestamp ? formatDate(msg.timestamp) : '';
 
-      // Date separator
       if (date && date !== lastMsgDate) {
         lastMsgDate = date;
         const sep = document.createElement('div');
@@ -367,7 +353,6 @@
       wrapper.id = `msg-${key}`;
       wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'} mb-1`;
 
-      // Avatar colors berdasarkan nama
       const hue = hashCode(msg.senderName || '?') % 360;
       const avatarBg = `hsl(${hue}, 50%, 25%)`;
       const avatarColor = `hsl(${hue}, 70%, 65%)`;
@@ -390,7 +375,6 @@
       const text = msgInput.value.trim();
       if (!text || !myUid) return;
 
-      // Max 500 karakter
       const trimmed = text.substring(0, 500);
 
       push(ref(db, "public_chat"), {
@@ -404,8 +388,6 @@
       msgInput.style.height = 'auto';
       sendBtn.disabled = true;
       scrollBottom();
-
-      // Hapus typing
       set(ref(db, "chat_typing"), null);
     }
 
@@ -417,7 +399,6 @@
       }
     });
 
-    // Auto-resize textarea
     msgInput.addEventListener('input', () => {
       msgInput.style.height = 'auto';
       msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
@@ -487,7 +468,6 @@
     });
 
     window.handleLogout = async () => {
-      // Hapus online presence
       if (myUid) remove(ref(db, `chat_online/${myUid}`));
       try { await signOut(auth); location.reload(); } catch(e) { console.error(e); }
     };
@@ -495,9 +475,6 @@
     document.getElementById('menuBtn').addEventListener('click', () => {
       document.getElementById('mobileMenu').classList.toggle('hidden');
     });
-
-    // Import orderBy & limitToLast
-    import { orderByChild, limitToLast, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
   </script>
 </body>
 </html>
