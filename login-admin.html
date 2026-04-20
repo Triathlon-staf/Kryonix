@@ -20,8 +20,10 @@
     .login-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: rgba(12, 18, 32, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
     .input-field { width: 100%; background: #080c14; border: 1px solid var(--border); padding: 14px 16px; border-radius: 10px; color: white; outline: none; margin-bottom: 1.5rem; box-sizing: border-box; }
     .input-field:focus { border-color: var(--green); box-shadow: 0 0 0 2px rgba(0,232,157,0.1); }
-    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10; border: none; cursor: pointer; }
+    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--green), #00c4a0); color: #060a10; border: none; cursor: pointer; transition: all .3s; }
     .btn-login:hover { box-shadow: 0 0 20px rgba(0,232,157,0.4); }
+    .btn-login.granted { background: linear-gradient(135deg, #10b981, #059669); pointer-events: none; }
+    .btn-login.denied { background: linear-gradient(135deg, #ef4444, #dc2626); }
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
   </style>
 </head>
@@ -38,7 +40,7 @@
     <form onsubmit="handleLogin(event)">
       <input type="text" id="admin-user" class="input-field" placeholder="ADMIN ID" required autocomplete="off">
       <input type="password" id="admin-pass" class="input-field" placeholder="ACCESS KEY" required>
-      <button type="submit" class="btn-login">LOGIN ADMIN</button>
+      <button type="submit" id="loginBtn" class="btn-login">LOGIN ADMIN</button>
     </form>
 
     <div class="mt-6 text-center text-sm text-gray-500 space-y-2">
@@ -48,22 +50,27 @@
   </div>
 
   <script>
-    // 1. Admin Login Logic (Simple & Hardcoded)
     function handleLogin(e) {
       e.preventDefault();
       const id = document.getElementById('admin-user').value;
       const key = document.getElementById('admin-pass').value;
+      const btn = document.getElementById('loginBtn');
 
-      // HARDCODED ADMIN LIST
       if (id === 'admin' && key === 'admin') {
-        alert('ACCESS GRANTED');
-        window.location.href = 'admin.html'; // Redirect ke file admin
+        btn.textContent = 'ACCESS GRANTED';
+        btn.classList.add('granted');
+        sessionStorage.setItem('kryonix_admin', 'granted');
+        setTimeout(() => { window.location.href = 'admin.html'; }, 500);
       } else {
-        alert('ACCESS DENIED');
+        btn.textContent = 'ACCESS DENIED';
+        btn.classList.add('denied');
+        setTimeout(() => {
+          btn.textContent = 'LOGIN ADMIN';
+          btn.classList.remove('denied');
+        }, 1500);
       }
     }
 
-    // 2. Particle Effect (Visual Only)
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
