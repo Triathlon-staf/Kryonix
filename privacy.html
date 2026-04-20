@@ -9,157 +9,224 @@
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- TAILWIND CONFIG -->
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-          colors: {
-            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
-            accent: { green: '#00e89d', cyan: '#00c4ff', red: '#ff4757' }
-          }
+      theme: { extend: {
+        fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+        colors: {
+          dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+          accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' },
+          wa: { green: '#00a884', muted: '#8696a0', border: '#2a3942' }
         }
-      }
+      }}
     }
   </script>
 
   <style>
-    :root { 
-      --bg: #060a10; 
-      --fg: #e8ecf2; 
-      --cyan: #00c4ff; 
-      --border: #152035; 
+    :root {
+      --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --muted: #5a6a80;
+      --green: #00e89d; --cyan: #00c4ff; --purple: #a78bfa; --border: #152035;
     }
-    
-    body { 
-      background: var(--bg); 
-      color: var(--fg); 
-      font-family: 'Space Grotesk', sans-serif; 
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif;
       overflow-x: hidden;
-      padding-bottom: 5rem;
     }
 
-    /* BACKGROUND FX */
-    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,196,255,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,196,255,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
-    .scanline { position: fixed; inset: 0; z-index: 1; pointer-events: none; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px); }
-    
-    .orb { position: fixed; border-radius: 50%; filter: blur(100px); pointer-events: none; z-index: 0; animation: orbFloat 20s ease-in-out infinite alternate; }
-    .orb-1 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); top: -100px; right: -100px; }
-    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(40px, 60px); } }
+    /* Background FX */
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,196,255,0.025) 1px, transparent 1px),
+                        linear-gradient(90deg,rgba(0,196,255,0.025) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0; pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: orbFloat 12s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,196,255,0.06), transparent 70%); top: -100px; right: -100px; }
+    .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(167,139,250,0.04), transparent 70%); bottom: -80px; left: -80px; animation-delay: -6s; }
+    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 30px); } }
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
 
-    /* LAYOUT CONTAINER */
-    .container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 10; }
+    /* Navbar */
+    .glass-nav { backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border); }
+    .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; transition: transform 0.5s; }
+    .nav-link { position: relative; color: var(--muted); font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
+    .nav-link:hover { color: var(--green); }
+    .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active { color: var(--green); }
+    .nav-link.active::after { width: 100%; }
 
-    /* HEADER AREA */
-    .page-header { text-align: center; padding-top: 5rem; padding-bottom: 3rem; border-bottom: 1px solid var(--border); margin-bottom: 4rem; }
-    
-    .badge { 
-      display: inline-block; 
-      font-family: 'JetBrains Mono', monospace; 
-      font-size: 0.75rem; 
-      color: var(--accent-cyan); 
-      border: 1px solid rgba(0, 196, 255, 0.3); 
-      padding: 0.25rem 0.75rem; 
-      border-radius: 4px; 
-      margin-bottom: 1rem;
-      background: rgba(0, 196, 255, 0.05);
-      text-transform: uppercase;
-      letter-spacing: 1px;
+    /* User dropdown */
+    .user-menu { position: relative; }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 8px); right: 0; min-width: 200px;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.6); padding: 6px;
+      opacity: 0; visibility: hidden; transform: translateY(-6px); transition: all 0.2s ease;
+    }
+    .user-dropdown.open { opacity: 1; visibility: visible; transform: translateY(0); }
+    .user-dropdown a, .user-dropdown button {
+      display: flex; align-items: center; gap: 10px; width: 100%; padding: 10px 14px;
+      border-radius: 8px; font-size: 0.85rem; color: var(--muted); text-decoration: none;
+      background: transparent; border: none; cursor: pointer; transition: 0.15s;
+      font-family: 'Space Grotesk', sans-serif;
+    }
+    .user-dropdown a:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
+    .user-dropdown button.logout-btn:hover { background: rgba(239,68,68,0.08); color: #f87171; }
+
+    .btn-cyber {
+      display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 10px;
+      font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: all 0.3s;
+      border: none; cursor: pointer;
+    }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--fg); }
+    .btn-outline:hover { border-color: var(--green); background: rgba(0,232,157,0.05); color: var(--green); }
+
+    /* Container */
+    .content-container { max-width: 800px; margin: 0 auto; padding: 0 1.5rem; position: relative; z-index: 10; }
+
+    /* Page Header */
+    .page-header {
+      text-align: center; padding-top: 5.5rem; padding-bottom: 3rem;
+      border-bottom: 1px solid var(--border); margin-bottom: 4rem;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: var(--cyan); border: 1px solid rgba(0,196,255,0.2);
+      padding: 5px 14px; border-radius: 6px; margin-bottom: 1.25rem;
+      background: rgba(0,196,255,0.04); text-transform: uppercase; letter-spacing: 1.5px;
     }
 
-    /* SECTIONS */
-    .policy-section { 
-      display: flex; 
-      gap: 2rem; 
-      margin-bottom: 5rem; 
-      opacity: 0; 
-      animation: slideUp 0.6s ease forwards;
+    /* Policy Sections */
+    .policy-section {
+      display: flex; gap: 2.5rem; margin-bottom: 4rem;
     }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* NUMBERING STYLES */
-    .section-number { 
-      flex-shrink: 0; 
-      width: 60px; 
-      text-align: right; 
-      font-family: 'JetBrains Mono', monospace; 
-      font-weight: 700; 
-      font-size: 2rem; 
-      line-height: 1;
-      color: rgba(255, 255, 255, 0.1);
-      position: relative;
-      top: -5px;
+    .section-number {
+      flex-shrink: 0; width: 60px; text-align: right;
+      font-family: 'JetBrains Mono', monospace; font-weight: 700;
+      font-size: 2rem; line-height: 1; color: rgba(255,255,255,0.08); position: relative; top: -5px;
     }
-    .section-number span { color: var(--accent-cyan); text-shadow: 0 0 10px rgba(0,196,255,0.4); }
-
-    /* CONTENT STYLES */
-    .section-content h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: white; }
-    .section-content p { 
-      color: #94a3b8; 
-      line-height: 1.8; 
-      margin-bottom: 1.5rem; 
-      font-size: 1rem;
-    }
+    .section-number span { color: var(--cyan); text-shadow: 0 0 15px rgba(0,196,255,0.3); }
+    .section-content h3 { font-size: 1.3rem; font-weight: 700; margin-bottom: 0.75rem; color: white; }
+    .section-content p { color: #94a3b8; line-height: 1.85; margin-bottom: 1.25rem; font-size: 0.95rem; }
     .section-content ul { list-style: none; margin-bottom: 1rem; }
-    .section-content li { 
-      position: relative; 
-      padding-left: 1.5rem; 
-      margin-bottom: 0.8rem; 
-      color: #cbd5e1; 
-      line-height: 1.6; 
+    .section-content li {
+      position: relative; padding-left: 1.5rem; margin-bottom: 0.75rem;
+      color: #cbd5e1; line-height: 1.65;
     }
     .section-content li::before {
-      content: '•';
-      position: absolute; left: 0; color: var(--accent-cyan);
+      content: ''; position: absolute; left: 0; top: 10px;
+      width: 5px; height: 5px; border-radius: 50%; background: var(--cyan);
+      box-shadow: 0 0 6px rgba(0,196,255,0.4);
     }
-    .highlight-text { color: white; font-weight: 600; background: rgba(255,255,255,0.05); padding: 0 4px; border-radius: 2px; }
+    .highlight-text { color: white; font-weight: 600; background: rgba(255,255,255,0.04); padding: 1px 6px; border-radius: 3px; }
+    .section-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0.5rem 0 1.5rem; }
 
-    /* FOOTER */
-    .footer-card {
-      background: rgba(12, 18, 32, 0.6);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2.5rem;
-      margin-top: 6rem;
-      text-align: center;
+    /* Support CTA */
+    .support-card {
+      background: rgba(12,18,32,0.6); backdrop-filter: blur(10px);
+      border: 1px solid var(--border); border-radius: 16px;
+      padding: 2.5rem; margin-top: 3rem; text-align: center; position: relative; overflow: hidden;
     }
-    
-    .back-btn {
-      display: inline-flex; align-items: center; gap: 0.5rem;
-      color: #64748b; text-decoration: none; font-size: 0.9rem;
-      transition: 0.3s;
+    .support-card::before {
+      content: ''; position: absolute; top: 0; left: 20%; right: 20%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,196,255,0.3), transparent);
     }
-    .back-btn:hover { color: var(--accent-cyan); transform: translateX(-5px); }
 
-    /* RESPONSIVE */
+    /* Footer */
+    .site-footer {
+      position: relative; z-index: 10; width: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(6,10,16,0.98) 100px);
+      margin-top: 4rem;
+    }
+    .footer-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,196,255,0.2), rgba(167,139,250,0.2), transparent);
+    }
+    .footer-link {
+      color: #64748b; font-size: 0.875rem; text-decoration: none; transition: 0.25s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .footer-link:hover { color: #00e89d; }
+    .footer-link i { font-size: 0.6rem; opacity: 0; transform: translateX(-4px); transition: 0.25s; }
+    .footer-link:hover i { opacity: 1; transform: translateX(0); }
+    .footer-social {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      color: #64748b; font-size: 0.95rem; transition: all 0.3s; text-decoration: none;
+    }
+    .footer-social:hover {
+      color: #00e89d; border-color: rgba(0,232,157,0.3); background: rgba(0,232,157,0.06);
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,232,157,0.1);
+    }
+    .footer-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;
+      background: rgba(0,232,157,0.06); border: 1px solid rgba(0,232,157,0.15);
+      color: rgba(0,232,157,0.7);
+    }
+    .footer-logo-img { width: 32px; height: 32px; object-fit: cover; border-radius: 8px; }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Back link */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--muted); font-size: 0.85rem; text-decoration: none; transition: 0.3s;
+    }
+    .back-link:hover { color: var(--cyan); }
+    .back-link i { font-size: 0.65rem; transition: transform 0.3s; }
+    .back-link:hover i { transform: translateX(-3px); }
+
+    /* Responsive */
     @media (max-width: 640px) {
-      .policy-section { flex-direction: column; gap: 0.5rem; margin-bottom: 4rem; }
-      .section-number { width: auto; text-align: left; font-size: 1.5rem; opacity: 0.5; }
+      .policy-section { flex-direction: column; gap: 0.5rem; margin-bottom: 3rem; }
+      .section-number { width: auto; text-align: left; font-size: 1.25rem; }
     }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
 <body>
 
+  <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+
   <!-- NAVBAR -->
-  <nav class="fixed w-full top-0 z-50 glass-nav transition-all duration-300" id="navbar">
-    <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-3 group cursor-pointer">
-        <div class="w-10 h-10 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-xl transition-transform duration-500" id="logo-icon">K</div>
-        <span class="text-xl font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+  <nav class="fixed w-full top-0 z-50 glass-nav">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <a href="index.html" class="flex items-center gap-2.5 group" id="logoLink">
+        <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
+        <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
       </a>
 
-      <!-- Desktop Nav: semua link langsung -->
-      <div class="hidden md:flex items-center gap-8">
-        <a href="index.html" class="nav-link" style="color: var(--green);">Home</a>
-        <a href="privacy.html" class="nav-link">Privacy</a>
-        <a href="tos.html" class="nav-link">ToS</a>
+      <div class="hidden md:flex items-center gap-6">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="faq.html" class="nav-link">FAQ</a>
+        <a href="tos.html" class="nav-link">Terms</a>
+        <a href="privacy.html" class="nav-link active">Privacy</a>
       </div>
 
-      <!-- Right Side -->
-      <div class="flex items-center gap-3">
-        <!-- SUDAH LOGIN -->
+      <div class="flex items-center gap-2">
         <div id="userMenu" class="user-menu hidden">
           <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition">
             <div class="w-7 h-7 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
@@ -178,154 +245,380 @@
           </div>
         </div>
 
-        <!-- BELUM LOGIN -->
-        <a id="loginBtn" href="login-buyer.html" class="btn-cyber btn-outline text-sm !px-5 !py-2">
-          <i class="fas fa-user"></i><span class="hidden sm:inline"> Login</span>
+        <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition">
+          <i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span>
         </a>
-
-        <!-- Mobile hamburger -->
-        <button id="menuBtn" class="md:hidden text-2xl text-gray-300 ml-1"><i class="fas fa-bars"></i></button>
+        <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
       </div>
     </div>
-  
-  <!-- BACKGROUND -->
-  <div class="grid-bg"></div>
-  <div class="scanline"></div>
-  <div class="orb orb-1"></div>
 
-  <!-- CONTAINER -->
-  <div class="container">
-    
-    <!-- HEADER -->
-    <header class="page-header">
-      <a href="index.html" class="back-btn mb-4 inline-block">
+    <div id="mobileMenu" class="hidden md:hidden border-t border-dark-border p-4 space-y-3" style="background:var(--bg-card);">
+      <a href="index.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Home</a>
+      <a href="faq.html" class="block text-gray-400 hover:text-green-400 text-sm transition">FAQ</a>
+      <a href="tos.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Terms</a>
+      <a href="privacy.html" class="block text-green-400 font-semibold text-sm">Privacy</a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <div class="content-container">
+
+    <!-- Header -->
+    <header class="page-header reveal">
+      <a href="index.html" class="back-link mb-5 inline-block">
         <i class="fas fa-arrow-left"></i> Back to Home
       </a>
-      
-      <div class="badge"><== PRIVACY POLICY ==></div>
-      
-      <h1 class="text-4xl md:text-5xl font-bold mb-2 tracking-tight">Kebijakan Privasi</h1>
-      
-      <p class="text-gray-500 text-sm font-mono mb-6">Last Updated: 1 November 2025</p>
-      
-      <p class="text-lg text-white max-w-2xl mx-auto leading-relaxed">
-        Platform cloud yang sederhana dan canggih yang disesuaikan dengan kebutuhan Anda.
-      </p>
 
-      <div class="mt-8 border-t border-dark-border pt-6 max-w-3xl mx-auto">
-        <p class="text-gray-400 leading-relaxed">
-          Selamat datang di <strong class="text-white">Kryonix</strong>. Kami menghormati privasi setiap pengguna dan berkomitmen untuk melindungi data pribadi yang Anda berikan saat menggunakan layanan kami, termasuk situs <span class="text-cyan-400">kryonix.com</span>.
-        </p>
+      <div class="badge">
+        <i class="fas fa-shield-alt text-[10px]"></i>
+        PRIVACY POLICY
       </div>
+
+      <h1 class="text-4xl md:text-5xl font-bold mb-3 tracking-tight">Kebijakan Privasi</h1>
+      <p class="text-xs font-mono mb-6" style="color:var(--muted);">Last Updated: 1 November 2025</p>
+
+      <p class="text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
+        Kami menghargai kepercayaan Anda. Kebijakan ini menjelaskan bagaimana KRYONIX mengelola, melindungi, dan menggunakan data pribadi Anda.
+      </p>
     </header>
 
-    <!-- MAIN CONTENT -->
+    <!-- Sections -->
     <main>
 
-      <!-- 1 -->
-      <section class="policy-section" style="animation-delay: 0.1s;">
+      <section class="policy-section reveal" style="transition-delay:0.05s;">
         <div class="section-number">01<span>.</span></div>
         <div class="section-content">
           <h3>Informasi yang Kami Kumpulkan</h3>
-          <p>Untuk menyediakan layanan terbaik, kami mengumpulkan data berikut:</p>
+          <p>Untuk menyediakan layanan yang optimal, kami mengumpulkan data berikut saat Anda mendaftar atau menggunakan platform kami:</p>
           <ul>
-            <li>Nama, alamat email, nomor telepon, dan informasi akun billing.</li>
-            <li>Data login, IP address, serta log aktivitas server.</li>
-            <li>Informasi teknis seperti sistem operasi, browser, dan perangkat yang digunakan.</li>
+            <li><span class="highlight-text">Identitas Akun</span> — Nama, alamat email, nomor telepon, dan informasi billing.</li>
+            <li><span class="highlight-text">Data Teknis</span> — IP address, user agent, log aktivitas, dan metadata server.</li>
+            <li><span class="highlight-text">Informasi Perangkat</span> — Sistem operasi, browser, resolusi layar, dan perangkat yang digunakan.</li>
+            <li><span class="highlight-text">Data Transaksi</span> — Riwayat pembayaran, metode pembayaran, dan detail pesanan.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 2 -->
-      <section class="policy-section" style="animation-delay: 0.2s;">
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.1s;">
         <div class="section-number">02<span>.</span></div>
         <div class="section-content">
           <h3>Penggunaan Informasi</h3>
-          <p>Data Anda digunakan untuk memastikan operasional layanan yang lancar:</p>
+          <p>Seluruh data yang dikumpulkan digunakan secara bertanggung jawab untuk:</p>
           <ul>
-            <li>Mengelola akun dan menyediakan layanan hosting, VPS, serta domain.</li>
-            <li>Meningkatkan keamanan dan kinerja jaringan.</li>
-            <li>Menangani dukungan teknis serta mencegah penyalahgunaan layanan.</li>
-            <li>Mengirimkan notifikasi sistem, pembaruan, dan tagihan.</li>
+            <li>Mengelola akun pengguna dan menyediakan layanan hosting, VPS, serta domain.</li>
+            <li>Memantau dan meningkatkan keamanan serta kinerja infrastruktur jaringan.</li>
+            <li>Menangani dukungan teknis, troubleshooting, dan mencegah penyalahgunaan layanan.</li>
+            <li>Mengirimkan notifikasi sistem penting, pembaruan layanan, dan invoice tagihan.</li>
+            <li>Mematuhi kewajiban hukum dan regulasi yang berlaku di yurisdiksi kami.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 3 -->
-      <section class="policy-section" style="animation-delay: 0.3s;">
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.15s;">
         <div class="section-number">03<span>.</span></div>
         <div class="section-content">
           <h3>Keamanan Data</h3>
           <p>
-            Kami menerapkan perlindungan DDoS berbasis router Arbon dan Juniper, sistem firewall tingkat lanjut, serta enkripsi SSL/TLS di seluruh transaksi. Data pengguna disimpan di server dengan pengawasan 24/7 dan backup terenkripsi secara berkala.
-          </p>
-        </div>
-      </section>
-
-      <!-- 4 -->
-      <section class="policy-section" style="animation-delay: 0.4s;">
-        <div class="section-number">04<span>.</span></div>
-        <div class="section-content">
-          <h3>Pembagian Data</h3>
-          <p>
-            Kryonix tidak menjual, menyewakan, atau membagikan data pribadi tanpa izin. Data hanya dibagikan kepada mitra terpercaya seperti:
+            Kami menerapkan standar keamanan enterprise-grade untuk melindungi data Anda:
           </p>
           <ul>
-            <li><strong>Gateway Pembayaran:</strong> Midtrans, PayPal, Tripay.</li>
-            <li><strong>Provider Infrastruktur:</strong> Hetzner, OVH.</li>
-            <li><strong>Penyedia Keamanan:</strong> Cloudflare, Juniper.</li>
+            <li><span class="highlight-text">DDoS Protection</span> — Filter real-time berbasis Arbon dan Juniper router.</li>
+            <li><span class="highlight-text">Enkripsi</span> — SSL/TLS di seluruh transaksi data dan komunikasi API.</li>
+            <li><span class="highlight-text">Firewall</span> — Sistem firewall tingkat lanjut dengan rule-based access control.</li>
+            <li><span class="highlight-text">Backup</span> — Data pengguna di-backup secara terenkripsi dan berkala ke lokasi terpisah.</li>
+            <li><span class="highlight-text">Monitoring</span> — Pengawasan server 24/7 dengan sistem deteksi anomali otomatis.</li>
           </ul>
         </div>
       </section>
 
-      <!-- 5 -->
-      <section class="policy-section" style="animation-delay: 0.5s;">
-        <div class="section-number">05<span>.</span></div>
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.2s;">
+        <div class="section-number">04<span>.</span></div>
         <div class="section-content">
-          <h3>Hak Pengguna</h3>
+          <h3>Pembagian Data kepada Pihak Ketiga</h3>
           <p>
-            Pengguna memiliki hak untuk meminta salinan data, memperbarui, atau menghapus informasi pribadi. Untuk permintaan terkait data pribadi, hubungi kami di: <a href="mailto:support@kryonix.com" class="text-cyan-400 hover:underline">support@kryonix.com</a>.
+            KRYONIX <span class="highlight-text">tidak pernah menjual, menyewakan, atau memperdagangkan</span> data pribadi pengguna. Data hanya dibagikan kepada mitra teknis yang terpercaya:
+          </p>
+          <ul>
+            <li><span class="highlight-text">Gateway Pembayaran</span> — Midtrans, PayPal, Tripay (hanya data transaksi yang diperlukan).</li>
+            <li><span class="highlight-text">Provider Infrastruktur</span> — Hetzner, OVH (untuk deployment server yang Anda pesan).</li>
+            <li><span class="highlight-text">Keamanan Jaringan</span> — Cloudflare, Juniper (untuk filtrasi trafik dan proteksi DDoS).</li>
+          </ul>
+          <p style="font-size:0.85rem;color:#64748b;">
+            Setiap mitra terikat kontrak kerahasiaan (NDA) dan hanya mengakses data sesuai kebutuhan operasional.
           </p>
         </div>
       </section>
 
-      <!-- 6 -->
-      <section class="policy-section" style="animation-delay: 0.6s;">
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.25s;">
+        <div class="section-number">05<span>.</span></div>
+        <div class="section-content">
+          <h3>Cookies dan Tracking</h3>
+          <p>
+            Kami menggunakan cookies untuk meningkatkan pengalaman pengguna. Cookie yang kami gunakan meliputi:
+          </p>
+          <ul>
+            <li><span class="highlight-text">Essential Cookies</span> — Diperlukan untuk autentikasi sesi dan keamanan akun.</li>
+            <li><span class="highlight-text">Analytics Cookies</span> — Membantu kami memahami penggunaan platform dan meningkatkan UX.</li>
+            <li><span class="highlight-text">Preference Cookies</span> — Menyimpan pengaturan bahasa dan tema yang Anda pilih.</li>
+          </ul>
+          <p style="font-size:0.85rem;color:#64748b;">
+            Anda dapat mengatur preferensi cookie melalui pengaturan browser kapan saja.
+          </p>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.3s;">
         <div class="section-number">06<span>.</span></div>
+        <div class="section-content">
+          <h3>Hak Pengguna</h3>
+          <p>
+            Sebagai pengguna, Anda memiliki hak penuh atas data pribadi Anda:
+          </p>
+          <ul>
+            <li><span class="highlight-text">Akses</span> — Meminta salinan lengkap data pribadi yang kami simpan.</li>
+            <li><span class="highlight-text">Koreksi</span> — Memperbarui informasi yang tidak akurat atau sudah tidak berlaku.</li>
+            <li><span class="highlight-text">Penghapusan</span> — Meminta penghapusan data pribadi sesuai ketentuan yang berlaku.</li>
+            <li><span class="highlight-text">Portabilitas</span> — Meminta transfer data ke platform lain dalam format standar.</li>
+          </ul>
+          <p>
+            Untuk permintaan terkait data pribadi, hubungi kami di
+            <a href="mailto:support@kryonix.com" class="hover:underline" style="color:var(--cyan);">support@kryonix.com</a>.
+          </p>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.35s;">
+        <div class="section-number">07<span>.</span></div>
+        <div class="section-content">
+          <h3>Retensi Data</h3>
+          <p>
+            Data akun aktif disimpan selama layanan berlangsung. Setelah penghapusan akun, data akan di-anonymize dalam waktu <span class="highlight-text">30 hari</span> dan dihapus permanen dalam <span class="highlight-text">90 hari</span>, kecuali jika ada kewajiban hukum untuk menyimpannya lebih lama. Log server disimpan selama <span class="highlight-text">90 hari</span> untuk keperluan audit keamanan.
+          </p>
+        </div>
+      </section>
+
+      <div class="section-divider"></div>
+
+      <section class="policy-section reveal" style="transition-delay:0.4s;">
+        <div class="section-number">08<span>.</span></div>
         <div class="section-content">
           <h3>Perubahan Kebijakan</h3>
           <p>
-            Kryonix dapat memperbarui kebijakan ini sewaktu-waktu untuk menyesuaikan dengan perubahan sistem dan regulasi. Versi terbaru tersedia di kryonix.com.
+            KRYONIX dapat memperbarui kebijakan privasi ini sewaktu-waktu untuk menyesuaikan dengan perubahan sistem, regulasi, atau praktik operasional. Perubahan material akan diberitahukan melalui email atau notifikasi di platform. Kami menyarankan Anda untuk meninjau halaman ini secara berkala.
           </p>
         </div>
       </section>
 
     </main>
 
-    <!-- FOOTER -->
-    <div class="footer-card">
-      <div class="flex items-center justify-center gap-3 mb-6">
-        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500/20 to-blue-500/20 flex items-center justify-center border border-cyan-500/30">
-          <i class="fas fa-headset text-cyan-400"></i>
+    <!-- Support CTA -->
+    <div class="support-card reveal" style="transition-delay:0.1s;">
+      <div class="flex items-center justify-center gap-4 mb-5">
+        <div class="w-12 h-12 rounded-xl flex items-center justify-center" style="background:rgba(0,196,255,0.08);border:1px solid rgba(0,196,255,0.15);">
+          <i class="fas fa-headset text-lg" style="color:var(--cyan);"></i>
         </div>
         <div class="text-left">
-          <div class="font-bold text-white">Kryonix Support Team</div>
-          <div class="text-xs text-gray-500">24/7 System Active</div>
+          <div class="font-bold text-white">Punya Pertanyaan?</div>
+          <div class="text-xs font-mono" style="color:var(--muted);">KRYONIX SUPPORT // 24/7 ACTIVE</div>
         </div>
       </div>
-
-      <div class="flex flex-col sm:flex-row justify-center items-center gap-4 text-sm font-mono">
-        <a href="mailto:support@kryonix.com" class="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition">
-          <i class="fas fa-envelope"></i> support@kryonix.com
+      <p class="text-sm text-gray-400 mb-5 max-w-md mx-auto">
+        Jika ada hal terkait privasi yang ingin Anda tanyakan, tim support kami siap membantu.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center items-center gap-3">
+        <a href="mailto:support@kryonix.com" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all" style="background:linear-gradient(135deg,var(--cyan),#008bbf);color:white;box-shadow:0 0 15px rgba(0,196,255,0.2);">
+          <i class="fas fa-envelope text-xs"></i> support@kryonix.com
         </a>
-        <span class="hidden sm:inline text-gray-700">|</span>
-        <a href="https://kryonix.com" class="flex items-center gap-2 text-gray-400 hover:text-cyan-400 transition">
-          <i class="fas fa-globe"></i> kryonix.com
+        <a href="chat.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all" style="background:rgba(12,18,32,0.6);border:1px solid var(--border);color:var(--fg);">
+          <i class="fas fa-comments text-xs" style="color:var(--cyan);"></i> Live Chat
         </a>
       </div>
     </div>
 
   </div>
 
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <div class="max-w-7xl mx-auto px-6 pt-14 pb-0">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10">
+
+        <div class="md:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4 group">
+            <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="footer-logo-img">
+            <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+          </a>
+          <p class="text-sm text-gray-500 leading-relaxed mb-4" style="max-width:240px;">
+            Penyedia layanan Cloud Hosting & VPS berkinerja tinggi dengan dukungan 24/7.
+          </p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="footer-badge">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+              ALL SYSTEMS ONLINE
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Navigasi</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="index.html" class="footer-link"><i class="fas fa-chevron-right"></i> Home</a>
+            <a href="store.html" class="footer-link"><i class="fas fa-chevron-right"></i> Store</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Public Chat</a>
+            <a href="faq.html" class="footer-link"><i class="fas fa-chevron-right"></i> FAQ</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Legal</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+            <a href="privacy.html" class="footer-link"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Refund Policy</a>
+            <a href="partner.html" class="footer-link"><i class="fas fa-chevron-right"></i> Partners</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Support</div>
+          <div class="flex flex-col gap-2.5 mb-5">
+            <a href="login-buyer.html" class="footer-link"><i class="fas fa-chevron-right"></i> Login Akun</a>
+            <a href="track.html" class="footer-link"><i class="fas fa-chevron-right"></i> Lacak Pesanan</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Hubungi Admin</a>
+          </div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">Sosial Media</div>
+          <div class="flex items-center gap-2">
+            <a href="#" class="footer-social" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="#" class="footer-social" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="footer-social" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social" title="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-divider"></div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
+        <p class="text-xs text-gray-600 font-mono">&copy; 2025 KRYONIX. All rights reserved.</p>
+        <div class="flex items-center gap-3">
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Terms</a>
+          <span class="text-gray-800">·</span>
+          <a href="privacy.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Privacy</a>
+          <span class="text-gray-800">·</span>
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Refund</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPTS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHPvQ6Bt9f6U3wqDz3CG71HNpcFq3RZRI",
+      authDomain: "kryonix-7c55e.firebaseapp.com",
+      databaseURL: "https://kryonix-7c55e-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "kryonix-7c55e", storageBucket: "kryonix-7c55e.firebasestorage.app",
+      messagingSenderId: "917095112473", appId: "1:917095112473:web:dd4120a14724e6e6a02f88", measurementId: "G-9Y77T2V6H7"
+    };
+
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
+    const auth = getAuth(fbApp);
+
+    onAuthStateChanged(auth, async (user) => {
+      const userMenu = document.getElementById('userMenu');
+      const loginBtn = document.getElementById('loginBtn');
+      if (user) {
+        userMenu.classList.remove('hidden');
+        loginBtn.classList.add('hidden');
+        let name = user.email?.split('@')[0] || 'User';
+        try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) name = s.val(); } catch(e) {}
+        const initial = name.charAt(0).toUpperCase();
+        document.getElementById('navAvatar').textContent = initial;
+        document.getElementById('navName').textContent = name;
+        document.getElementById('dropdownName').textContent = name;
+        document.getElementById('dropdownEmail').textContent = user.email || '';
+      } else {
+        userMenu.classList.add('hidden');
+        loginBtn.classList.remove('hidden');
+      }
+    });
+
+    window.toggleDropdown = () => {
+      const dd = document.getElementById('userDropdown');
+      const ch = document.getElementById('dropdownChevron');
+      dd.classList.toggle('open');
+      ch.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+    };
+    document.addEventListener('click', (e) => {
+      if (!document.getElementById('userMenu').contains(e.target)) {
+        document.getElementById('userDropdown').classList.remove('open');
+        document.getElementById('dropdownChevron').style.transform = '';
+      }
+    });
+    window.handleLogout = async () => {
+      try { await signOut(auth); location.reload(); } catch(e) { console.error(e); }
+    };
+    document.getElementById('menuBtn').addEventListener('click', () => {
+      document.getElementById('mobileMenu').classList.toggle('hidden');
+    });
+
+    // Scroll reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Particles
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resizeCanvas); resizeCanvas();
+    for (let i = 0; i < 40; i++) pArr.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.4,
+      speedY: (Math.random() - 0.5) * 0.4, opacity: Math.random() * 0.4 + 0.1
+    });
+    function animP() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pArr.forEach(p => {
+        p.x += p.speedX; p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,196,255,${p.opacity})`; ctx.fill();
+      });
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 100) {
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,196,255,${0.03 * (1 - d / 100)})`;
+            ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
+  </script>
 </body>
 </html>
