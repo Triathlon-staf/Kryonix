@@ -13,75 +13,335 @@
       darkMode: 'class',
       theme: { extend: {
         fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
-        colors: { dark: { bg: '#060a10', card: '#0c1220', border: '#152035' }, accent: { green: '#00e89d', cyan: '#00c4ff' } }
+        colors: {
+          dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+          accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' },
+          wa: { green: '#00a884', muted: '#8696a0', border: '#2a3942' }
+        }
       }}
     }
   </script>
   <style>
-    :root { --bg: #060a10; --bg-card: #0c1220; --border: #152035; --green: #00e89d; --cyan: #00c4ff; }
+    :root {
+      --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --muted: #5a6a80;
+      --green: #00e89d; --cyan: #00c4ff; --purple: #a78bfa; --border: #152035;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--bg); color: #e8ecf2; font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
-    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
-    .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; animation: orbFloat 10s ease-in-out infinite alternate; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; overflow-x: hidden; }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,232,157,0.03) 1px, transparent 1px),
+                        linear-gradient(90deg,rgba(0,232,157,0.03) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0; pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+    }
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: orbFloat 10s ease-in-out infinite alternate;
+    }
     .orb-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,232,157,0.06), transparent 70%); top: -100px; right: -100px; }
     .orb-2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0,196,255,0.05), transparent 70%); bottom: -50px; left: -100px; animation-delay: -5s; }
+    .orb-3 { width: 280px; height: 280px; background: radial-gradient(circle, rgba(167,139,250,0.04), transparent 70%); top: 40%; left: 30%; animation-delay: -8s; }
     @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 30px); } }
-    .partner-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; transition: all 0.4s; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; overflow: hidden; }
-    .partner-card:hover { transform: translateY(-6px); border-color: rgba(0,232,157,0.3); box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 15px rgba(0,232,157,0.08); }
-    .partner-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--green), var(--cyan)); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
-    .partner-card:hover::before { transform: scaleX(1); }
-    .partner-logo { width: 80px; height: 80px; border-radius: 16px; object-fit: contain; background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px; margin-bottom: 1.25rem; }
-    .text-gradient { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .nav-link { position: relative; color: #5a6a80; font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
-    .nav-link:hover, .nav-link.active { color: var(--green); }
+    #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    /* Navbar */
+    .glass-nav { backdrop-filter: blur(16px); background: rgba(6,10,16,0.85); border-bottom: 1px solid var(--border); }
+    .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; transition: transform 0.5s; }
+    .nav-link { position: relative; color: var(--muted); font-size: 0.9rem; transition: 0.3s; text-decoration: none; }
+    .nav-link:hover { color: var(--green); }
     .nav-link::after { content: ''; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px; background: var(--green); transition: 0.3s; }
-    .nav-link:hover::after, .nav-link.active::after { width: 100%; }
-    ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .nav-link:hover::after { width: 100%; }
+    .nav-link.active { color: var(--green); }
+    .nav-link.active::after { width: 100%; }
+
+    /* Partner Cards */
+    .partner-card {
+      background: rgba(12, 18, 32, 0.6); backdrop-filter: blur(10px);
+      border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem;
+      transition: all 0.4s; display: flex; flex-direction: column; align-items: center;
+      text-align: center; position: relative; overflow: hidden; text-decoration: none;
+    }
+    .partner-card:hover {
+      transform: translateY(-6px); border-color: rgba(0,232,157,0.3);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3), 0 0 15px rgba(0,232,157,0.08);
+      background: rgba(12, 18, 32, 0.85);
+    }
+    .partner-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transform: scaleX(0); transform-origin: left; transition: transform 0.4s;
+    }
+    .partner-card:hover::before { transform: scaleX(1); }
+
+    .partner-logo-wrap {
+      width: 72px; height: 72px; border-radius: 16px; display: flex; align-items: center;
+      justify-content: center; margin-bottom: 1.25rem; transition: all 0.3s;
+      background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 12px;
+    }
+    .partner-card:hover .partner-logo-wrap {
+      border-color: rgba(0,232,157,0.2); background: rgba(0,232,157,0.04);
+    }
+    .partner-logo-wrap img { width: 100%; height: 100%; object-fit: contain; }
+
+    .partner-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 6px; font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;
+      text-transform: uppercase; border: 1px solid;
+    }
+
+    .text-gradient {
+      background: linear-gradient(135deg, var(--green), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+
+    /* Category filter */
+    .filter-btn {
+      padding: 6px 16px; border-radius: 8px; font-size: 0.8rem; font-weight: 500;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; transition: all 0.25s; font-family: 'Space Grotesk', sans-serif;
+    }
+    .filter-btn:hover { border-color: rgba(0,232,157,0.3); color: var(--fg); }
+    .filter-btn.active {
+      background: rgba(0,232,157,0.08); border-color: rgba(0,232,157,0.3);
+      color: var(--green);
+    }
+
+    /* Stats bar */
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 10px; font-size: 0.75rem;
+      background: rgba(12,18,32,0.6); border: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace; color: var(--muted);
+    }
+    .stat-pill strong { color: var(--fg); }
+
+    /* Footer */
+    .site-footer {
+      position: relative; z-index: 10; width: 100%;
+      background: linear-gradient(180deg, transparent 0%, rgba(6,10,16,0.98) 100px);
+      margin-top: auto;
+    }
+    .footer-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,232,157,0.2), rgba(167,139,250,0.2), transparent);
+    }
+    .footer-link {
+      color: #64748b; font-size: 0.875rem; text-decoration: none; transition: 0.25s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .footer-link:hover { color: #00e89d; }
+    .footer-link i { font-size: 0.6rem; opacity: 0; transform: translateX(-4px); transition: 0.25s; }
+    .footer-link:hover i { opacity: 1; transform: translateX(0); }
+    .footer-social {
+      width: 38px; height: 38px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06);
+      color: #64748b; font-size: 0.95rem; transition: all 0.3s; text-decoration: none;
+    }
+    .footer-social:hover {
+      color: #00e89d; border-color: rgba(0,232,157,0.3); background: rgba(0,232,157,0.06);
+      transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,232,157,0.1);
+    }
+    .footer-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 6px; font-size: 0.7rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.5px;
+      background: rgba(0,232,157,0.06); border: 1px solid rgba(0,232,157,0.15);
+      color: rgba(0,232,157,0.7);
+    }
+    .footer-logo-img { width: 32px; height: 32px; object-fit: cover; border-radius: 8px; }
+
+    /* Scroll reveal */
+    .reveal {
+      opacity: 0; transform: translateY(25px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
 <body>
+
   <div class="grid-bg"></div>
+  <canvas id="particles"></canvas>
+  <div class="scanline"></div>
   <div class="orb orb-1"></div>
   <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
 
-  <nav class="fixed w-full top-0 z-50 glass-nav border-b border-dark-border" style="backdrop-filter:blur(16px);background:rgba(6,10,16,0.85);">
+  <!-- NAVBAR -->
+  <nav class="fixed w-full top-0 z-50 glass-nav">
     <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-      <a href="index.html" class="flex items-center gap-2.5 group"><div class="w-9 h-9 bg-gradient-to-br from-green-400 to-cyan-500 rounded-lg flex items-center justify-center font-bold text-black text-base">K</div><span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span></a>
+      <a href="index.html" class="flex items-center gap-2.5 group">
+        <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
+        <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
+      </a>
       <div class="hidden md:flex items-center gap-6">
         <a href="index.html" class="nav-link">Home</a>
         <a href="store.html" class="nav-link">Store</a>
-        <a href="tos.html" class="nav-link">Important</a>
+        <a href="faq.html" class="nav-link">FAQ</a>
         <a href="chat.html" class="nav-link">Chat</a>
-        <a href="partners.html" class="nav-link active">Partners</a>
+        <a href="partner.html" class="nav-link active">Partners</a>
       </div>
-      <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition"><i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span></a>
-      <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
+      <div class="flex items-center gap-2">
+        <a id="loginBtn" href="login-buyer.html" class="text-sm text-green-400 hover:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-500/10 transition"><i class="fas fa-user mr-1"></i><span class="hidden sm:inline">Login</span></a>
+        <button id="menuBtn" class="md:hidden text-xl text-gray-400"><i class="fas fa-bars"></i></button>
+      </div>
     </div>
     <div id="mobileMenu" class="hidden md:hidden border-t border-dark-border p-4 space-y-3" style="background:var(--bg-card);">
       <a href="index.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Home</a>
       <a href="store.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Store</a>
-      <a href="tos.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Important</a>
+      <a href="faq.html" class="block text-gray-400 hover:text-green-400 text-sm transition">FAQ</a>
       <a href="chat.html" class="block text-gray-400 hover:text-green-400 text-sm transition">Chat</a>
-      <a href="partners.html" class="block text-green-400 font-semibold text-sm">Partners</a>
+      <a href="partner.html" class="block text-green-400 font-semibold text-sm">Partners</a>
     </div>
   </nav>
 
-  <main class="relative z-10 pt-24 pb-16 px-4 md:px-8">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-12">
-        <div class="inline-block px-4 py-1 mb-4 rounded-full border border-green-500/30 text-green-400 text-xs font-mono tracking-widest bg-green-500/5">TRUSTED PARTNERS</div>
+  <!-- MAIN -->
+  <main class="relative z-10 pt-24 pb-8 px-4 md:px-8 min-h-screen flex flex-col">
+    <div class="max-w-7xl mx-auto w-full flex-1">
+
+      <!-- Header -->
+      <div class="text-center mb-10 reveal">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-5 rounded-full border border-green-500/20 bg-green-500/5 text-green-400 text-xs font-mono tracking-widest">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          TRUSTED PARTNERS
+        </div>
         <h1 class="text-4xl md:text-5xl font-bold mb-4">KOLABORASI <span class="text-gradient">STRATEGIS</span></h1>
-        <p class="text-gray-400 max-w-xl mx-auto">Kami bekerja sama dengan berbagai provider infrastruktur dan platform terkemuka untuk memberikan layanan terbaik.</p>
+        <p class="text-gray-400 max-w-xl mx-auto leading-relaxed">Kami bekerja sama dengan berbagai provider infrastruktur dan platform terkemuka untuk memberikan layanan terbaik.</p>
       </div>
-      <div id="partnerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-        <div class="col-span-full text-center py-16 text-gray-500"><i class="fas fa-spinner fa-spin text-2xl mb-3 text-green-400"></i><p>Loading partners...</p></div>
+
+      <!-- Stats -->
+      <div class="flex flex-wrap justify-center gap-3 mb-10 reveal" style="transition-delay:0.1s;">
+        <div class="stat-pill"><i class="fas fa-handshake text-green-400 text-xs"></i> Total: <strong id="totalCount">0</strong></div>
+        <div class="stat-pill"><i class="fas fa-server text-cyan-400 text-xs"></i> Infrastructure: <strong id="infraCount">0</strong></div>
+        <div class="stat-pill"><i class="fas fa-shield-alt text-purple-400 text-xs"></i> Security: <strong id="secCount">0</strong></div>
+        <div class="stat-pill"><i class="fas fa-credit-card text-green-400 text-xs"></i> Payment: <strong id="payCount">0</strong></div>
       </div>
+
+      <!-- Filter -->
+      <div class="flex flex-wrap justify-center gap-2 mb-10 reveal" style="transition-delay:0.15s;" id="filterBar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="infrastructure"><i class="fas fa-server mr-1 text-xs"></i> Infrastructure</button>
+        <button class="filter-btn" data-filter="payment"><i class="fas fa-credit-card mr-1 text-xs"></i> Payment</button>
+        <button class="filter-btn" data-filter="security"><i class="fas fa-shield-alt mr-1 text-xs"></i> Security</button>
+        <button class="filter-btn" data-filter="cdn"><i class="fas fa-bolt mr-1 text-xs"></i> CDN</button>
+        <button class="filter-btn" data-filter="domain"><i class="fas fa-globe mr-1 text-xs"></i> Domain</button>
+        <button class="filter-btn" data-filter="game"><i class="fas fa-gamepad mr-1 text-xs"></i> Game</button>
+      </div>
+
+      <!-- Partner Grid -->
+      <div id="partnerGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 reveal" style="transition-delay:0.2s;">
+        <div class="col-span-full text-center py-16 text-gray-500">
+          <i class="fas fa-spinner fa-spin text-2xl mb-3 text-green-400"></i>
+          <p>Loading partners...</p>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="mt-14 text-center reveal" style="transition-delay:0.1s;">
+        <div class="relative inline-block rounded-2xl overflow-hidden p-8 md:p-10" style="background:linear-gradient(135deg,rgba(0,232,157,0.04),rgba(0,196,255,0.03));border:1px solid rgba(0,232,157,0.1);">
+          <div class="absolute inset-0 opacity-20" style="background:radial-gradient(ellipse at 50% 50%,rgba(0,232,157,0.1),transparent 70%);"></div>
+          <div class="relative z-10">
+            <h3 class="text-xl md:text-2xl font-bold mb-3">Tertarik Menjadi Partner?</h3>
+            <p class="text-gray-400 text-sm mb-6 max-w-md mx-auto">Hubungi kami untuk diskusi kolaborasi dan kemitraan strategis.</p>
+            <a href="chat.html" class="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all" style="background:linear-gradient(135deg,var(--green),#00c4a0);color:#060a10;box-shadow:0 0 20px rgba(0,232,157,0.2);">
+              <i class="fas fa-comments"></i> Hubungi Kami
+            </a>
+          </div>
+        </div>
+      </div>
+
     </div>
   </main>
 
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-divider"></div>
+    <div class="max-w-7xl mx-auto px-6 pt-14 pb-0">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10">
+
+        <div class="md:col-span-1">
+          <a href="index.html" class="flex items-center gap-2.5 mb-4 group">
+            <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="footer-logo-img">
+            <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
+          </a>
+          <p class="text-sm text-gray-500 leading-relaxed mb-4" style="max-width:240px;">
+            Penyedia layanan Cloud Hosting & VPS berkinerja tinggi dengan dukungan 24/7.
+          </p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="footer-badge">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
+              ALL SYSTEMS ONLINE
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Navigasi</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="index.html" class="footer-link"><i class="fas fa-chevron-right"></i> Home</a>
+            <a href="store.html" class="footer-link"><i class="fas fa-chevron-right"></i> Store</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Public Chat</a>
+            <a href="faq.html" class="footer-link"><i class="fas fa-chevron-right"></i> FAQ</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Legal</div>
+          <div class="flex flex-col gap-2.5">
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+            <a href="privacy.html" class="footer-link"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+            <a href="tos.html" class="footer-link"><i class="fas fa-chevron-right"></i> Refund Policy</a>
+            <a href="partner.html" class="footer-link"><i class="fas fa-chevron-right"></i> Partners</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Support</div>
+          <div class="flex flex-col gap-2.5 mb-5">
+            <a href="login-buyer.html" class="footer-link"><i class="fas fa-chevron-right"></i> Login Akun</a>
+            <a href="track.html" class="footer-link"><i class="fas fa-chevron-right"></i> Lacak Pesanan</a>
+            <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Hubungi Admin</a>
+          </div>
+          <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-3">Sosial Media</div>
+          <div class="flex items-center gap-2">
+            <a href="#" class="footer-social" title="Discord"><i class="fab fa-discord"></i></a>
+            <a href="#" class="footer-social" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+            <a href="#" class="footer-social" title="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="footer-social" title="YouTube"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="footer-divider"></div>
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
+        <p class="text-xs text-gray-600 font-mono">&copy; 2025 KRYONIX. All rights reserved.</p>
+        <div class="flex items-center gap-3">
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Terms</a>
+          <span class="text-gray-800">·</span>
+          <a href="privacy.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Privacy</a>
+          <span class="text-gray-800">·</span>
+          <a href="tos.html" class="text-xs text-gray-600 hover:text-gray-400 transition font-mono">Refund</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -96,48 +356,160 @@
     const db = getDatabase(fbApp);
     const auth = getAuth(fbApp);
 
-    const partnerCatIcons = { infrastructure:'fa-server', payment:'fa-credit-card', security:'fa-shield-alt', cdn:'fa-bolt', domain:'fa-globe', game:'fa-gamepad', other:'fa-star' };
-    const partnerCatColors = { infrastructure:'text-cyan-400', payment:'text-green-400', security:'text-purple-400', cdn:'text-yellow-400', domain:'text-blue-400', game:'text-pink-400', other:'text-gray-400' };
-
-    onAuthStateChanged(auth, async (user) => {
+    // ═══ AUTH ═══
+    onAuthStateChanged(auth, (user) => {
       const btn = document.getElementById('loginBtn');
       if (user) btn.classList.add('hidden');
       else btn.classList.remove('hidden');
     });
 
-    onValue(ref(db, "partners"), (snap) => {
+    // ═══ CATEGORY CONFIG ═══
+    const catIcons = {
+      infrastructure: 'fa-server', payment: 'fa-credit-card', security: 'fa-shield-alt',
+      cdn: 'fa-bolt', domain: 'fa-globe', game: 'fa-gamepad', other: 'fa-star'
+    };
+    const catColors = {
+      infrastructure: { text: 'text-cyan-400', bg: 'rgba(0,196,255,0.06)', border: 'rgba(0,196,255,0.15)' },
+      payment: { text: 'text-green-400', bg: 'rgba(0,232,157,0.06)', border: 'rgba(0,232,157,0.15)' },
+      security: { text: 'text-purple-400', bg: 'rgba(167,139,250,0.06)', border: 'rgba(167,139,250,0.15)' },
+      cdn: { text: 'text-yellow-400', bg: 'rgba(250,204,21,0.06)', border: 'rgba(250,204,21,0.15)' },
+      domain: { text: 'text-blue-400', bg: 'rgba(96,165,250,0.06)', border: 'rgba(96,165,250,0.15)' },
+      game: { text: 'text-pink-400', bg: 'rgba(244,114,182,0.06)', border: 'rgba(244,114,182,0.15)' },
+      other: { text: 'text-gray-400', bg: 'rgba(148,163,184,0.06)', border: 'rgba(148,163,184,0.15)' }
+    };
+
+    let allPartners = [];
+    let activeFilter = 'all';
+
+    // ═══ FILTER ═══
+    document.getElementById('filterBar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      activeFilter = btn.dataset.filter;
+      renderPartners();
+    });
+
+    function renderPartners() {
       const grid = document.getElementById('partnerGrid');
-      const raw = snap.val();
-      grid.innerHTML = '';
-      if (!raw) {
-        grid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-600"><i class="fas fa-handshake text-3xl mb-3"></i><p>Belum ada partner.</p></div>';
+      const filtered = activeFilter === 'all' ? allPartners : allPartners.filter(p => p.category === activeFilter);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-16 text-gray-600">
+            <i class="fas fa-search text-3xl mb-3"></i>
+            <p>Tidak ada partner untuk kategori ini.</p>
+          </div>`;
         return;
       }
-      Object.keys(raw).forEach(k => {
-        const p = raw[k];
-        const color = partnerCatColors[p.category] || 'text-gray-400';
-        const icon = p.icon || partnerCatIcons[p.category] || 'fa-star';
+
+      grid.innerHTML = '';
+      filtered.forEach((p, i) => {
+        const cc = catColors[p.category] || catColors.other;
+        const icon = p.icon || catIcons[p.category] || 'fa-star';
         const card = document.createElement('a');
         card.href = p.website || '#';
         card.target = p.website ? '_blank' : '';
         card.rel = 'noopener';
         card.className = 'partner-card';
+        card.style.animationDelay = `${i * 0.05}s`;
+        card.style.animation = 'cardFadeIn 0.4s ease forwards';
+        card.style.opacity = '0';
         card.innerHTML = `
           ${p.logo
-            ? `<img src="${p.logo}" alt="${p.name}" class="partner-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="partner-logo flex-col items-center justify-center" style="display:none"><i class="fas ${icon} text-2xl ${color}"></i></div>`
-            : `<div class="partner-logo flex items-center justify-center"><i class="fas ${icon} text-2xl ${color}"></i></div>`
+            ? `<div class="partner-logo-wrap">
+                <img src="${p.logo}" alt="${p.name}" onerror="this.parentElement.innerHTML='<i class=\\'fas ${icon} text-2xl ${cc.text}\\'></i>'">
+               </div>`
+            : `<div class="partner-logo-wrap"><i class="fas ${icon} text-2xl ${cc.text}"></i></div>`
           }
           <h3 class="font-bold text-sm text-white mb-1">${p.name}</h3>
-          <p class="text-xs text-gray-500 mb-3 line-clamp-2 flex-1">${p.description || ''}</p>
-          <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-mono uppercase bg-dark-bg border border-dark-border ${color}">${p.category}</span>
+          <p class="text-xs text-gray-500 mb-3 leading-relaxed flex-1" style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${p.description || 'Trusted partner of KRYONIX.'}</p>
+          <span class="partner-badge ${cc.text}" style="background:${cc.bg};border-color:${cc.border};">
+            <i class="fas ${catIcons[p.category] || 'fa-star'}" style="font-size:0.55rem;"></i>
+            ${p.category}
+          </span>
         `;
         grid.appendChild(card);
       });
+
+      // Add card animation keyframe
+      if (!document.getElementById('cardAnimStyle')) {
+        const s = document.createElement('style');
+        s.id = 'cardAnimStyle';
+        s.textContent = `@keyframes cardFadeIn { from { opacity:0; transform:translateY(15px); } to { opacity:1; transform:translateY(0); } }`;
+        document.head.appendChild(s);
+      }
+    }
+
+    // ═══ LOAD PARTNERS ═══
+    onValue(ref(db, "partners"), (snap) => {
+      const raw = snap.val();
+      if (!raw) {
+        document.getElementById('partnerGrid').innerHTML = `
+          <div class="col-span-full text-center py-16 text-gray-600">
+            <i class="fas fa-handshake text-3xl mb-3"></i>
+            <p>Belum ada partner terdaftar.</p>
+          </div>`;
+        return;
+      }
+
+      allPartners = Object.keys(raw).map(k => ({ id: k, ...raw[k] }));
+
+      // Update stats
+      document.getElementById('totalCount').textContent = allPartners.length;
+      document.getElementById('infraCount').textContent = allPartners.filter(p => p.category === 'infrastructure').length;
+      document.getElementById('secCount').textContent = allPartners.filter(p => p.category === 'security').length;
+      document.getElementById('payCount').textContent = allPartners.filter(p => p.category === 'payment').length;
+
+      renderPartners();
     });
 
+    // ═══ MOBILE MENU ═══
     document.getElementById('menuBtn').addEventListener('click', () => {
       document.getElementById('mobileMenu').classList.toggle('hidden');
     });
+
+    // ═══ SCROLL REVEAL ═══
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ═══ PARTICLES ═══
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    let pArr = [];
+    function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resizeCanvas); resizeCanvas();
+    for (let i = 0; i < 45; i++) pArr.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.4,
+      speedY: (Math.random() - 0.5) * 0.4, opacity: Math.random() * 0.5 + 0.1
+    });
+    function animP() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      pArr.forEach(p => {
+        p.x += p.speedX; p.y += p.speedY;
+        if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
+        if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,232,157,${p.opacity})`; ctx.fill();
+      });
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 110) {
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,232,157,${0.04 * (1 - d / 110)})`;
+            ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animP);
+    }
+    animP();
   </script>
 </body>
 </html>
