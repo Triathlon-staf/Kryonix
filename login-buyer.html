@@ -6,50 +6,236 @@
   <title>BUYER LOGIN | KRYONIX</title>
   <link rel="icon" type="image/png" href="images/icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <script>
     tailwind.config = {
-      theme: { extend: { fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }, colors: { dark: { bg: '#060a10', card: '#0c1220' }, accent: { cyan: '#00c4ff' } } } }
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Space Grotesk', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] },
+          colors: {
+            dark: { bg: '#060a10', card: '#0c1220', border: '#152035' },
+            accent: { green: '#00e89d', cyan: '#00c4ff', purple: '#a78bfa' }
+          }
+        }
+      }
+    }
   </script>
+
   <style>
-    :root { --bg: #060a10; --fg: #e8ecf2; --cyan: '#00c4ff'; --border: '#152035'; }
-    body { background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .grid-bg { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,196,255,0.03) 1px, transparent 1px), linear-gradient(90deg,rgba(0,196,255,0.03) 1px, transparent 1px); background-size: 50px 50px; z-index: 0; pointer-events: none; }
-    .login-card { position: relative; z-index: 10; width: 100%; max-width: 400px; background: rgba(12, 18, 32, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; box-shadow: 0 0 50px rgba(0,0,0,0.5); }
-    .input-field { width: 100%; background: #080c14; border: 1px solid var(--border); padding: 14px 16px; border-radius: 10px; color: white; outline: none; margin-bottom: 1.5rem; box-sizing: border-box; }
-    .input-field:focus { border-color: var(--cyan); box-shadow: 0 0 0 2px rgba(0,196,255,0.1); }
-    .btn-login { width: 100%; padding: 14px; border-radius: 10px; font-weight: 700; font-size: 1rem; background: linear-gradient(135deg, var(--cyan), #008bbf); color: white; border: none; cursor: pointer; }
-    .btn-login:hover { box-shadow: 0 0 20px rgba(0,196,255,0.4); }
+    :root {
+      --bg: #060a10; --bg-card: #0c1220; --fg: #e8ecf2; --muted: #5a6a80;
+      --green: #00e89d; --cyan: #00c4ff; --purple: #a78bfa; --border: #152035;
+    }
+    body {
+      background: var(--bg); color: var(--fg); font-family: 'Space Grotesk', sans-serif;
+      overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center;
+    }
+
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,196,255,0.025) 1px, transparent 1px),
+                        linear-gradient(90deg,rgba(0,196,255,0.025) 1px, transparent 1px);
+      background-size: 50px 50px; z-index: 0; pointer-events: none;
+    }
+    .scanline {
+      position: fixed; inset: 0; z-index: 1; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.1) 2px, rgba(0,0,0,0.1) 4px);
+    }
+
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0;
+      animation: orbFloat 10s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 350px; height: 350px; background: radial-gradient(circle, rgba(0,196,255,0.07), transparent 70%); top: -80px; left: -80px; }
+    .orb-2 { width: 250px; height: 250px; background: radial-gradient(circle, rgba(167,139,250,0.06), transparent 70%); bottom: -60px; right: -60px; animation-delay: -5s; }
+    @keyframes orbFloat { 0% { transform: translate(0,0); } 100% { transform: translate(20px, 30px); } }
+
     #particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    .login-card {
+      position: relative; z-index: 10; width: 100%; max-width: 420px; margin: 1rem;
+      background: rgba(12, 18, 32, 0.75); backdrop-filter: blur(24px);
+      border: 1px solid var(--border); border-radius: 20px;
+      box-shadow: 0 0 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,196,255,0.03);
+      animation: cardIn 0.6s ease;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.97); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .card-glow {
+      position: absolute; top: -1px; left: 20%; right: 20%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,196,255,0.4), transparent);
+    }
+
+    .logo-img {
+      width: 56px; height: 56px; object-fit: cover; border-radius: 14px;
+      box-shadow: 0 0 20px rgba(0,196,255,0.15);
+    }
+
+    .input-wrap {
+      position: relative; margin-bottom: 1.25rem;
+    }
+    .input-wrap i {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); font-size: 0.85rem; transition: color 0.3s; pointer-events: none;
+    }
+    .input-field {
+      width: 100%; background: #080c14; border: 1px solid var(--border);
+      padding: 14px 16px 14px 44px; border-radius: 12px; color: white;
+      outline: none; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+    .input-field::placeholder { color: #3a4a5e; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; letter-spacing: 0.5px; }
+    .input-field:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 3px rgba(0,196,255,0.08);
+    }
+    .input-wrap:focus-within i { color: var(--cyan); }
+
+    .btn-login {
+      width: 100%; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 0.95rem;
+      background: linear-gradient(135deg, var(--cyan), #008bbf); color: white;
+      border: none; cursor: pointer; transition: all 0.3s; font-family: 'Space Grotesk', sans-serif;
+      letter-spacing: 0.5px; position: relative; overflow: hidden;
+    }
+    .btn-login:hover { box-shadow: 0 0 25px rgba(0,196,255,0.4); transform: translateY(-1px); }
+    .btn-login:active { transform: translateY(0); }
+    .btn-login:disabled {
+      opacity: 0.6; cursor: not-allowed; transform: none;
+      box-shadow: none;
+    }
+    .btn-login.loading { pointer-events: none; }
+
+    .status-line {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 10px;
+      background: rgba(0,196,255,0.04); border: 1px solid rgba(0,196,255,0.08);
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: rgba(0,196,255,0.6);
+    }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--cyan); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px; margin: 1.5rem 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+    .divider span { font-size: 0.7rem; color: #3a4a5e; font-family: 'JetBrains Mono', monospace; }
+
+    .back-link {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      color: var(--muted); font-size: 0.85rem; text-decoration: none; transition: 0.3s;
+      padding: 8px; border-radius: 8px;
+    }
+    .back-link:hover { color: var(--cyan); background: rgba(0,196,255,0.04); }
+    .back-link i { font-size: 0.7rem; transition: transform 0.3s; }
+    .back-link:hover i { transform: translateX(-3px); }
+
+    .back-link.register-link:hover { color: var(--green); background: rgba(0,232,157,0.04); }
+
+    /* Toast notification */
+    .toast-container {
+      position: fixed; top: 1.5rem; right: 1.5rem; z-index: 9999;
+      display: flex; flex-direction: column; gap: 0.5rem;
+    }
+    .toast {
+      padding: 14px 20px; border-radius: 12px; font-size: 0.875rem;
+      backdrop-filter: blur(16px); border: 1px solid;
+      animation: toastIn 0.3s ease;
+      display: flex; align-items: center; gap: 10px;
+      max-width: 360px; font-family: 'Space Grotesk', sans-serif;
+    }
+    .toast.error {
+      background: rgba(239,68,68,0.1); border-color: rgba(239,68,68,0.2); color: #fca5a5;
+    }
+    .toast.success {
+      background: rgba(0,232,157,0.1); border-color: rgba(0,232,157,0.2); color: #6ee7b7;
+    }
+    .toast.fadeout { animation: toastOut 0.3s ease forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes toastOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(30px); } }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
   </style>
 </head>
 <body>
+
   <div class="grid-bg"></div>
   <canvas id="particles"></canvas>
-  <div class="login-card">
-    <div class="text-center mb-8">
-      <i class="fas fa-users text-5xl text-cyan-400 mb-4"></i>
-      <h1 class="text-2xl font-bold">BUYER LOGIN</h1>
-      <p class="text-xs text-gray-500 font-mono mt-1">WELCOME BACK CUSTOMER</p>
-    </div>
-    
-    <form onsubmit="handleLogin(event)">
-      <input type="email" id="email" class="input-field" placeholder="EMAIL ADDRESS" required>
-      <input type="password" id="pass" class="input-field" placeholder="PASSWORD" required>
-      <button type="submit" class="btn-login">LOGIN</button>
-    </form>
+  <div class="scanline"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
 
-    <div class="mt-6 text-center text-sm text-gray-500 space-y-2">
-      <a href="register-buyer.html" class="block hover:text-cyan-400">Don't have an account? Register</a>
-      <a href="login-admin.html" class="block hover:text-cyan-400">Login as Admin</a>
-      <a href="index.html" class="block hover:text-cyan-400">Back to Home</a>
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="login-card" id="loginCard">
+    <div class="card-glow"></div>
+
+    <div class="p-8">
+      <!-- Header -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center mb-5">
+          <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
+        </div>
+        <h1 class="text-2xl font-bold tracking-tight">BUYER LOGIN</h1>
+        <p class="text-xs font-mono mt-2" style="color:var(--muted);">KRYONIX CUSTOMER PORTAL // AUTH REQUIRED</p>
+      </div>
+
+      <!-- Status -->
+      <div class="status-line mb-6">
+        <span class="status-dot"></span>
+        SECURE CONNECTION &mdash; FIREBASE AUTH ENABLED
+      </div>
+
+      <!-- Form -->
+      <form onsubmit="handleLogin(event)" id="loginForm">
+        <div class="input-wrap">
+          <input type="email" id="email" class="input-field" placeholder="EMAIL ADDRESS" required>
+          <i class="fas fa-envelope"></i>
+        </div>
+        <div class="input-wrap">
+          <input type="password" id="pass" class="input-field" placeholder="PASSWORD" required>
+          <i class="fas fa-lock"></i>
+        </div>
+        <button type="submit" class="btn-login" id="loginBtn">
+          <i class="fas fa-sign-in-alt mr-2 text-sm"></i>LOGIN
+        </button>
+      </form>
+
+      <!-- Divider -->
+      <div class="divider">
+        <span>OPTIONS</span>
+      </div>
+
+      <!-- Bottom links -->
+      <div class="space-y-1">
+        <a href="register-buyer.html" class="back-link register-link">
+          <i class="fas fa-user-plus"></i>
+          Don't have an account? Register
+        </a>
+        <a href="login-admin.html" class="back-link">
+          <i class="fas fa-arrow-left"></i>
+          Login as Admin
+        </a>
+        <a href="index.html" class="back-link">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </a>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    // FIREBASE AUTH IMPORT
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
@@ -66,55 +252,105 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    // ═══ TOAST SYSTEM ═══
+    function showToast(message, type = 'error') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      const icon = type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle';
+      toast.innerHTML = `<i class="fas ${icon}"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.classList.add('fadeout');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // ═══ LOGIN ═══
     window.handleLogin = async (e) => {
       e.preventDefault();
       const email = document.getElementById('email').value;
       const pass = document.getElementById('pass').value;
-      const btn = document.querySelector('.btn-login');
+      const btn = document.getElementById('loginBtn');
 
-      btn.innerText = "CHECKING...";
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2 text-sm"></i>AUTHENTICATING...';
+      btn.classList.add('loading');
       btn.disabled = true;
 
       try {
-        // Login pakai Firebase Auth
         await signInWithEmailAndPassword(auth, email, pass);
-        alert("LOGIN SUCCESS!");
-        window.location.href = 'index.html';
+        btn.innerHTML = '<i class="fas fa-check-circle mr-2 text-sm"></i>LOGIN SUCCESS';
+        showToast('Login berhasil! Mengalihkan...', 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1200);
       } catch (error) {
         console.error(error);
-        if(error.code === 'auth/invalid-credential') {
-          alert("Email atau Password Salah!");
-        } else if(error.code === 'auth/user-not-found') {
-          alert("User tidak ditemukan. Silakan daftar.");
+        if (error.code === 'auth/invalid-credential') {
+          showToast('Email atau password salah.');
+        } else if (error.code === 'auth/user-not-found') {
+          showToast('User tidak ditemukan. Silakan daftar terlebih dahulu.');
+        } else if (error.code === 'auth/too-many-requests') {
+          showToast('Terlalu banyak percobaan. Coba lagi nanti.');
+        } else if (error.code === 'auth/invalid-email') {
+          showToast('Format email tidak valid.');
         } else {
-          alert("Error: " + error.message);
+          showToast('Error: ' + error.message);
         }
-      } finally {
-        btn.innerText = "LOGIN";
+        btn.innerHTML = '<i class="fas fa-sign-in-alt mr-2 text-sm"></i>LOGIN';
+        btn.classList.remove('loading');
         btn.disabled = false;
       }
     }
   </script>
 
   <script>
+    // ═══ PARTICLES ═══
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
-    function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-    for (let i = 0; i < 40; i++) pArr.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.5, speedY: (Math.random() - 0.5) * 0.5, opacity: Math.random() * 0.5 + 0.1 });
+    function resizeCanvas() { canvas.width = innerWidth; canvas.height = innerHeight; }
+    addEventListener('resize', resizeCanvas); resizeCanvas();
+    for (let i = 0; i < 40; i++) pArr.push({
+      x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+      size: Math.random() * 1.5 + 0.5, speedX: (Math.random() - 0.5) * 0.4,
+      speedY: (Math.random() - 0.5) * 0.4, opacity: Math.random() * 0.5 + 0.1
+    });
     function animP() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       pArr.forEach(p => {
         p.x += p.speedX; p.y += p.speedY;
         if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0;
         if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2); ctx.fillStyle = `rgba(0,196,255,${p.opacity})`; ctx.fill();
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,196,255,${p.opacity})`; ctx.fill();
       });
+      for (let i = 0; i < pArr.length; i++) {
+        for (let j = i + 1; j < pArr.length; j++) {
+          const dx = pArr[i].x - pArr[j].x, dy = pArr[i].y - pArr[j].y;
+          const d = Math.sqrt(dx * dx + dy * dy);
+          if (d < 100) {
+            ctx.beginPath(); ctx.moveTo(pArr[i].x, pArr[i].y); ctx.lineTo(pArr[j].x, pArr[j].y);
+            ctx.strokeStyle = `rgba(0,196,255,${0.04 * (1 - d / 100)})`;
+            ctx.lineWidth = 0.5; ctx.stroke();
+          }
+        }
+      }
       requestAnimationFrame(animP);
     }
     animP();
+
+    // ═══ INPUT FOCUS CARD GLOW ═══
+    const inputs = document.querySelectorAll('.input-field');
+    const card = document.getElementById('loginCard');
+    inputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        card.style.borderColor = 'rgba(0,196,255,0.2)';
+        card.style.boxShadow = '0 0 60px rgba(0,0,0,0.5), 0 0 30px rgba(0,196,255,0.06)';
+      });
+      input.addEventListener('blur', () => {
+        card.style.borderColor = 'var(--border)';
+        card.style.boxShadow = '0 0 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,196,255,0.03)';
+      });
+    });
   </script>
 </body>
 </html>
