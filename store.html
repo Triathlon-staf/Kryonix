@@ -66,7 +66,6 @@
 
     .text-gradient { background: linear-gradient(135deg, var(--green), var(--cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* User dropdown */
     .user-menu { position: relative; }
     .user-dropdown {
       position: absolute; top: calc(100% + 8px); right: 0; min-width: 210px;
@@ -85,7 +84,6 @@
     .user-dropdown a:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
     .user-dropdown button.logout-btn:hover { background: rgba(239,68,68,0.08); color: #f87171; }
 
-    /* Product cards */
     .product-card {
       background: rgba(12, 18, 32, 0.6); border: 1px solid var(--border);
       border-radius: 20px; overflow: hidden; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
@@ -163,7 +161,6 @@
     .loading-logo { animation: loadPulse 1.5s ease-in-out infinite; }
     @keyframes loadPulse { 0%,100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.08); opacity: 1; } }
 
-    /* ═══ FOOTER ═══ */
     .site-footer {
       position: relative; z-index: 10; width: 100%;
       background: linear-gradient(180deg, transparent 0%, rgba(6,10,16,0.98) 100px);
@@ -313,6 +310,7 @@
         <button onclick="filterProducts('domain', this)" class="filter-btn px-5 py-2.5 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">DOMAIN</button>
         <button onclick="filterProducts('game', this)" class="filter-btn px-5 py-2.5 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">GAME SERVER</button>
         <button onclick="filterProducts('dedicated', this)" class="filter-btn px-5 py-2.5 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">DEDICATED</button>
+        <button onclick="filterProducts('other', this)" class="filter-btn px-5 py-2.5 rounded-full border border-dark-border text-sm font-semibold hover:border-green-500">OTHER</button>
       </div>
 
       <!-- Product Grid -->
