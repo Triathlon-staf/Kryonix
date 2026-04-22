@@ -30,28 +30,13 @@
       --wa-text: #e9edef; --wa-muted: #8696a0; --wa-time: #667781; --wa-input: #1e2b33;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; height: 100dvh; overflow: hidden; }
+    body { background: var(--wa-dark); color: var(--wa-text); font-family: 'Space Grotesk', sans-serif; }
 
-    /* ★ FIX UTAMA: gunakan dvh bukan vh ★ */
-    html, body {
-      height: 100%;
-      height: 100dvh;
-      overflow: hidden;
-    }
-    body {
-      background: var(--wa-dark);
-      color: var(--wa-text);
-      font-family: 'Space Grotesk', sans-serif;
-    }
-
-    /* ★ FIX: layout wrapper pakai dvh ★ */
     .app-layout {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh;
-      position: relative;
-      z-index: 10;
-      overflow: hidden;
+      display: flex; flex-direction: column;
+      height: 100vh; height: 100dvh;
+      position: relative; z-index: 10; overflow: hidden;
     }
 
     .chat-bg {
@@ -83,16 +68,11 @@
     .date-sep::before, .date-sep::after { content: ''; flex: 1; height: 1px; background: var(--wa-border); }
     .date-sep span { font-size: 11px; color: var(--wa-muted); white-space: nowrap; padding: 0 8px; }
 
-    /* ★ FIX: input wrap pakai safe-area-inset-bottom untuk HP dengan nav bar bawah ★ */
     .chat-input-wrap {
-      background: var(--wa-input);
-      border-top: 1px solid var(--wa-border);
+      background: var(--wa-input); border-top: 1px solid var(--wa-border);
       padding: 10px 12px;
       padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-      display: flex;
-      align-items: flex-end;
-      gap: 10px;
-      flex-shrink: 0;
+      display: flex; align-items: flex-end; gap: 10px; flex-shrink: 0;
     }
     .chat-input {
       flex: 1; background: var(--wa-dark); border: none; border-radius: 8px;
@@ -100,7 +80,6 @@
       font-family: 'Space Grotesk', sans-serif; resize: none; max-height: 120px;
       min-height: 42px; line-height: 1.4;
     }
-    /* ★ FIX: font-size 16px mencegah auto-zoom di iOS/Android ★ */
     .chat-input::placeholder { color: var(--wa-muted); }
     .send-btn {
       width: 42px; height: 42px; border-radius: 50%; border: none;
@@ -150,16 +129,19 @@
 
     .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; }
 
-    /* ★ FIX: chat area harus bisa scroll tapi tidak overflow parent ★ */
     .chat-scroll {
-      flex: 1 1 0%;
-      min-height: 0;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
+      flex: 1 1 0%; min-height: 0;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: contain;
     }
 
-    /* ★ FIX: mencegah keyboard push layout di beberapa Android ★ */
+    /* Kirim indikator */
+    .send-btn.sending {
+      opacity: 0.6; pointer-events: none;
+    }
+    .send-btn.sending i { animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
     @supports (height: 100dvh) {
       .app-layout { height: 100dvh; }
     }
@@ -167,7 +149,6 @@
 </head>
 <body>
 
-  <!-- Loading -->
   <div id="loadingScreen" class="loading-screen">
     <div class="w-10 h-10 border-2 border-green-500 border-t-transparent rounded-full animate-spin mb-4"></div>
     <p class="text-sm text-gray-500 font-mono">VERIFYING ACCESS...</p>
@@ -175,7 +156,6 @@
 
   <div class="chat-bg"></div>
 
-  <!-- ★ FIX: pakai class app-layout bukan h-screen ★ -->
   <div class="app-layout">
 
     <!-- NAVBAR -->
@@ -243,34 +223,29 @@
       </div>
     </div>
 
-    <!-- ★ FIX: pakai class chat-scroll ★ -->
+    <!-- MESSAGES -->
     <div class="chat-scroll px-4 py-2" id="chatArea">
       <div class="flex justify-center py-16">
         <i class="fas fa-circle-notch fa-spin text-2xl text-wa-green"></i>
       </div>
     </div>
 
-    <!-- INPUT AREA -->
-    <form id="chatForm" onsubmit="return false;" class="flex-shrink-0">
-      <div class="chat-input-wrap">
-        <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"></textarea>
-        <button type="submit" id="sendBtn" class="send-btn is-disabled" aria-label="Kirim pesan">
-          <i class="fas fa-paper-plane text-sm"></i>
-        </button>
-      </div>
-    </form>
+    <!-- ★ FIX: BUKAN form, langsung div biasa ★ -->
+    <div class="chat-input-wrap">
+      <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"></textarea>
+      <button type="button" id="sendBtn" class="send-btn is-disabled" aria-label="Kirim pesan">
+        <i class="fas fa-paper-plane text-sm"></i>
+      </button>
+    </div>
   </div>
 
-  <!-- ★ FIX: visual-viewport API untuk handle keyboard Android ★ -->
+  <!-- visualViewport fix untuk keyboard Android -->
   <script>
     if (window.visualViewport) {
       function fixLayout() {
-        const vv = window.visualViewport;
-        document.documentElement.style.setProperty('--vv-height', vv.height + 'px');
-        const layout = document.querySelector('.app-layout');
-        if (layout) {
-          layout.style.height = vv.height + 'px';
-        }
+        var vv = window.visualViewport;
+        var layout = document.querySelector('.app-layout');
+        if (layout) layout.style.height = vv.height + 'px';
       }
       window.visualViewport.addEventListener('resize', fixLayout);
       window.visualViewport.addEventListener('scroll', fixLayout);
@@ -302,11 +277,11 @@
     const chatArea = document.getElementById('chatArea');
     const msgInput = document.getElementById('msgInput');
     const sendBtn = document.getElementById('sendBtn');
-    const chatForm = document.getElementById('chatForm');
     let lastMsgDate = '';
     let typingTimeout = null;
+    let isSending = false; // ★ FIX: guard anti double-send
 
-    // ── AUTH GUARD ──
+    // ── AUTH ──
     onAuthStateChanged(auth, async (user) => {
       const loader = document.getElementById('loadingScreen');
       if (!user) { window.location.href = 'login-buyer.html'; return; }
@@ -340,49 +315,40 @@
       setInterval(() => { update(myPresenceRef, { lastSeen: Date.now() }); }, 30000);
     }
 
-    // ── ONLINE COUNT ──
     function listenOnline() {
-      const cutoff = Date.now() - 120000;
       onValue(ref(db, "chat_online"), (snap) => {
         const raw = snap.val();
         if (!raw) { document.getElementById('onlineCount').textContent = '0 online'; return; }
         let count = 0;
+        const cutoff = Date.now() - 120000;
         Object.values(raw).forEach(u => { if (u.lastSeen > cutoff) count++; });
-        document.getElementById('onlineCount').textContent = `${count} online`;
+        document.getElementById('onlineCount').textContent = count + ' online';
       });
     }
 
-    // ── TYPING INDICATOR ──
     function listenTyping() {
       onValue(ref(db, "chat_typing"), (snap) => {
         const raw = snap.val();
         const el = document.getElementById('typingStatus');
-        const nameEl = document.getElementById('typingName');
         if (!raw || raw.uid === myUid || Date.now() - raw.timestamp > 3000) {
           el.classList.add('hidden');
           return;
         }
-        nameEl.textContent = raw.name;
+        document.getElementById('typingName').textContent = raw.name;
         el.classList.remove('hidden');
       });
     }
 
-    // ── ENABLE/DISABLE SEND ──
+    // ── BUTTON STATE ──
     function syncBtnState() {
-      const hasText = msgInput.value.trim().length > 0;
-      sendBtn.classList.toggle('is-disabled', !hasText);
+      sendBtn.classList.toggle('is-disabled', msgInput.value.trim().length === 0);
     }
-    msgInput.addEventListener('input', syncBtnState);
-    msgInput.addEventListener('change', syncBtnState);
-
-    // ── AUTO-RESIZE TEXTAREA ──
     msgInput.addEventListener('input', () => {
+      syncBtnState();
+      // auto-resize
       msgInput.style.height = 'auto';
       msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-    });
-
-    // ── TYPING TRIGGER ──
-    msgInput.addEventListener('input', () => {
+      // typing indicator
       if (msgInput.value.trim()) {
         set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
       }
@@ -394,19 +360,14 @@
       }, 2000);
     });
 
-    // ── SEND: form submit (utama untuk Android) ──
-    chatForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      sendMessage();
-    });
-
-    // ── SEND: click fallback ──
+    // ★ FIX: hanya SATU cara kirim — click pada button
     sendBtn.addEventListener('click', (e) => {
       e.preventDefault();
+      e.stopPropagation();
       sendMessage();
     });
 
-    // ── SEND: Enter key ──
+    // ★ FIX: Enter juga kirim, tapi cegah double-fire
     msgInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -414,27 +375,50 @@
       }
     });
 
-    // ── ACTUAL SEND ──
+    // ★ FIX: cegah form submit apapun (tidak ada form lagi, tapi safety)
+    document.addEventListener('submit', (e) => { e.preventDefault(); });
+
+    // ── SEND LOGIC (dengan guard + error handling) ──
     function sendMessage() {
+      if (isSending) return; // ★ guard: cegah double-send
+
       const text = msgInput.value.trim();
       if (!text || !myUid) return;
 
-      push(ref(db, "public_chat"), {
+      isSending = true;
+      sendBtn.classList.add('sending');
+      sendBtn.classList.remove('is-disabled');
+
+      const msgData = {
         senderUid: myUid,
         senderName: myName,
         text: text.substring(0, 500),
         timestamp: Date.now()
-      });
+      };
 
-      msgInput.value = '';
-      msgInput.style.height = 'auto';
-      syncBtnState();
-
-      // ★ FIX: scroll setelah keyboard mungkin masih terbuka ──
-      setTimeout(scrollBottom, 100);
-      setTimeout(scrollBottom, 300);
-
-      set(ref(db, "chat_typing"), null);
+      // ★ FIX: push dulu, BARU clear input setelah berhasil
+      push(ref(db, "public_chat"), msgData)
+        .then(() => {
+          // berhasil → clear input
+          msgInput.value = '';
+          msgInput.style.height = 'auto';
+          syncBtnState();
+          set(ref(db, "chat_typing"), null);
+          msgInput.blur(); // tutup keyboard setelah kirim
+          setTimeout(scrollBottom, 150);
+          setTimeout(scrollBottom, 400);
+        })
+        .catch((err) => {
+          // gagal → JANGAN clear, biar user bisa coba lagi
+          console.error('Gagal kirim:', err);
+          alert('Gagal mengirim pesan. Coba lagi.');
+          msgInput.focus();
+        })
+        .finally(() => {
+          isSending = false;
+          sendBtn.classList.remove('sending');
+          syncBtnState();
+        });
     }
 
     function scrollBottom() {
@@ -443,22 +427,19 @@
 
     // ── LOAD MESSAGES ──
     function loadMessages() {
-      const msgRef = ref(db, "public_chat");
-      const q = query(msgRef, orderByChild("timestamp"), limitToLast(100));
+      const q = query(ref(db, "public_chat"), orderByChild("timestamp"), limitToLast(100));
 
       onChildAdded(q, (snap) => {
         appendMessage(snap.val(), snap.key);
         scrollBottom();
       });
-
       onChildChanged(q, (snap) => {
-        const el = document.getElementById(`msg-${snap.key}`);
+        const el = document.getElementById('msg-' + snap.key);
         if (el) el.remove();
         appendMessage(snap.val(), snap.key);
       });
-
       onChildRemoved(q, (snap) => {
-        const el = document.getElementById(`msg-${snap.key}`);
+        const el = document.getElementById('msg-' + snap.key);
         if (el) el.remove();
       });
     }
@@ -473,28 +454,36 @@
         lastMsgDate = date;
         const sep = document.createElement('div');
         sep.className = 'date-sep';
-        sep.innerHTML = `<span>${date}</span>`;
+        sep.innerHTML = '<span>' + date + '</span>';
         chatArea.appendChild(sep);
       }
 
       const wrapper = document.createElement('div');
-      wrapper.id = `msg-${key}`;
-      wrapper.className = `flex ${isMe ? 'justify-end' : 'justify-start'} mb-1`;
+      wrapper.id = 'msg-' + key;
+      wrapper.className = 'flex ' + (isMe ? 'justify-end' : 'justify-start') + ' mb-1';
 
       const hue = hashCode(msg.senderName || '?') % 360;
-      const avatarBg = `hsl(${hue}, 50%, 25%)`;
-      const avatarColor = `hsl(${hue}, 70%, 65%)`;
+      const avatarBg = 'hsl(' + hue + ', 50%, 25%)';
+      const avatarColor = 'hsl(' + hue + ', 70%, 65%)';
+      const initial = (msg.senderName || '?').charAt(0).toUpperCase();
 
-      wrapper.innerHTML = `
-        ${!isMe ? `<div class="avatar mr-2 mt-auto" style="background:${avatarBg};color:${avatarColor};font-size:13px;">${(msg.senderName || '?').charAt(0).toUpperCase()}</div>` : ''}
-        <div class="msg-bubble ${isMe ? 'msg-me' : 'msg-other'}">
-          ${!isMe ? `<div class="text-xs font-semibold mb-0.5" style="color:${avatarColor}">${escapeHtml(msg.senderName || 'Anon')}</div>` : ''}
-          <div class="text-sm leading-relaxed break-words" style="color:#e9edef;">${linkify(escapeHtml(msg.text || ''))}</div>
-          <div class="text-right mt-0.5"><span class="text-[10px]" style="color:rgba(255,255,255,0.45);">${time}${isMe ? ' <i class="fas fa-check-double text-[9px]" style="color:rgba(79,195,247,0.7);"></i>' : ''}</span></div>
-        </div>
-        ${isMe ? `<div class="avatar ml-2 mt-auto" style="background:${avatarBg};color:${avatarColor};font-size:13px;">${myInitial}</div>` : ''}
-      `;
+      let html = '';
+      if (!isMe) {
+        html += '<div class="avatar mr-2 mt-auto" style="background:' + avatarBg + ';color:' + avatarColor + ';font-size:13px;">' + initial + '</div>';
+      }
+      html += '<div class="msg-bubble ' + (isMe ? 'msg-me' : 'msg-other') + '">';
+      if (!isMe) {
+        html += '<div class="text-xs font-semibold mb-0.5" style="color:' + avatarColor + '">' + escapeHtml(msg.senderName || 'Anon') + '</div>';
+      }
+      html += '<div class="text-sm leading-relaxed break-words" style="color:#e9edef;">' + linkify(escapeHtml(msg.text || '')) + '</div>';
+      html += '<div class="text-right mt-0.5"><span class="text-[10px]" style="color:rgba(255,255,255,0.45);">' + time;
+      if (isMe) html += ' <i class="fas fa-check-double text-[9px]" style="color:rgba(79,195,247,0.7);"></i>';
+      html += '</span></div></div>';
+      if (isMe) {
+        html += '<div class="avatar ml-2 mt-auto" style="background:' + avatarBg + ';color:' + avatarColor + ';font-size:13px;">' + myInitial + '</div>';
+      }
 
+      wrapper.innerHTML = html;
       chatArea.appendChild(wrapper);
     }
 
@@ -529,7 +518,7 @@
       return Math.abs(hash);
     }
 
-    // ── NAV UI ──
+    // ── NAV ──
     window.toggleDropdown = () => {
       const dd = document.getElementById('userDropdown');
       const ch = document.getElementById('dropdownChevron');
@@ -549,7 +538,7 @@
     });
 
     window.handleLogout = async () => {
-      if (myUid) remove(ref(db, `chat_online/${myUid}`));
+      if (myUid) remove(ref(db, 'chat_online/' + myUid));
       try { await signOut(auth); location.reload(); } catch(e) { console.error(e); }
     };
 
