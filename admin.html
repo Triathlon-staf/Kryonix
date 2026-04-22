@@ -183,7 +183,7 @@
             <button onclick="saveSettings()" class="mt-4 px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition">Save Changes</button>
           </div>
 
-          <!-- ★ QRIS COMMANDS (baru) ★ -->
+          <!-- QRIS COMMANDS -->
           <div class="bg-dark-card border border-dark-border rounded-xl p-6">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-lg font-bold text-green-400"><i class="fas fa-qrcode mr-2"></i>QRIS Payment Commands</h3>
@@ -286,7 +286,7 @@
     </div>
   </div>
 
-  <!-- ★ MODAL: QRIS COMMAND (baru) ★ -->
+  <!-- MODAL: QRIS COMMAND -->
   <div id="qrisModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closeQrisModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
@@ -361,7 +361,7 @@
           <div id="chatMessages" class="space-y-3 min-h-[100px]"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
         </div>
       </div>
-      <!-- ★ QRIS QUICK BAR (baru) ★ -->
+      <!-- QRIS QUICK BAR -->
       <div id="qrisQuickBar" class="hidden flex-shrink-0 border-t border-dark-border px-4 py-2 bg-dark-card/80">
         <div class="flex items-center gap-2 overflow-x-auto" id="qrisQuickBarInner">
           <span class="text-[10px] text-gray-600 font-mono flex-shrink-0">QRIS:</span>
@@ -448,11 +448,9 @@
       });
     }
 
-    // ══════════════════════════════════════
-    // ★ QRIS COMMANDS SYSTEM
-    // ══════════════════════════════════════
-    let qrisCommands = {}; // { "/pay1": { label, image, ... }, ... }
-    let qrisFormData = { image: null }; // untuk modal form
+    // ═══ QRIS COMMANDS SYSTEM ═══
+    let qrisCommands = {};
+    let qrisFormData = { image: null };
 
     function loadQrisCommands() {
       onValue(ref(db, "settings/qris_commands"), (snap) => {
@@ -495,7 +493,7 @@
             </div>
             <p class="text-[10px] text-gray-600 font-mono">Ketik <span class="text-green-400/60">${esc(q.command)}</span> di chat order → auto-kirim QRIS</p>
           </div>
-          <button onclick='editQris(${JSON.stringify({ id:q.id, command:(q.command||"").replace(/'/g,"\\'"), label:(q.label||"").replace(/'/g,"\\'"), image:q.image?true:false })})' class="text-cyan-400 hover:text-cyan-300 p-2 rounded-lg hover:bg-cyan-500/10 transition flex-shrink-0" title="Edit"><i class="fas fa-edit"></i></button>
+          <button onclick='editQris(${JSON.stringify({ id:q.id, command:(q.command||"").replace(/'/g,"\\'"), label:(q.label||"").replace(/'/g,"\\'"), image:q.image?true:false })})') class="text-cyan-400 hover:text-cyan-300 p-2 rounded-lg hover:bg-cyan-500/10 transition flex-shrink-0" title="Edit"><i class="fas fa-edit"></i></button>
           <button onclick="deleteQris('${q.id}')" class="text-red-400 hover:text-red-300 p-2 rounded-lg hover:bg-red-500/10 transition flex-shrink-0" title="Hapus"><i class="fas fa-trash"></i></button>
         `;
         list.appendChild(card);
@@ -508,7 +506,6 @@
       const cmds = Object.keys(qrisCommands);
       if (cmds.length === 0) { bar.classList.add('hidden'); return; }
       bar.classList.remove('hidden');
-      // Reset inner, keep label
       inner.innerHTML = '<span class="text-[10px] text-gray-600 font-mono flex-shrink-0">QRIS:</span>';
       cmds.forEach(cmd => {
         const q = qrisCommands[cmd];
@@ -521,7 +518,6 @@
       });
     }
 
-    // QRIS Modal
     window.openQrisModal = (isEdit = false, data = null) => {
       const modal = document.getElementById('qrisModal');
       modal.classList.remove('hidden');
@@ -545,7 +541,6 @@
     window.closeQrisModal = () => document.getElementById('qrisModal').classList.add('hidden');
 
     window.editQris = (data) => {
-      // Fetch full data including image from qrisCommands
       const cmd = data.command.toLowerCase().trim();
       const fullData = qrisCommands[cmd];
       if (fullData) {
@@ -561,7 +556,6 @@
       catch(e) { showToast('Gagal.', 'error'); }
     };
 
-    // QRIS form file input
     document.getElementById('qrisFormFile').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if (!file) return;
       try {
@@ -580,7 +574,6 @@
       let command = document.getElementById('qrisCommand').value.trim();
       const label = document.getElementById('qrisLabel').value.trim();
 
-      // Validate command format
       if (!command.startsWith('/')) {
         showToast('Perintah harus diawali dengan /', 'error');
         return;
@@ -591,7 +584,6 @@
         return;
       }
 
-      // Check duplicate (exclude self when editing)
       const normalizedCmd = command.toLowerCase();
       for (const [key, val] of Object.entries(qrisCommands)) {
         if (key === normalizedCmd && val._id !== id) {
@@ -620,7 +612,6 @@
       }
     };
 
-    // Quick send QRIS from chat panel
     window.quickSendQris = async (cmd) => {
       if (!currentChatOrderId) return;
       const q = qrisCommands[cmd];
@@ -637,8 +628,6 @@
       } catch(e) { showToast('Gagal mengirim.', 'error'); }
     };
 
-    // ══════════════════════════════════════
-
     let pendingChatImage = null;
     document.getElementById('chatImageInput').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if(!file) return;
@@ -648,14 +637,13 @@
         document.getElementById('chatPreviewImg').src = pendingChatImage;
         document.getElementById('chatPreviewName').textContent = file.name;
         document.getElementById('chatImagePreview').classList.remove('hidden');
-      } catch(err) { showToast(typeof err==='string'?err:'Gagal.', 'error'); }
+      } catch(err) { showToast(typeof err==='string'?err:'Gagal.','error'); }
       e.target.value = '';
     });
     window.clearChatImage = () => { pendingChatImage = null; document.getElementById('chatImagePreview').classList.add('hidden'); };
 
     if (sessionStorage.getItem('kryonix_admin') !== 'granted') { window.location.href = 'login-admin.html'; }
 
-    // Load QRIS commands immediately (needed for order chat, not just settings)
     loadQrisCommands();
 
     window.switchTab = (tab) => {
@@ -753,7 +741,7 @@
     window.handlePartnerSubmit = async (e) => {
       e.preventDefault(); const id=document.getElementById('ptId').value; const cat=document.getElementById('ptCat').value;
       const data = { name:document.getElementById('ptName').value.trim(), logo:document.getElementById('ptLogo').value.trim(), category:cat, icon:document.getElementById('ptIcon').value.trim()||partnerCatIcons[cat]||'fa-star', website:document.getElementById('ptWebsite').value.trim(), description:document.getElementById('ptDesc').value.trim() };
-      try { if(id){await update(ref(db,`partners/${id}`),data);showToast("Partner diupdate!");}else{const r=push(ref(db,"partners"));await set(r,data);showToast("Partner ditambahkan!");} closePartnerModal(); }
+      try { if(id){await update(ref(db,`partners/${id}`),data);showToast("Partner diupdate!");}else{const r=push(ref(db,"partners");await set(r,data);showToast("Partner ditambahkan!");} closePartnerModal(); }
       catch(e){console.error(e);showToast("Gagal menyimpan.","error");}
     };
     window.deletePartner = async (id) => { if(!confirm("Hapus partner ini?"))return; try{await remove(ref(db,`partners/${id}`));showToast("Partner dihapus.");}catch(e){showToast("Gagal.","error");} };
@@ -809,7 +797,7 @@
       };
       try {
         if (id) { await update(ref(db, `testimonials/${id}`), data); showToast("Testimoni diupdate!"); }
-        else { const r = push(ref(db, "testimonials")); data.createdAt = serverTimestamp(); await set(r, data); showToast("Testimoni ditambahkan!"); }
+        else { const r = push(ref(db, "testimonials"); data.createdAt = serverTimestamp(); await set(r, data); showToast("Testimoni ditambahkan!"); }
         closeTestiModal();
       } catch(e) { console.error(e); showToast("Gagal.", "error"); }
     };
@@ -880,7 +868,29 @@
       if(unreadCount>0){badge.classList.remove('hidden');badge.textContent=unreadCount>99?'99+':unreadCount;}else{badge.classList.add('hidden');}
     });
 
-    window.updateOrderStatusFromPanel = async () => { if(!currentChatOrderId)return; try{await update(ref(db,`orders/${currentChatOrderId}`),{status:document.getElementById('detailStatus').value});showToast("Status diupdate!");}catch(e){showToast("Gagal.","error");} };
+    window.updateOrderStatusFromPanel = async () => {
+      if(!currentChatOrderId) return;
+      const newStatus = document.getElementById('detailStatus').value;
+      try {
+        await update(ref(db, `orders/${currentChatOrderId}`), { status: newStatus });
+
+        // ★ Queue push notification ke buyer ★
+        const orderSnap = await get(ref(db, `orders/${currentChatOrderId}`));
+        const order = orderSnap.val();
+        if (order) {
+          const labels = { pending:'Menunggu Pembayaran', processing:'Sedang Diproses', completed:'Pesanan Selesai!', cancelled:'Pesanan Dibatalkan' };
+          await push(ref(db, "notifications/pending"), {
+            title: 'KRYONIX — Update Pesanan',
+            body: `"${order.productTitle}" sekarang: ${labels[newStatus] || newStatus}`,
+            url: '/track.html',
+            orderId: currentChatOrderId,
+            createdAt: serverTimestamp()
+          });
+        }
+
+        showToast("Status diupdate & notifikasi diqueue!");
+      } catch(e) { showToast("Gagal.", "error"); }
+    };
     window.deleteOrder = async (k) => { if(!confirm("Hapus order ini?"))return; try{await remove(ref(db,`orders/${k}`));showToast("Order dihapus.");}catch(e){showToast("Gagal.","error");} };
 
     let currentChatOrderId = null, unsubOrder = null, unsubChat = null;
@@ -924,7 +934,7 @@
           if (m.image) {
             const imgKey = 'img_' + m.key;
             imageStore[imgKey] = m.image;
-            contentHtml += `<img src="${m.image}" loading="lazy" class="rounded-lg mt-1.5 max-w-[260px] cursor-pointer hover:brightness-110 transition border border-white/5" onclick="viewImage('${imgKey}')">`;
+            contentHtml += `<img src="${m.image}" loading="lazy" class="rounded-lg mt-1.5 max-w-[260px] cursor-pointer hover:brightness-110 transition border border border-white/5" onclick="viewImage('${imgKey}')">`;
           }
           contentHtml += `<p class="text-[10px] ${isMe?'text-green-500/50':'text-gray-600'} mt-1 text-right">${formatTime(m.timestamp)}</p>`;
           div.innerHTML = `<div class="chat-bubble ${isMe?'bg-green-500/10 border-green-500/20':'bg-dark-card border-dark-border'} border rounded-2xl ${isMe?'rounded-br-sm':'rounded-bl-sm'} px-4 py-2.5">${contentHtml}</div>`;
@@ -935,7 +945,8 @@
     };
 
     window.closeOrderDetail = () => {
-      if(unsubOrder) unsubOrder(); if(unsubChat) unsubChat();
+      if(unsubOrder) unsubOrder();
+      if(unsubChat) unsubChat();
       currentChatOrderId = null;
       document.getElementById('orderDetailPanel').classList.add('hidden');
     };
@@ -987,13 +998,13 @@
     }
   </script>
   <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(r => console.log('[SW] OK'))
-        .catch(e => console.warn('[SW] Fail', e));
-    });
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(r => console.log('[SW] Registered'))
+          .catch(e => console.warn('[SW] Failed:', e));
+      });
+    }
+  </script>
 </body>
 </html>
