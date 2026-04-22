@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KRYONIX | NEXT GEN HOSTING</title>
   <link rel="icon" type="image/png" href="images/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00e89d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KRYONIX">
+  <link rel="apple-touch-icon" href="images/icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -1082,6 +1088,18 @@
     window.addEventListener('scroll', () => {
       document.getElementById('navbar').style.boxShadow = window.scrollY > 100 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none';
     });
+    
   </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(r => console.log('[SW] Registered'))
+          .catch(e => console.warn('[SW] Failed:', e));
+      });
+    }
+  </script>
+</body>
+</html>
 </body>
 </html>
