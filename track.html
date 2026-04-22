@@ -5,6 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lacak Pesanan | KRYONIX</title>
   <link rel="icon" type="image/png" href="images/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#00e89d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KRYONIX">
+  <link rel="apple-touch-icon" href="images/icon-192.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -86,7 +92,7 @@
           <div id="chatMessages" class="space-y-3 min-h-[100px]"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
         </div>
       </div>
-      <!-- ★ QRIS HINT BAR (baru) ★ -->
+      <!-- QRIS HINT BAR -->
       <div id="qrisHintBar" class="hidden flex-shrink-0 border-t border-dark-border px-4 py-2 bg-dark-card/80">
         <div class="flex items-center gap-2 overflow-x-auto" id="qrisHintBarInner">
           <span class="text-[10px] text-gray-600 font-mono flex-shrink-0">METODE BAYAR:</span>
@@ -166,9 +172,7 @@
       });
     }
 
-    // ══════════════════════════════════════
-    // ★ QRIS COMMANDS (buyer side)
-    // ══════════════════════════════════════
+    // ═══ QRIS COMMANDS (buyer side) ═══
     let qrisCommands = {};
 
     function loadQrisCommands() {
@@ -196,7 +200,6 @@
         const q = qrisCommands[cmd];
         const chip = document.createElement('button');
         chip.className = 'qris-cmd-chip';
-        // Tampilkan command + nama singkat
         const shortLabel = q.label ? q.label.split(' - ')[0] : '';
         chip.textContent = cmd + (shortLabel ? ' ' + shortLabel : '');
         chip.title = 'Minta pembayaran via ' + (q.label || cmd);
@@ -205,19 +208,16 @@
       });
     }
 
-    // Buyer klik chip → auto request + auto reply QRIS
     window.quickSendQris = async (cmd) => {
       if (!currentChatOrderId) return;
       const q = qrisCommands[cmd];
       if (!q || !q.image) return;
       try {
-        // Kirim pesan buyer: request
         await set(push(ref(db, `orders/${currentChatOrderId}/chat`)), {
           sender: 'buyer',
           text: 'Saya ingin membayar via ' + (q.label || cmd),
           timestamp: serverTimestamp()
         });
-        // Auto-reply QRIS dari admin (system)
         await set(push(ref(db, `orders/${currentChatOrderId}/chat`)), {
           sender: 'admin',
           text: '💰 Pembayaran via ' + (q.label || cmd) + '. Silakan scan QRIS berikut:',
@@ -227,10 +227,9 @@
       } catch(e) { showToast('Gagal.', 'error'); }
     };
 
-    // Load QRIS commands saat page load
     loadQrisCommands();
-    // ══════════════════════════════════════
 
+    // ═══ CHAT IMAGE ═══
     let pendingChatImage = null;
     document.getElementById('chatImageInput').addEventListener('change', async (e) => {
       const file = e.target.files[0]; if(!file) return;
@@ -248,6 +247,7 @@
       document.getElementById('chatImagePreview').classList.add('hidden');
     };
 
+    // ═══ SEARCH ═══
     const urlParams=new URLSearchParams(window.location.search);
     if(urlParams.get('phone')){document.getElementById('searchPhone').value=urlParams.get('phone');searchOrders();}
     document.getElementById('searchPhone').addEventListener('keydown',(e)=>{if(e.key==='Enter')searchOrders();});
@@ -297,6 +297,7 @@
       },{onlyOnce:true});
     }
 
+    // ═══ ORDER DETAIL + CHAT ═══
     let currentChatOrderId=null, unsubOrder=null, unsubChat=null;
 
     window.openOrderDetail=(orderId)=>{
@@ -326,3 +327,78 @@
         const raw=snap.val(); container.innerHTML='';
         if(!raw){container.innerHTML='<div class="text-center text-gray-600 text-sm py-8">Belum ada pesan. Tanyakan sesuatu ke admin.</div>';return;}
         const msgs=Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+        msgs.forEach(m=>{
+          const isMe=m.sender==='buyer';
+          const div=document.createElement('div');
+          div.className=`flex ${isMe?'justify-end':'justify-start'}`;
+          let contentHtml='';
+          if(m.text) contentHtml+=`<p class="text-sm text-gray-200 break-words">${m.text}</p>`;
+          if(m.image){
+            const imgKey='img_'+m.key;
+            imageStore[imgKey]=m.image;
+            contentHtml+=`<img src="${m.image}" loading="lazy" class="rounded-lg mt-1.5 max-w-[260px] cursor-pointer hover:brightness-110 transition border border-white/5" onclick="viewImage('${imgKey}')">`;
+          }
+          contentHtml+=`<p class="text-[10px] ${isMe?'text-green-500/50':'text-gray-600'} mt-1 text-right">${formatTime(m.timestamp)}</p>`;
+          div.innerHTML=`<div class="chat-bubble ${isMe?'bg-green-500/10 border-green-500/20':'bg-dark-card border-dark-border'} border rounded-2xl ${isMe?'rounded-br-sm':'rounded-bl-sm'} px-4 py-2.5">${contentHtml}</div>`;
+          container.appendChild(div);
+        });
+        container.scrollTop=container.scrollHeight;
+      });
+    };
+
+    window.closeOrderDetail=()=>{
+      if(unsubOrder)unsubOrder();
+      if(unsubChat)unsubChat();
+      currentChatOrderId=null;
+      document.getElementById('orderDetailPanel').classList.add('hidden');
+    };
+
+    window.sendChat=async(sender)=>{
+      const input=document.getElementById('chatInput');
+      const text=input.value.trim();
+      const img=pendingChatImage;
+      if(!text && !img) return;
+      input.value='';
+      clearChatImage();
+      try{
+        const msgData={sender, timestamp:serverTimestamp()};
+        if(text) msgData.text=text;
+        if(img) msgData.image=img;
+        const chatRef=push(ref(db,`orders/${currentChatOrderId}/chat`));
+        await set(chatRef, msgData);
+      }catch(e){console.error(e);showToast("Gagal kirim pesan.","error");}
+    };
+
+    document.getElementById('chatInput').addEventListener('keydown',(e)=>{
+      if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat('buyer');}
+    });
+  </script>
+
+  <!-- Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(r => console.log('[SW] Registered'))
+          .catch(e => console.warn('[SW] Failed:', e));
+      });
+    }
+  </script>
+
+  <!-- Push Notification (buyer side) -->
+  <script type="module">
+    import { requestNotificationPermission } from "push.js";
+    window.saveFCMToken = async (uid, token) => { console.log('FCM ready'); };
+    window.removeFCMToken = async (uid, token) => { console.log('FCM removed'); };
+    window.requestPushPermission = async () => {
+      const token = await requestNotificationPermission(null);
+      if (token) {
+        localStorage.setItem('fcm_token', token);
+        alert('Notifikasi aktif! Kamu akan terima update pesanan.');
+      } else {
+        alert('Notifikasi gagal aktif. Cek permission browser.');
+      }
+    };
+  </script>
+</body>
+</html>
