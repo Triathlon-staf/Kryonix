@@ -133,7 +133,6 @@
     }
     .stat-card:hover { background: var(--bg-card); }
 
-    /* Feature badges */
     .feature-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;
     }
@@ -150,7 +149,6 @@
       background: rgba(0,232,157,0.06); color: var(--green);
     }
 
-    /* User dropdown */
     .user-menu { position: relative; }
     .user-dropdown {
       position: absolute; top: calc(100% + 8px); right: 0; min-width: 200px;
@@ -168,7 +166,6 @@
     .user-dropdown a:hover { background: rgba(255,255,255,0.04); color: var(--fg); }
     .user-dropdown button.logout-btn:hover { background: rgba(239,68,68,0.08); color: #f87171; }
 
-    /* Important dropdown */
     .important-menu { position: relative; }
     .important-trigger {
       display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.9rem;
@@ -208,9 +205,64 @@
     .dd-arrow { font-size: 0.6rem; color: #334155; opacity: 0; transform: translateX(-4px); transition: all 0.15s ease; }
     .important-dropdown a:hover .dd-arrow { opacity: 1; transform: translateX(0); color: var(--green); }
 
-    /* Mobile important dropdown */
     .mobile-important-list { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
     .mobile-important-list.open { max-height: 300px; }
+
+    /* ═══ TESTIMONIAL ═══ */
+    .testi-card {
+      background: rgba(12,18,32,0.6); border: 1px solid var(--border); border-radius: 18px;
+      padding: 2rem; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+      position: relative; overflow: hidden;
+    }
+    .testi-card::before {
+      content: '\201C'; position: absolute; top: -8px; right: 16px;
+      font-size: 7rem; font-family: Georgia, serif; line-height: 1;
+      color: rgba(0,232,157,0.04); pointer-events: none;
+    }
+    .testi-card:hover {
+      transform: translateY(-6px); border-color: rgba(0,232,157,0.35);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,232,157,0.08);
+    }
+    .testi-stars { display: flex; gap: 3px; margin-bottom: 1rem; }
+    .testi-stars i { font-size: 0.75rem; color: #facc15; }
+    .testi-stars .empty { color: #1e293b; }
+    .testi-text {
+      font-size: 0.92rem; line-height: 1.7; color: #94a3b8; margin-bottom: 1.5rem;
+      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .testi-author { display: flex; align-items: center; gap: 12px; }
+    .testi-avatar {
+      width: 42px; height: 42px; border-radius: 12px; object-fit: cover;
+      border: 1px solid rgba(255,255,255,0.08); background: #1a1f2e;
+    }
+    .testi-avatar-fallback {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 0.9rem; color: #060a10; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .testi-name { font-size: 0.9rem; font-weight: 600; color: #e8ecf2; }
+    .testi-role { font-size: 0.75rem; color: #475569; font-family: 'JetBrains Mono', monospace; }
+    .testi-badge {
+      position: absolute; top: 1.25rem; left: 1.25rem;
+      display: flex; align-items: center; gap: 5px;
+      padding: 3px 10px; border-radius: 6px; font-size: 0.65rem;
+      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3px;
+    }
+    .testi-badge-buyer { background: rgba(0,232,157,0.06); border: 1px solid rgba(0,232,157,0.15); color: rgba(0,232,157,0.7); }
+    .testi-badge-admin { background: rgba(0,196,255,0.06); border: 1px solid rgba(0,196,255,0.15); color: rgba(0,196,255,0.7); }
+
+    .testi-skeleton {
+      background: rgba(12,18,32,0.6); border: 1px solid var(--border); border-radius: 18px;
+      padding: 2rem; position: relative; overflow: hidden;
+    }
+    .testi-skeleton::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
+      animation: shimmer 1.5s infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    .skel-line { height: 12px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-bottom: 10px; }
 
     /* ═══ FOOTER ═══ */
     .site-footer {
@@ -227,9 +279,7 @@
       display: flex; align-items: center; gap: 6px;
     }
     .footer-link:hover { color: #00e89d; }
-    .footer-link i {
-      font-size: 0.6rem; opacity: 0; transform: translateX(-4px); transition: 0.25s;
-    }
+    .footer-link i { font-size: 0.6rem; opacity: 0; transform: translateX(-4px); transition: 0.25s; }
     .footer-link:hover i { opacity: 1; transform: translateX(0); }
     .footer-social {
       width: 38px; height: 38px; border-radius: 10px;
@@ -250,7 +300,6 @@
     }
     .footer-logo-img { width: 32px; height: 32px; object-fit: cover; border-radius: 8px; }
 
-    /* Scroll reveal */
     .reveal {
       opacity: 0; transform: translateY(30px);
       transition: opacity 0.6s ease, transform 0.6s ease;
@@ -279,7 +328,6 @@
         <span class="text-xl font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
       </a>
 
-      <!-- Desktop Nav -->
       <div class="hidden md:flex items-center gap-8">
         <a href="index.html" class="nav-link active-link">Home</a>
         <a href="store.html" class="nav-link">Store</a>
@@ -297,7 +345,6 @@
         </div>
       </div>
 
-      <!-- Right Side -->
       <div class="flex items-center gap-3">
         <div id="userMenu" class="user-menu hidden">
           <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition">
@@ -523,6 +570,34 @@
       </div>
     </div>
 
+    <!-- ═══ TESTIMONIALS (DYNAMIC FROM FIREBASE) ═══ -->
+    <div class="max-w-7xl mx-auto px-6 mt-24 w-full reveal" style="transition-delay:0.1s;">
+      <div class="flex items-end justify-between mb-10">
+        <div>
+          <div class="text-xs font-mono text-green-400 tracking-widest uppercase mb-2">Testimonials</div>
+          <h3 class="text-2xl md:text-3xl font-bold">Apa Kata Mereka</h3>
+          <p class="text-gray-500 text-sm mt-2">Pengalaman nyata dari pengguna KRYONIX.</p>
+        </div>
+        <a href="testimoni.html" class="hidden sm:inline-flex items-center gap-2 text-green-400 text-sm font-semibold hover:text-green-300 transition group">
+          Lihat Semua
+          <i class="fas fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+        </a>
+      </div>
+
+      <div id="homeTestiGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- 3 skeleton cards -->
+        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:100%;height:10px;"></div><div class="skel-line" style="width:90%;height:10px;"></div><div class="skel-line" style="width:75%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:60%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:40%;height:8px;margin-bottom:0;"></div></div></div></div>
+        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:100%;height:10px;"></div><div class="skel-line" style="width:85%;height:10px;"></div><div class="skel-line" style="width:70%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:55%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:35%;height:8px;margin-bottom:0;"></div></div></div></div>
+        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:95%;height:10px;"></div><div class="skel-line" style="width:80%;height:10px;"></div><div class="skel-line" style="width:65%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:50%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:45%;height:8px;margin-bottom:0;"></div></div></div></div>
+      </div>
+
+      <div class="mt-8 text-center sm:hidden">
+        <a href="testimoni.html" class="btn-cyber btn-outline text-sm !px-6 !py-2.5">
+          <i class="fas fa-message"></i> Lihat Semua Testimoni
+        </a>
+      </div>
+    </div>
+
     <!-- CTA -->
     <div class="max-w-4xl mx-auto px-6 mt-24 w-full reveal" style="transition-delay:0.1s;">
       <div class="relative rounded-2xl overflow-hidden p-10 md:p-14 text-center" style="background:linear-gradient(135deg,rgba(0,232,157,0.06),rgba(0,196,255,0.04));border:1px solid rgba(0,232,157,0.12);">
@@ -548,7 +623,6 @@
 
       <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10">
 
-        <!-- Brand -->
         <div class="md:col-span-1">
           <a href="index.html" class="flex items-center gap-2.5 mb-4 group">
             <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="footer-logo-img">
@@ -565,7 +639,6 @@
           </div>
         </div>
 
-        <!-- Navigation -->
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Navigasi</div>
           <div class="flex flex-col gap-2.5">
@@ -573,10 +646,10 @@
             <a href="store.html" class="footer-link"><i class="fas fa-chevron-right"></i> Store</a>
             <a href="chat.html" class="footer-link"><i class="fas fa-chevron-right"></i> Public Chat</a>
             <a href="faq.html" class="footer-link"><i class="fas fa-chevron-right"></i> FAQ</a>
+            <a href="testimoni.html" class="footer-link"><i class="fas fa-chevron-right"></i> Testimoni</a>
           </div>
         </div>
 
-        <!-- Legal -->
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Legal</div>
           <div class="flex flex-col gap-2.5">
@@ -587,7 +660,6 @@
           </div>
         </div>
 
-        <!-- Support + Social -->
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Support</div>
           <div class="flex flex-col gap-2.5 mb-5">
@@ -606,7 +678,6 @@
 
       </div>
 
-      <!-- Bottom bar -->
       <div class="footer-divider"></div>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
         <p class="text-xs text-gray-600 font-mono">&copy; 2025 KRYONIX. All rights reserved.</p>
@@ -627,7 +698,7 @@
   <!-- ==================== SCRIPTS ==================== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getDatabase, ref, get, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -804,12 +875,9 @@
     // ═══════════════════════════════════
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('visible');
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
     // ═══════════════════════════════════
@@ -837,6 +905,118 @@
     }
 
     // ═══════════════════════════════════
+    // HOMEPAGE TESTIMONIALS — DYNAMIC FROM FIREBASE
+    // ═══════════════════════════════════
+    const homeTestiGrid = document.getElementById('homeTestiGrid');
+    const TESTI_LIMIT = 3;
+
+    const avatarGradients = [
+      'from-green-400 to-cyan-500',
+      'from-cyan-400 to-blue-500',
+      'from-purple-400 to-pink-500',
+      'from-amber-400 to-orange-500',
+      'from-emerald-400 to-teal-500',
+      'from-rose-400 to-red-500'
+    ];
+
+    function getAvatarGradient(name) {
+      const code = name ? name.charCodeAt(0) : 0;
+      return avatarGradients[code % avatarGradients.length];
+    }
+
+    function buildStarsHtml(rating) {
+      let html = '';
+      for (let i = 1; i <= 5; i++) {
+        html += `<i class="fas fa-star ${i <= rating ? '' : 'empty'}"></i>`;
+      }
+      return html;
+    }
+
+    function renderHomeTestimonials(list) {
+      homeTestiGrid.innerHTML = '';
+
+      if (list.length === 0) {
+        homeTestiGrid.innerHTML = `
+          <div class="col-span-full text-center py-16">
+            <i class="fas fa-comments text-4xl text-gray-700 mb-4"></i>
+            <p class="text-gray-500 text-sm">Belum ada testimoni.</p>
+          </div>`;
+        return;
+      }
+
+      const badgeColors = ['buyer', 'admin', 'buyer'];
+      const badgeLabels = { buyer: 'USER', admin: 'VERIFIED' };
+
+      list.forEach((t, idx) => {
+        const src = t.source === 'admin' ? 'admin' : 'buyer';
+        const label = badgeLabels[src] || 'USER';
+        const grad = getAvatarGradient(t.name);
+        const initial = (t.name || '?').charAt(0).toUpperCase();
+        const safeText = (t.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+        const card = document.createElement('div');
+        card.className = 'testi-card';
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        card.style.transition = `opacity 0.5s ease ${idx * 0.1}s, transform 0.5s ease ${idx * 0.1}s`;
+
+        card.innerHTML = `
+          <div class="testi-badge testi-badge-${src}">
+            <i class="fas fa-check text-[8px]"></i> ${label}
+          </div>
+          <div class="testi-stars">${buildStarsHtml(t.rating || 0)}</div>
+          <p class="testi-text">"${safeText}"</p>
+          <div class="testi-author">
+            <div class="testi-avatar-fallback bg-gradient-to-br ${grad}">${initial}</div>
+            <div>
+              <div class="testi-name">${(t.name || 'Anonim').replace(/</g, '&lt;')}</div>
+              <div class="testi-role">${t.product ? t.product.replace(/</g, '&lt;') : 'Pelanggan KRYONIX'}</div>
+            </div>
+          </div>
+        `;
+
+        homeTestiGrid.appendChild(card);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          });
+        });
+      });
+    }
+
+    async function loadHomeTestimonials() {
+      try {
+        const snap = await get(ref(db, 'testimonials'));
+        const raw = snap.val();
+
+        if (!raw) {
+          renderHomeTestimonials([]);
+          return;
+        }
+
+        const all = [];
+        Object.keys(raw).forEach(k => {
+          const t = raw[k];
+          if (t.approved === false) return;
+          all.push({ ...t });
+        });
+
+        all.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        renderHomeTestimonials(all.slice(0, TESTI_LIMIT));
+      } catch (err) {
+        console.error('Failed to load testimonials:', err);
+        renderHomeTestimonials([]);
+      }
+    }
+
+    // Initial load
+    loadHomeTestimonials();
+
+    // Refresh every 5 minutes
+    setInterval(loadHomeTestimonials, 5 * 60 * 1000);
+
+    // ═══════════════════════════════════
     // SECRET ADMIN TRIGGER (5x logo)
     // ═══════════════════════════════════
     let logoClicks = 0, logoTimer;
@@ -858,16 +1038,9 @@
     // ═══════════════════════════════════
     // NAVBAR SCROLL EFFECT
     // ═══════════════════════════════════
-    let lastScroll = 0;
     window.addEventListener('scroll', () => {
       const navbar = document.getElementById('navbar');
-      const scrollY = window.scrollY;
-      if (scrollY > 100) {
-        navbar.style.boxShadow = '0 4px 30px rgba(0,0,0,0.3)';
-      } else {
-        navbar.style.boxShadow = 'none';
-      }
-      lastScroll = scrollY;
+      navbar.style.boxShadow = window.scrollY > 100 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none';
     });
   </script>
 </body>
