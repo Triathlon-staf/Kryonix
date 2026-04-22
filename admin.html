@@ -43,6 +43,11 @@
     .img-preview-bar img{height:48px;border-radius:6px;object-fit:cover;border:1px solid var(--border)}
     .img-btn{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.04);border:1px solid var(--border);color:#5a6a80;cursor:pointer;transition:all .15s;flex-shrink:0}
     .img-btn:hover{background:rgba(0,232,157,.08);color:var(--green);border-color:rgba(0,232,157,.3)}
+    .qris-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;align-items:center;gap:14px;transition:all .2s}
+    .qris-card:hover{border-color:rgba(0,232,157,.3);background:rgba(0,232,157,.02)}
+    .qris-card img{width:64px;height:64px;border-radius:10px;object-fit:contain;background:rgba(255,255,255,.02);border:1px solid var(--border);flex-shrink:0}
+    .qris-cmd-chip{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:8px;font-size:11px;font-family:'JetBrains Mono',monospace;background:rgba(0,232,157,.06);border:1px solid rgba(0,232,157,.15);color:#00e89d;cursor:pointer;transition:all .15s;white-space:nowrap;flex-shrink:0}
+    .qris-cmd-chip:hover{background:rgba(0,232,157,.15);border-color:rgba(0,232,157,.4);transform:translateY(-1px)}
   </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -164,25 +169,24 @@
       <div id="tab-settings" class="tab-content hidden">
         <div class="max-w-3xl">
           <h2 class="text-2xl font-bold mb-6">General Settings</h2>
+
+          <!-- ToS -->
           <div class="bg-dark-card border border-dark-border rounded-xl p-6 mb-6">
             <h3 class="text-lg font-bold mb-4 text-cyan-400">Terms of Service (ToS)</h3>
             <textarea id="tos-input" class="w-full bg-dark-bg border border-dark-border rounded-lg p-4 text-sm text-gray-300 font-mono h-48 focus:outline-none focus:border-green-500 transition resize-none" placeholder="Masukkan text ToS..."></textarea>
             <button onclick="saveSettings()" class="mt-4 px-6 py-2 bg-cyan-600 hover:bg-cyan-500 text-white rounded-lg transition">Save Changes</button>
           </div>
+
+          <!-- ★ QRIS COMMANDS (baru) ★ -->
           <div class="bg-dark-card border border-dark-border rounded-xl p-6">
-            <h3 class="text-lg font-bold mb-4 text-green-400">QRIS Payment</h3>
-            <p class="text-sm text-gray-500 mb-4">Upload gambar QRIS yang akan dikirim ke buyer via chat.</p>
-            <div class="flex items-start gap-4">
-              <div id="qrisPreview" class="w-40 h-40 rounded-xl border-2 border-dashed border-dark-border flex items-center justify-center overflow-hidden flex-shrink-0 bg-dark-bg">
-                <i class="fas fa-qrcode text-2xl text-gray-700" id="qrisPlaceholder"></i>
-                <img id="qrisImg" class="hidden w-full h-full object-contain p-2">
-              </div>
-              <div class="flex flex-col gap-2">
-                <input type="file" id="qrisFileInput" accept="image/*" class="hidden">
-                <button onclick="document.getElementById('qrisFileInput').click()" class="px-4 py-2 bg-dark-bg border border-dark-border rounded-lg text-sm text-gray-400 hover:text-white hover:border-green-500 transition"><i class="fas fa-upload mr-2"></i>Upload QRIS</button>
-                <button onclick="sendQrisToChat()" class="px-4 py-2 bg-green-600 hover:bg-green-500 text-black font-bold rounded-lg text-sm transition" id="sendQrisBtn" disabled><i class="fas fa-paper-plane mr-2"></i>Kirim ke Chat</button>
-                <p class="text-xs text-gray-600 mt-1">Gambar akan dikompres otomatis.</p>
-              </div>
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-bold text-green-400"><i class="fas fa-qrcode mr-2"></i>QRIS Payment Commands</h3>
+              <button onclick="openQrisModal()" class="px-3 py-1.5 bg-green-600 hover:bg-green-500 text-black font-bold rounded-lg text-xs transition"><i class="fas fa-plus mr-1"></i>Tambah</button>
+            </div>
+            <p class="text-sm text-gray-500 mb-1">Upload QRIS masing-masing admin dengan perintah custom.</p>
+            <p class="text-xs text-gray-600 mb-5">Ketik perintah di chat order (admin/buyer) untuk auto-kirim gambar QRIS. Contoh: <code class="text-green-400/70">/pay1</code></p>
+            <div id="qrisList" class="space-y-3">
+              <div class="text-center py-6 text-gray-600 text-sm"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat...</div>
             </div>
           </div>
         </div>
@@ -276,6 +280,45 @@
     </div>
   </div>
 
+  <!-- ★ MODAL: QRIS COMMAND (baru) ★ -->
+  <div id="qrisModal" class="fixed inset-0 z-50 hidden">
+    <div class="absolute inset-0 modal-backdrop" onclick="closeQrisModal()"></div>
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl p-6 m-4">
+        <h3 id="qrisModalTitle" class="text-xl font-bold mb-6">Tambah QRIS Command</h3>
+        <form id="qrisForm" onsubmit="handleQrisSubmit(event)">
+          <input type="hidden" id="qrisEditId">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">PERINTAH</label>
+              <input type="text" id="qrisCommand" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2.5 text-green-400 font-mono text-lg focus:border-green-500 outline-none" placeholder="/pay1">
+              <p class="text-[10px] text-gray-600 mt-1">Harus diawali dengan <code class="text-green-400/60">/</code>. Contoh: /pay1, /qris-bca, /dana</p>
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">LABEL / NAMA</label>
+              <input type="text" id="qrisLabel" required class="w-full bg-dark-bg border border-dark-border rounded-lg px-4 py-2.5 text-white focus:border-green-500 outline-none" placeholder="QRIS BCA - Admin Raka">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-gray-400 mb-1">GAMBAR QRIS</label>
+              <div id="qrisFormPreview" class="hidden mb-3 p-3 rounded-xl bg-dark-bg border border-dark-border">
+                <img id="qrisFormImg" class="max-h-40 mx-auto rounded-lg">
+              </div>
+              <input type="file" id="qrisFormFile" accept="image/*" class="hidden">
+              <button type="button" onclick="document.getElementById('qrisFormFile').click()" class="w-full px-4 py-3 bg-dark-bg border border-dark-border rounded-lg text-sm text-gray-400 hover:text-white hover:border-green-500 transition flex items-center justify-center gap-2">
+                <i class="fas fa-upload"></i> Upload Gambar QRIS
+              </button>
+              <p class="text-[10px] text-gray-600 mt-1">Akan dikompres otomatis. Max 8MB.</p>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+              <button type="button" onclick="closeQrisModal()" class="px-4 py-2 rounded-lg border border-dark-border text-gray-400 hover:text-white transition text-sm">Batal</button>
+              <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-500 text-black font-bold transition text-sm">Simpan</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <!-- PANEL: ORDER DETAIL + CHAT -->
   <div id="orderDetailPanel" class="hidden fixed inset-0 z-40">
     <div class="absolute inset-0 bg-black/60" onclick="closeOrderDetail()"></div>
@@ -290,7 +333,7 @@
           <button onclick="closeOrderDetail()" class="w-9 h-9 rounded-lg bg-dark-bg border border-dark-border flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fas fa-times"></i></button>
         </div>
       </div>
-      <div class="flex-1 overflow-y-auto">
+      <div class="flex-1 overflow-y-auto min-h-0">
         <div class="p-4 border-b border-dark-border">
           <h4 class="text-xs font-mono text-gray-500 uppercase tracking-wider mb-3">Rincian Pesanan</h4>
           <div class="bg-dark-card border border-dark-border rounded-xl p-4 space-y-3 text-sm">
@@ -312,6 +355,13 @@
           <div id="chatMessages" class="space-y-3 min-h-[100px]"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
         </div>
       </div>
+      <!-- ★ QRIS QUICK BAR (baru) ★ -->
+      <div id="qrisQuickBar" class="hidden flex-shrink-0 border-t border-dark-border px-4 py-2 bg-dark-card/80">
+        <div class="flex items-center gap-2 overflow-x-auto" id="qrisQuickBarInner">
+          <span class="text-[10px] text-gray-600 font-mono flex-shrink-0">QRIS:</span>
+        </div>
+      </div>
+      <!-- CHAT INPUT -->
       <div class="flex-shrink-0 border-t border-dark-border p-4 bg-dark-card space-y-2">
         <div id="chatImagePreview" class="hidden img-preview-bar">
           <img id="chatPreviewImg" src="" alt="preview">
@@ -324,7 +374,7 @@
         <input type="file" id="chatImageInput" accept="image/*" class="hidden">
         <div class="flex gap-2">
           <button onclick="document.getElementById('chatImageInput').click()" class="img-btn" title="Kirim gambar"><i class="fas fa-image"></i></button>
-          <input type="text" id="chatInput" class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500 transition placeholder-gray-600" placeholder="Ketik pesan...">
+          <input type="text" id="chatInput" class="flex-1 bg-dark-bg border border-dark-border rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-green-500 transition placeholder-gray-600" placeholder="Ketik pesan atau /pay1 ...">
           <button onclick="sendChat('admin')" class="px-5 py-2.5 bg-green-600 hover:bg-green-500 text-black font-bold rounded-xl transition flex items-center gap-2"><i class="fas fa-paper-plane text-sm"></i><span class="hidden sm:inline">Kirim</span></button>
         </div>
       </div>
@@ -392,28 +442,196 @@
       });
     }
 
-    let qrisBase64 = null;
-    document.getElementById('qrisFileInput').addEventListener('change', async (e) => {
-      const file = e.target.files[0]; if(!file) return;
+    // ══════════════════════════════════════
+    // ★ QRIS COMMANDS SYSTEM
+    // ══════════════════════════════════════
+    let qrisCommands = {}; // { "/pay1": { label, image, ... }, ... }
+    let qrisFormData = { image: null }; // untuk modal form
+
+    function loadQrisCommands() {
+      onValue(ref(db, "settings/qris_commands"), (snap) => {
+        const raw = snap.val();
+        qrisCommands = {};
+        if (raw) {
+          Object.values(raw).forEach(q => {
+            const cmd = (q.command || '').toLowerCase().trim();
+            if (cmd) qrisCommands[cmd] = q;
+          });
+        }
+        renderQrisList(raw);
+        renderQrisQuickBar();
+      });
+    }
+
+    function renderQrisList(raw) {
+      const list = document.getElementById('qrisList');
+      if (!raw || Object.keys(raw).length === 0) {
+        list.innerHTML = `
+          <div class="text-center py-8 text-gray-600">
+            <i class="fas fa-qrcode text-3xl mb-3 text-gray-700"></i>
+            <p class="text-sm">Belum ada QRIS command.</p>
+            <p class="text-xs text-gray-700 mt-1">Klik "Tambah" untuk menambahkan.</p>
+          </div>`;
+        return;
+      }
+      list.innerHTML = '';
+      const sorted = Object.keys(raw).map(k => ({ id: k, ...raw[k] })).sort((a, b) => (a.command || '').localeCompare(b.command || ''));
+      sorted.forEach(q => {
+        const card = document.createElement('div');
+        card.className = 'qris-card';
+        card.innerHTML = `
+          ${q.image ? `<img src="${q.image}" alt="QRIS">` : `<div class="w-16 h-16 rounded-lg border border-dark-border flex items-center justify-center text-gray-700 flex-shrink-0"><i class="fas fa-qrcode text-xl"></i></div>`}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-0.5">
+              <code class="text-sm font-mono text-green-400 font-bold">${esc(q.command || '-')}</code>
+              <span class="text-gray-700">—</span>
+              <span class="text-sm text-gray-300 truncate">${esc(q.label || '-')}</span>
+            </div>
+            <p class="text-[10px] text-gray-600 font-mono">Ketik <span class="text-green-400/60">${esc(q.command)}</span> di chat order → auto-kirim QRIS</p>
+          </div>
+          <button onclick='editQris(${JSON.stringify({ id:q.id, command:(q.command||"").replace(/'/g,"\\'"), label:(q.label||"").replace(/'/g,"\\'"), image:q.image?true:false })})' class="text-cyan-400 hover:text-cyan-300 p-2 rounded-lg hover:bg-cyan-500/10 transition flex-shrink-0" title="Edit"><i class="fas fa-edit"></i></button>
+          <button onclick="deleteQris('${q.id}')" class="text-red-400 hover:text-red-300 p-2 rounded-lg hover:bg-red-500/10 transition flex-shrink-0" title="Hapus"><i class="fas fa-trash"></i></button>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    function renderQrisQuickBar() {
+      const bar = document.getElementById('qrisQuickBar');
+      const inner = document.getElementById('qrisQuickBarInner');
+      const cmds = Object.keys(qrisCommands);
+      if (cmds.length === 0) { bar.classList.add('hidden'); return; }
+      bar.classList.remove('hidden');
+      // Reset inner, keep label
+      inner.innerHTML = '<span class="text-[10px] text-gray-600 font-mono flex-shrink-0">QRIS:</span>';
+      cmds.forEach(cmd => {
+        const q = qrisCommands[cmd];
+        const chip = document.createElement('button');
+        chip.className = 'qris-cmd-chip';
+        chip.textContent = cmd + (q.label ? ' ' + q.label.split(' - ')[0] : '');
+        chip.title = 'Kirim ' + cmd + ' — ' + (q.label || '');
+        chip.onclick = () => quickSendQris(cmd);
+        inner.appendChild(chip);
+      });
+    }
+
+    // QRIS Modal
+    window.openQrisModal = (isEdit = false, data = null) => {
+      const modal = document.getElementById('qrisModal');
+      modal.classList.remove('hidden');
+      document.getElementById('qrisModalTitle').textContent = isEdit ? 'Edit QRIS Command' : 'Tambah QRIS Command';
+      document.getElementById('qrisForm').reset();
+      document.getElementById('qrisEditId').value = '';
+      document.getElementById('qrisFormPreview').classList.add('hidden');
+      qrisFormData = { image: null };
+
+      if (isEdit && data) {
+        document.getElementById('qrisEditId').value = data.id || '';
+        document.getElementById('qrisCommand').value = data.command || '';
+        document.getElementById('qrisLabel').value = data.label || '';
+        if (data.image) {
+          qrisFormData.image = data.image;
+          document.getElementById('qrisFormImg').src = data.image;
+          document.getElementById('qrisFormPreview').classList.remove('hidden');
+        }
+      }
+    };
+    window.closeQrisModal = () => document.getElementById('qrisModal').classList.add('hidden');
+
+    window.editQris = (data) => {
+      // Fetch full data including image from qrisCommands
+      const cmd = data.command.toLowerCase().trim();
+      const fullData = qrisCommands[cmd];
+      if (fullData) {
+        openQrisModal(true, { id: data.id, command: data.command, label: data.label, image: fullData.image });
+      } else {
+        openQrisModal(true, data);
+      }
+    };
+
+    window.deleteQris = async (id) => {
+      if (!confirm('Hapus QRIS command ini?')) return;
+      try { await remove(ref(db, `settings/qris_commands/${id}`)); showToast('QRIS dihapus.'); }
+      catch(e) { showToast('Gagal.', 'error'); }
+    };
+
+    // QRIS form file input
+    document.getElementById('qrisFormFile').addEventListener('change', async (e) => {
+      const file = e.target.files[0]; if (!file) return;
       try {
         showToast('Memproses gambar...');
-        qrisBase64 = await compressImage(file, 600, 0.8);
-        document.getElementById('qrisImg').src = qrisBase64;
-        document.getElementById('qrisImg').classList.remove('hidden');
-        document.getElementById('qrisPlaceholder').classList.add('hidden');
-        document.getElementById('sendQrisBtn').disabled = false;
-        showToast('QRIS siap dikirim!');
-      } catch(err) { showToast(typeof err==='string'?err:'Gagal memproses gambar.', 'error'); }
+        qrisFormData.image = await compressImage(file, 600, 0.6);
+        document.getElementById('qrisFormImg').src = qrisFormData.image;
+        document.getElementById('qrisFormPreview').classList.remove('hidden');
+        showToast('Gambar siap!');
+      } catch(err) { showToast(typeof err === 'string' ? err : 'Gagal memproses.', 'error'); }
       e.target.value = '';
     });
-    window.sendQrisToChat = async () => {
-      if(!qrisBase64 || !currentChatOrderId) { showToast('Buka chat order dulu.', 'error'); return; }
+
+    window.handleQrisSubmit = async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('qrisEditId').value;
+      let command = document.getElementById('qrisCommand').value.trim();
+      const label = document.getElementById('qrisLabel').value.trim();
+
+      // Validate command format
+      if (!command.startsWith('/')) {
+        showToast('Perintah harus diawali dengan /', 'error');
+        return;
+      }
+
+      if (!qrisFormData.image && !id) {
+        showToast('Upload gambar QRIS terlebih dahulu.', 'error');
+        return;
+      }
+
+      // Check duplicate (exclude self when editing)
+      const normalizedCmd = command.toLowerCase();
+      for (const [key, val] of Object.entries(qrisCommands)) {
+        if (key === normalizedCmd && val._id !== id) {
+          showToast(`Perintah ${command} sudah digunakan oleh "${val.label}"`, 'error');
+          return;
+        }
+      }
+
       try {
-        const chatRef = push(ref(db, `orders/${currentChatOrderId}/chat`));
-        await set(chatRef, { sender:'admin', text:'Silakan scan QRIS berikut untuk pembayaran:', image:qrisBase64, timestamp:serverTimestamp() });
-        showToast('QRIS terkirim ke buyer!');
+        const data = { command: normalizedCmd, label };
+        if (qrisFormData.image) data.image = qrisFormData.image;
+        if (!id) data.createdAt = serverTimestamp();
+
+        if (id) {
+          await update(ref(db, `settings/qris_commands/${id}`), data);
+          showToast('QRIS diupdate!');
+        } else {
+          const r = push(ref(db, 'settings/qris_commands'));
+          await set(r, data);
+          showToast('QRIS ditambahkan!');
+        }
+        closeQrisModal();
+      } catch(err) {
+        console.error(err);
+        showToast('Gagal menyimpan.', 'error');
+      }
+    };
+
+    // Quick send QRIS from chat panel
+    window.quickSendQris = async (cmd) => {
+      if (!currentChatOrderId) return;
+      const q = qrisCommands[cmd];
+      if (!q || !q.image) { showToast('QRIS tidak ditemukan.', 'error'); return; }
+      try {
+        const msgData = {
+          sender: 'admin',
+          text: '💰 Pembayaran via ' + (q.label || cmd) + '. Silakan scan QRIS berikut:',
+          image: q.image,
+          timestamp: serverTimestamp()
+        };
+        await set(push(ref(db, `orders/${currentChatOrderId}/chat`)), msgData);
+        showToast('QRIS terkirim!');
       } catch(e) { showToast('Gagal mengirim.', 'error'); }
     };
+
+    // ══════════════════════════════════════
 
     let pendingChatImage = null;
     document.getElementById('chatImageInput').addEventListener('change', async (e) => {
@@ -431,6 +649,9 @@
 
     if (sessionStorage.getItem('kryonix_admin') !== 'granted') { window.location.href = 'login-admin.html'; }
 
+    // Load QRIS commands immediately (needed for order chat, not just settings)
+    loadQrisCommands();
+
     window.switchTab = (tab) => {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
       document.getElementById(`tab-${tab}`).classList.remove('hidden');
@@ -441,6 +662,7 @@
       if (tab === 'settings') loadSettings();
     };
 
+    // ═══ PRODUCTS ═══
     const productModal = document.getElementById('productModal');
     const productForm = document.getElementById('productForm');
     window.openProductModal = (isEdit=false, data=null) => {
@@ -508,6 +730,7 @@
       document.getElementById('stat-empty').textContent=te; document.getElementById('stat-cats').textContent=cats.size;
     });
 
+    // ═══ PARTNERS ═══
     const partnerModal = document.getElementById('partnerModal');
     const partnerForm = document.getElementById('partnerForm');
     window.openPartnerModal = (isEdit=false, data=null) => {
@@ -540,7 +763,7 @@
           const sd={id:k,name:(p.name||'').replace(/'/g,"\\'"),logo:(p.logo||'').replace(/'/g,"\\'"),category:p.category,icon:(p.icon||'').replace(/'/g,"\\'"),website:(p.website||'').replace(/'/g,"\\'"),description:(p.description||'').replace(/'/g,"\\'")};
           const tr=document.createElement('tr');
           tr.innerHTML=`
-            <td><div class="flex items-center gap-3">${p.logo?`<img src="${p.logo}" class="partner-logo" onerror="this.outerHTML='<div class=\\'partner-logo flex items-center justify-center\\'><i class=\\'fas ${icon} ${color} text-sm\\'></i></div>'">`:`<div class="partner-logo flex items-center justify-center"><i class="fas ${icon} ${color} text-sm"></i></div>`}<div class="min-w-0"><div class="font-bold text-sm text-white truncate">${esc(p.name)}</div><div class="text-xs text-gray-500 truncate max-w-[150px]">${esc(p.description||'-')}</div></div></div></div></td>
+            <td><div class="flex items-center gap-3">${p.logo?`<img src="${p.logo}" class="partner-logo" onerror="this.outerHTML='<div class=\\'partner-logo flex items-center justify-center\\'><i class=\\'fas ${icon} ${color} text-sm\\'></i></div>'">`:`<div class="partner-logo flex items-center justify-center"><i class="fas ${icon} ${color} text-sm"></i></div>`}<div class="min-w-0"><div class="font-bold text-sm text-white truncate">${esc(p.name)}</div><div class="text-xs text-gray-500 truncate max-w-[150px]">${esc(p.description||'-')}</div></div></div></td>
             <td><span class="px-2 py-0.5 rounded text-[10px] bg-dark-bg border border-dark-border text-gray-400 uppercase font-mono">${p.category}</span></td>
             <td>${p.website?`<a href="${p.website}" target="_blank" class="text-cyan-400 hover:text-cyan-300 text-xs font-mono truncate block max-w-[120px]">${esc(p.website.replace(/^https?:\/\//,''))}</a>`:'<span class="text-gray-600 text-xs">-</span>'}</td>
             <td class="text-center whitespace-nowrap"><button onclick='openPartnerModal(true,${JSON.stringify(sd)})' class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition"><i class="fas fa-edit"></i></button><button onclick="deletePartner('${k}')" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fas fa-trash"></i></button></td>`;
@@ -551,9 +774,9 @@
       document.getElementById('stat-payment').textContent=payment; document.getElementById('stat-other').textContent=other;
     });
 
+    // ═══ TESTIMONI ═══
     const testiModal = document.getElementById('testiModal');
     const testiFormA = document.getElementById('testiFormAdmin');
-
     window.openTestiModal = (isEdit=false, data=null) => {
       testiModal.classList.remove('hidden');
       document.getElementById('testiModalTitle').textContent = isEdit ? "Edit Testimoni" : "Add Testimoni";
@@ -567,7 +790,6 @@
       } else { testiFormA.reset(); document.getElementById('testiId').value = ''; document.getElementById('testiApprovedA').checked = true; }
     };
     window.closeTestiModal = () => testiModal.classList.add('hidden');
-
     window.handleTestiSubmit = async (e) => {
       e.preventDefault();
       const id = document.getElementById('testiId').value;
@@ -585,12 +807,10 @@
         closeTestiModal();
       } catch(e) { console.error(e); showToast("Gagal.", "error"); }
     };
-
     window.toggleTestiApproval = async (id, current) => {
       try { await update(ref(db, `testimonials/${id}`), { approved: !current }); showToast(current ? "Testimoni disembunyikan." : "Testimoni ditampilkan!"); }
       catch(e) { showToast("Gagal.", "error"); }
     };
-
     window.deleteTesti = async (id) => {
       if (!confirm("Hapus testimoni ini?")) return;
       try { await remove(ref(db, `testimonials/${id}`)); showToast("Testimoni dihapus."); }
@@ -599,9 +819,7 @@
 
     onValue(ref(db, "testimonials"), (snap) => {
       const tbody = document.getElementById('testi-tbody'); tbody.innerHTML = '';
-      const raw = snap.val();
-      let total=0, approved=0, pending=0, sumRating=0;
-
+      const raw = snap.val(); let total=0, approved=0, pending=0, sumRating=0;
       if (!raw) { tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">Belum ada testimoni.</td></tr>'; }
       else {
         const sorted = Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
@@ -617,27 +835,21 @@
             <td><div class="min-w-0"><div class="flex items-center gap-2 mb-0.5"><span class="font-bold text-sm text-white truncate">${esc(t.name||'Anonim')}</span><span class="source-badge ${t.source==='admin'?'source-admin':'source-buyer'}">${t.source==='admin'?'VERIFIED':'USER'}</span></div><div class="text-xs text-gray-500 truncate max-w-[220px]">${esc(t.text||'')}</div>${t.product?`<div class="text-[10px] text-gray-600 mt-0.5 font-mono">${esc(t.product)}</div>`:''}</div></td>
             <td class="text-center"><div class="flex justify-center gap-0.5">${starsH}</div></td>
             <td class="text-center"><span class="source-badge ${t.source==='admin'?'source-admin':'source-buyer'}">${t.source==='admin'?'VERIFIED':'USER'}</span></td>
-            <td class="text-center">
-              <button onclick="toggleTestiApproval('${t.key}',${isApproved})" class="status-badge border ${isApproved?'bg-green-500/10 text-green-400 border-green-500/20':'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'} cursor-pointer hover:opacity-80 transition">${isApproved?'APPROVED':'PENDING'}</button>
-            </td>
-            <td class="text-center whitespace-nowrap">
-              <button onclick='openTestiModal(true,${JSON.stringify(sd)})' class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition"><i class="fas fa-edit"></i></button>
-              <button onclick="deleteTesti('${t.key}')" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fas fa-trash"></i></button>
-            </td>`;
+            <td class="text-center"><button onclick="toggleTestiApproval('${t.key}',${isApproved})" class="status-badge border ${isApproved?'bg-green-500/10 text-green-400 border-green-500/20':'bg-yellow-500/10 text-yellow-400 border-yellow-500/20'} cursor-pointer hover:opacity-80 transition">${isApproved?'APPROVED':'PENDING'}</button></td>
+            <td class="text-center whitespace-nowrap"><button onclick='openTestiModal(true,${JSON.stringify(sd)})' class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition"><i class="fas fa-edit"></i></button><button onclick="deleteTesti('${t.key}')" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fas fa-trash"></i></button></td>`;
           tbody.appendChild(tr);
         });
       }
-
       document.getElementById('stat-testi-total').textContent = total;
       document.getElementById('stat-testi-approved').textContent = approved;
       document.getElementById('stat-testi-pending').textContent = pending;
       document.getElementById('stat-testi-avg').textContent = total > 0 ? (sumRating/total).toFixed(1) : '0.0';
-
       const badge = document.getElementById('testiPendingBadge');
       if (pending > 0) { badge.classList.remove('hidden'); badge.textContent = pending > 99 ? '99+' : pending; }
       else { badge.classList.add('hidden'); }
     });
 
+    // ═══ ORDERS ═══
     onValue(ref(db, "orders"), (snap) => {
       const tbody=document.getElementById('orders-tbody'); tbody.innerHTML=''; const raw=snap.val(); let unreadCount=0;
       if(!raw){tbody.innerHTML='<tr><td colspan="6" class="text-center py-8 text-gray-500">Belum ada pesanan.</td></tr>';}
@@ -673,6 +885,7 @@
       document.getElementById('chatMessages').innerHTML = '<div class="text-center text-gray-600 text-sm py-8"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat...</div>';
       document.getElementById('chatInput').value = '';
       clearChatImage();
+      renderQrisQuickBar();
 
       unsubOrder = onValue(ref(db, `orders/${orderId}`), (snap) => {
         const o=snap.val(); if(!o)return;
@@ -721,6 +934,7 @@
       document.getElementById('orderDetailPanel').classList.add('hidden');
     };
 
+    // ★ sendChat dengan QRIS command detection ★
     window.sendChat = async (sender) => {
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
@@ -728,12 +942,30 @@
       if (!text && !img) return;
       input.value = '';
       clearChatImage();
+
       try {
+        // Cek apakah text adalah QRIS command
+        const cmd = text.toLowerCase().trim();
+        if (cmd.startsWith('/') && qrisCommands[cmd]) {
+          const q = qrisCommands[cmd];
+          if (q.image) {
+            const msgData = {
+              sender: 'admin',
+              text: '💰 Pembayaran via ' + (q.label || cmd) + '. Silakan scan QRIS berikut:',
+              image: q.image,
+              timestamp: serverTimestamp()
+            };
+            await set(push(ref(db, `orders/${currentChatOrderId}/chat`)), msgData);
+            showToast('QRIS ' + (q.label || cmd) + ' terkirim!');
+            return;
+          }
+        }
+
+        // Normal message
         const msgData = { sender, timestamp: serverTimestamp() };
         if (text) msgData.text = text;
         if (img) msgData.image = img;
-        const chatRef = push(ref(db, `orders/${currentChatOrderId}/chat`));
-        await set(chatRef, msgData);
+        await set(push(ref(db, `orders/${currentChatOrderId}/chat`)), msgData);
       } catch(e) { console.error(e); showToast("Gagal kirim pesan.", "error"); }
     };
 
