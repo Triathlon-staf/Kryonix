@@ -90,6 +90,9 @@
     .send-btn:hover { background: var(--wa-greenDark); transform: scale(1.05); }
     .send-btn:active { transform: scale(0.95); }
     .send-btn.is-disabled { opacity: 0.35; pointer-events: none; }
+    .send-btn.sending { opacity: 0.6; pointer-events: none; }
+    .send-btn.sending i { animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
     .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wa-green); flex-shrink: 0; }
     .online-dot.pulse { animation: pulse 2s ease-in-out infinite; }
@@ -135,13 +138,6 @@
       overscroll-behavior-y: contain;
     }
 
-    /* Kirim indikator */
-    .send-btn.sending {
-      opacity: 0.6; pointer-events: none;
-    }
-    .send-btn.sending i { animation: spin 0.6s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
     @supports (height: 100dvh) {
       .app-layout { height: 100dvh; }
     }
@@ -158,7 +154,6 @@
 
   <div class="app-layout">
 
-    <!-- NAVBAR -->
     <nav class="flex-shrink-0 border-b border-wa-border" style="background: rgba(31,44,51,0.95); backdrop-filter: blur(12px);">
       <div class="max-w-full mx-auto px-4 h-14 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-2.5 group">
@@ -201,7 +196,6 @@
       </div>
     </nav>
 
-    <!-- CHAT HEADER -->
     <div class="flex-shrink-0 px-4 py-2.5 flex items-center justify-between border-b border-wa-border" style="background: var(--wa-header);">
       <div class="flex items-center gap-3">
         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center">
@@ -223,14 +217,12 @@
       </div>
     </div>
 
-    <!-- MESSAGES -->
     <div class="chat-scroll px-4 py-2" id="chatArea">
       <div class="flex justify-center py-16">
         <i class="fas fa-circle-notch fa-spin text-2xl text-wa-green"></i>
       </div>
     </div>
 
-    <!-- ★ FIX: BUKAN form, langsung div biasa ★ -->
     <div class="chat-input-wrap">
       <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"></textarea>
       <button type="button" id="sendBtn" class="send-btn is-disabled" aria-label="Kirim pesan">
@@ -239,7 +231,6 @@
     </div>
   </div>
 
-  <!-- visualViewport fix untuk keyboard Android -->
   <script>
     if (window.visualViewport) {
       function fixLayout() {
@@ -254,8 +245,9 @@
   </script>
 
   <script type="module">
+    // ★ FIX: onDisconnect sudah ditambahkan ke import ★
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, remove, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, remove, onDisconnect, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -279,16 +271,15 @@
     const sendBtn = document.getElementById('sendBtn');
     let lastMsgDate = '';
     let typingTimeout = null;
-    let isSending = false; // ★ FIX: guard anti double-send
+    let isSending = false;
 
-    // ── AUTH ──
     onAuthStateChanged(auth, async (user) => {
       const loader = document.getElementById('loadingScreen');
       if (!user) { window.location.href = 'login-buyer.html'; return; }
 
       myUid = user.uid;
       myName = user.email?.split('@')[0] || 'User';
-      try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) myName = s.val(); } catch(e) {}
+      try { const s = await get(ref(db, 'users/' + user.uid + '/name')); if (s.exists()) myName = s.val(); } catch(e) {}
       myInitial = myName.charAt(0).toUpperCase();
 
       document.getElementById('userMenu').classList.remove('hidden');
@@ -307,9 +298,8 @@
       listenTyping();
     });
 
-    // ── PRESENCE ──
     function setupPresence() {
-      const myPresenceRef = ref(db, `chat_online/${myUid}`);
+      const myPresenceRef = ref(db, 'chat_online/' + myUid);
       set(myPresenceRef, { name: myName, lastSeen: Date.now() });
       onDisconnect(myPresenceRef).remove();
       setInterval(() => { update(myPresenceRef, { lastSeen: Date.now() }); }, 30000);
@@ -339,16 +329,14 @@
       });
     }
 
-    // ── BUTTON STATE ──
     function syncBtnState() {
       sendBtn.classList.toggle('is-disabled', msgInput.value.trim().length === 0);
     }
+
     msgInput.addEventListener('input', () => {
       syncBtnState();
-      // auto-resize
       msgInput.style.height = 'auto';
       msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-      // typing indicator
       if (msgInput.value.trim()) {
         set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
       }
@@ -360,14 +348,12 @@
       }, 2000);
     });
 
-    // ★ FIX: hanya SATU cara kirim — click pada button
     sendBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
       sendMessage();
     });
 
-    // ★ FIX: Enter juga kirim, tapi cegah double-fire
     msgInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -375,13 +361,10 @@
       }
     });
 
-    // ★ FIX: cegah form submit apapun (tidak ada form lagi, tapi safety)
     document.addEventListener('submit', (e) => { e.preventDefault(); });
 
-    // ── SEND LOGIC (dengan guard + error handling) ──
     function sendMessage() {
-      if (isSending) return; // ★ guard: cegah double-send
-
+      if (isSending) return;
       const text = msgInput.value.trim();
       if (!text || !myUid) return;
 
@@ -396,20 +379,17 @@
         timestamp: Date.now()
       };
 
-      // ★ FIX: push dulu, BARU clear input setelah berhasil
       push(ref(db, "public_chat"), msgData)
         .then(() => {
-          // berhasil → clear input
           msgInput.value = '';
           msgInput.style.height = 'auto';
           syncBtnState();
           set(ref(db, "chat_typing"), null);
-          msgInput.blur(); // tutup keyboard setelah kirim
+          msgInput.blur();
           setTimeout(scrollBottom, 150);
           setTimeout(scrollBottom, 400);
         })
         .catch((err) => {
-          // gagal → JANGAN clear, biar user bisa coba lagi
           console.error('Gagal kirim:', err);
           alert('Gagal mengirim pesan. Coba lagi.');
           msgInput.focus();
@@ -425,7 +405,6 @@
       chatArea.scrollTop = chatArea.scrollHeight;
     }
 
-    // ── LOAD MESSAGES ──
     function loadMessages() {
       const q = query(ref(db, "public_chat"), orderByChild("timestamp"), limitToLast(100));
 
@@ -487,7 +466,6 @@
       chatArea.appendChild(wrapper);
     }
 
-    // ── UTILS ──
     function formatTime(ts) {
       if (typeof ts !== 'number') return '';
       return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
@@ -518,7 +496,6 @@
       return Math.abs(hash);
     }
 
-    // ── NAV ──
     window.toggleDropdown = () => {
       const dd = document.getElementById('userDropdown');
       const ch = document.getElementById('dropdownChevron');
