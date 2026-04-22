@@ -2,7 +2,7 @@
 <html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Public Chat | KRYONIX</title>
   <link rel="icon" type="image/png" href="images/icon.png">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -31,7 +31,7 @@
     .chat-bg {
       position: fixed; inset: 0;
       background-color: #0b141a;
-      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.015'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zM0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
       z-index: 0;
     }
 
@@ -39,6 +39,7 @@
       max-width: 65%; padding: 6px 8px 8px; border-radius: 8px; position: relative;
       animation: msgIn 0.2s ease;
       box-shadow: 0 1px 1px rgba(0,0,0,0.13);
+      word-wrap: break-word; overflow-wrap: break-word;
     }
     .msg-other { background: var(--wa-bubble); border-top-left-radius: 0; }
     .msg-me { background: var(--wa-bubble); border-top-right-radius: 0; }
@@ -70,9 +71,11 @@
       width: 42px; height: 42px; border-radius: 50%; border: none;
       background: var(--wa-green); color: white; cursor: pointer; display: flex;
       align-items: center; justify-content: center; flex-shrink: 0; transition: 0.15s;
+      -webkit-tap-highlight-color: transparent;
     }
     .send-btn:hover { background: var(--wa-greenDark); transform: scale(1.05); }
-    .send-btn:disabled { opacity: 0.4; cursor: default; transform: none; }
+    .send-btn:active { transform: scale(0.95); }
+    .send-btn.is-disabled { opacity: 0.35; pointer-events: none; }
 
     .online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--wa-green); flex-shrink: 0; }
     .online-dot.pulse { animation: pulse 2s ease-in-out infinite; }
@@ -110,9 +113,7 @@
     .nav-link.active-link { color: var(--wa-green); }
     .nav-link.active-link::after { width: 100%; }
 
-    .logo-img {
-      width: 36px; height: 36px; object-fit: cover; border-radius: 8px;
-    }
+    .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; }
   </style>
 </head>
 <body>
@@ -132,7 +133,7 @@
     <nav class="flex-shrink-0 border-b border-wa-border" style="background: rgba(31,44,51,0.95); backdrop-filter: blur(12px);">
       <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-2.5 group">
-          <img src="https://i.pinimg.com/736x/89/75/5d/89755dd7321afe2c3295a39df24e8309.jpg" alt="KRYONIX" class="logo-img">
+          <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="logo-img">
           <span class="text-base font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
         </a>
         <div class="hidden md:flex items-center gap-6">
@@ -174,7 +175,7 @@
     <!-- CHAT HEADER -->
     <div class="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b border-wa-border" style="background: var(--wa-header);">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-content-center">
           <i class="fas fa-comments text-black text-sm"></i>
         </div>
         <div>
@@ -200,13 +201,15 @@
       </div>
     </div>
 
-    <!-- INPUT AREA -->
-    <div class="chat-input-wrap flex-shrink-0">
-      <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1"></textarea>
-      <button id="sendBtn" class="send-btn" disabled>
-        <i class="fas fa-paper-plane text-sm"></i>
-      </button>
-    </div>
+    <!-- INPUT AREA (wrapped in form for Android fix) -->
+    <form id="chatForm" onsubmit="return false;" class="flex-shrink-0">
+      <div class="chat-input-wrap">
+        <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1"></textarea>
+        <button type="submit" id="sendBtn" class="send-btn is-disabled">
+          <i class="fas fa-paper-plane text-sm"></i>
+        </button>
+      </div>
+    </form>
   </div>
 
   <script type="module">
@@ -233,6 +236,7 @@
     const chatArea = document.getElementById('chatArea');
     const msgInput = document.getElementById('msgInput');
     const sendBtn = document.getElementById('sendBtn');
+    const chatForm = document.getElementById('chatForm');
     let lastMsgDate = '';
     let typingTimeout = null;
 
@@ -246,7 +250,6 @@
       try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) myName = s.val(); } catch(e) {}
       myInitial = myName.charAt(0).toUpperCase();
 
-      // Update navbar
       document.getElementById('userMenu').classList.remove('hidden');
       document.getElementById('loginBtn').classList.add('hidden');
       document.getElementById('navAvatar').textContent = myInitial;
@@ -268,9 +271,7 @@
       const myPresenceRef = ref(db, `chat_online/${myUid}`);
       set(myPresenceRef, { name: myName, lastSeen: Date.now() });
       onDisconnect(myPresenceRef).remove();
-      setInterval(() => {
-        update(myPresenceRef, { lastSeen: Date.now() });
-      }, 30000);
+      setInterval(() => { update(myPresenceRef, { lastSeen: Date.now() }); }, 30000);
     }
 
     // ── ONLINE COUNT ──
@@ -300,18 +301,72 @@
       });
     }
 
+    // ── ENABLE/DISABLE SEND BUTTON (multiple events for Android safety) ──
+    function syncBtnState() {
+      const hasText = msgInput.value.trim().length > 0;
+      sendBtn.classList.toggle('is-disabled', !hasText);
+    }
+
+    msgInput.addEventListener('input', syncBtnState);
+    msgInput.addEventListener('change', syncBtnState);
+
+    // ── TYPING TRIGGER (debounced) ──
     msgInput.addEventListener('input', () => {
       if (msgInput.value.trim()) {
         set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
       }
       clearTimeout(typingTimeout);
       typingTimeout = setTimeout(() => {
-        const typingRef = ref(db, "chat_typing");
-        get(typingRef).then(s => {
-          if (s.exists() && s.val().uid === myUid) set(typingRef, null);
+        get(ref(db, "chat_typing")).then(s => {
+          if (s.exists() && s.val().uid === myUid) set(ref(db, "chat_typing"), null);
         });
       }, 2000);
     });
+
+    // ── SEND VIA FORM SUBMIT (primary method — works on all platforms including Android) ──
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+
+    // ── SEND VIA CLICK (fallback) ──
+    sendBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      sendMessage();
+    });
+
+    // ── SEND VIA KEYDOWN (convenience) ──
+    msgInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    // ── ACTUAL SEND LOGIC ──
+    function sendMessage() {
+      const text = msgInput.value.trim();
+      if (!text || !myUid) return;
+
+      const trimmed = text.substring(0, 500);
+
+      push(ref(db, "public_chat"), {
+        senderUid: myUid,
+        senderName: myName,
+        text: trimmed,
+        timestamp: Date.now()
+      });
+
+      msgInput.value = '';
+      msgInput.style.height = 'auto';
+      syncBtnState();
+      scrollBottom();
+      set(ref(db, "chat_typing"), null);
+    }
+
+    function scrollBottom() {
+      requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+    }
 
     // ── LOAD MESSAGES ──
     function loadMessages() {
@@ -370,45 +425,6 @@
       chatArea.appendChild(wrapper);
     }
 
-    // ── SEND MESSAGE ──
-    function sendMessage() {
-      const text = msgInput.value.trim();
-      if (!text || !myUid) return;
-
-      const trimmed = text.substring(0, 500);
-
-      push(ref(db, "public_chat"), {
-        senderUid: myUid,
-        senderName: myName,
-        text: trimmed,
-        timestamp: Date.now()
-      });
-
-      msgInput.value = '';
-      msgInput.style.height = 'auto';
-      sendBtn.disabled = true;
-      scrollBottom();
-      set(ref(db, "chat_typing"), null);
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    msgInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    msgInput.addEventListener('input', () => {
-      msgInput.style.height = 'auto';
-      msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
-      sendBtn.disabled = !msgInput.value.trim();
-    });
-
-    function scrollBottom() {
-      requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
-    }
-
     // ── UTILS ──
     function formatTime(ts) {
       if (typeof ts !== 'number') return '';
@@ -421,7 +437,6 @@
       const d = new Date(ts);
       const today = new Date();
       const yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
-
       if (d.toDateString() === today.toDateString()) return 'HARI INI';
       if (d.toDateString() === yesterday.toDateString()) return 'KEMARIN';
       return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
