@@ -24,9 +24,35 @@
   </script>
 
   <style>
-    :root { --wa-dark: #0b141a; --wa-sidebar: #111b21; --wa-header: #1f2c33; --wa-border: #2a3942; --wa-green: #00a884; --wa-bubble: #005c4b; --wa-text: #e9edef; --wa-muted: #8696a0; --wa-time: #667781; --wa-input: #1e2b33; }
+    :root {
+      --wa-dark: #0b141a; --wa-sidebar: #111b21; --wa-header: #1f2c33;
+      --wa-border: #2a3942; --wa-green: #00a884; --wa-bubble: #005c4b;
+      --wa-text: #e9edef; --wa-muted: #8696a0; --wa-time: #667781; --wa-input: #1e2b33;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: var(--wa-dark); color: var(--wa-text); font-family: 'Space Grotesk', sans-serif; height: 100vh; overflow: hidden; }
+
+    /* ★ FIX UTAMA: gunakan dvh bukan vh ★ */
+    html, body {
+      height: 100%;
+      height: 100dvh;
+      overflow: hidden;
+    }
+    body {
+      background: var(--wa-dark);
+      color: var(--wa-text);
+      font-family: 'Space Grotesk', sans-serif;
+    }
+
+    /* ★ FIX: layout wrapper pakai dvh ★ */
+    .app-layout {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      position: relative;
+      z-index: 10;
+      overflow: hidden;
+    }
 
     .chat-bg {
       position: fixed; inset: 0;
@@ -57,15 +83,24 @@
     .date-sep::before, .date-sep::after { content: ''; flex: 1; height: 1px; background: var(--wa-border); }
     .date-sep span { font-size: 11px; color: var(--wa-muted); white-space: nowrap; padding: 0 8px; }
 
+    /* ★ FIX: input wrap pakai safe-area-inset-bottom untuk HP dengan nav bar bawah ★ */
     .chat-input-wrap {
-      background: var(--wa-input); border-top: 1px solid var(--wa-border);
-      padding: 10px 16px; display: flex; align-items: flex-end; gap: 10px;
+      background: var(--wa-input);
+      border-top: 1px solid var(--wa-border);
+      padding: 10px 12px;
+      padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      flex-shrink: 0;
     }
     .chat-input {
       flex: 1; background: var(--wa-dark); border: none; border-radius: 8px;
-      padding: 10px 16px; color: var(--wa-text); font-size: 0.95rem; outline: none;
-      font-family: 'Space Grotesk', sans-serif; resize: none; max-height: 120px; min-height: 42px; line-height: 1.4;
+      padding: 10px 14px; color: var(--wa-text); font-size: 16px; outline: none;
+      font-family: 'Space Grotesk', sans-serif; resize: none; max-height: 120px;
+      min-height: 42px; line-height: 1.4;
     }
+    /* ★ FIX: font-size 16px mencegah auto-zoom di iOS/Android ★ */
     .chat-input::placeholder { color: var(--wa-muted); }
     .send-btn {
       width: 42px; height: 42px; border-radius: 50%; border: none;
@@ -114,6 +149,20 @@
     .nav-link.active-link::after { width: 100%; }
 
     .logo-img { width: 36px; height: 36px; object-fit: cover; border-radius: 8px; }
+
+    /* ★ FIX: chat area harus bisa scroll tapi tidak overflow parent ★ */
+    .chat-scroll {
+      flex: 1 1 0%;
+      min-height: 0;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: contain;
+    }
+
+    /* ★ FIX: mencegah keyboard push layout di beberapa Android ★ */
+    @supports (height: 100dvh) {
+      .app-layout { height: 100dvh; }
+    }
   </style>
 </head>
 <body>
@@ -126,12 +175,12 @@
 
   <div class="chat-bg"></div>
 
-  <!-- LAYOUT -->
-  <div class="relative z-10 flex flex-col h-screen">
+  <!-- ★ FIX: pakai class app-layout bukan h-screen ★ -->
+  <div class="app-layout">
 
     <!-- NAVBAR -->
     <nav class="flex-shrink-0 border-b border-wa-border" style="background: rgba(31,44,51,0.95); backdrop-filter: blur(12px);">
-      <div class="max-w-full mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="max-w-full mx-auto px-4 h-14 flex items-center justify-between">
         <a href="index.html" class="flex items-center gap-2.5 group">
           <img src="https://i.pinimg.com/736x/89/75/5d/89755dd7321afe2c3295a39df24e8309.jpg" alt="KRYONIX" class="logo-img">
           <span class="text-base font-bold tracking-wide group-hover:text-green-400 transition hidden sm:inline">KRYONIX</span>
@@ -173,9 +222,9 @@
     </nav>
 
     <!-- CHAT HEADER -->
-    <div class="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b border-wa-border" style="background: var(--wa-header);">
+    <div class="flex-shrink-0 px-4 py-2.5 flex items-center justify-between border-b border-wa-border" style="background: var(--wa-header);">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-content-center">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-green-500 to-cyan-500 flex items-center justify-center">
           <i class="fas fa-comments text-black text-sm"></i>
         </div>
         <div>
@@ -189,32 +238,49 @@
       <div class="flex items-center gap-2">
         <div id="typingStatus" class="text-xs text-wa-muted hidden">
           <span class="typing-indicator"><span></span><span></span><span></span></span>
-          <span id="typingName" class="ml-1">seseorang</span> sedang mengetik...
+          <span id="typingName" class="ml-1">seseorang</span> mengetik...
         </div>
       </div>
     </div>
 
-    <!-- MESSAGES AREA -->
-    <div class="flex-1 overflow-y-auto px-4 py-2" id="chatArea">
+    <!-- ★ FIX: pakai class chat-scroll ★ -->
+    <div class="chat-scroll px-4 py-2" id="chatArea">
       <div class="flex justify-center py-16">
         <i class="fas fa-circle-notch fa-spin text-2xl text-wa-green"></i>
       </div>
     </div>
 
-    <!-- INPUT AREA (wrapped in form for Android fix) -->
+    <!-- INPUT AREA -->
     <form id="chatForm" onsubmit="return false;" class="flex-shrink-0">
       <div class="chat-input-wrap">
-        <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1"></textarea>
-        <button type="submit" id="sendBtn" class="send-btn is-disabled">
+        <textarea id="msgInput" class="chat-input" placeholder="Ketik pesan..." rows="1" autocomplete="off" autocorrect="off" autocapitalize="sentences" spellcheck="false"></textarea>
+        <button type="submit" id="sendBtn" class="send-btn is-disabled" aria-label="Kirim pesan">
           <i class="fas fa-paper-plane text-sm"></i>
         </button>
       </div>
     </form>
   </div>
 
+  <!-- ★ FIX: visual-viewport API untuk handle keyboard Android ★ -->
+  <script>
+    if (window.visualViewport) {
+      function fixLayout() {
+        const vv = window.visualViewport;
+        document.documentElement.style.setProperty('--vv-height', vv.height + 'px');
+        const layout = document.querySelector('.app-layout');
+        if (layout) {
+          layout.style.height = vv.height + 'px';
+        }
+      }
+      window.visualViewport.addEventListener('resize', fixLayout);
+      window.visualViewport.addEventListener('scroll', fixLayout);
+      fixLayout();
+    }
+  </script>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, remove, serverTimestamp, onDisconnect, orderByChild, limitToLast, query } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+    import { getDatabase, ref, push, set, update, onValue, onChildAdded, onChildChanged, onChildRemoved, get, remove, query, orderByChild, limitToLast } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -301,16 +367,21 @@
       });
     }
 
-    // ── ENABLE/DISABLE SEND BUTTON (multiple events for Android safety) ──
+    // ── ENABLE/DISABLE SEND ──
     function syncBtnState() {
       const hasText = msgInput.value.trim().length > 0;
       sendBtn.classList.toggle('is-disabled', !hasText);
     }
-
     msgInput.addEventListener('input', syncBtnState);
     msgInput.addEventListener('change', syncBtnState);
 
-    // ── TYPING TRIGGER (debounced) ──
+    // ── AUTO-RESIZE TEXTAREA ──
+    msgInput.addEventListener('input', () => {
+      msgInput.style.height = 'auto';
+      msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + 'px';
+    });
+
+    // ── TYPING TRIGGER ──
     msgInput.addEventListener('input', () => {
       if (msgInput.value.trim()) {
         set(ref(db, "chat_typing"), { uid: myUid, name: myName, timestamp: Date.now() });
@@ -323,19 +394,19 @@
       }, 2000);
     });
 
-    // ── SEND VIA FORM SUBMIT (primary method — works on all platforms including Android) ──
+    // ── SEND: form submit (utama untuk Android) ──
     chatForm.addEventListener('submit', (e) => {
       e.preventDefault();
       sendMessage();
     });
 
-    // ── SEND VIA CLICK (fallback) ──
+    // ── SEND: click fallback ──
     sendBtn.addEventListener('click', (e) => {
       e.preventDefault();
       sendMessage();
     });
 
-    // ── SEND VIA KEYDOWN (convenience) ──
+    // ── SEND: Enter key ──
     msgInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
@@ -343,29 +414,31 @@
       }
     });
 
-    // ── ACTUAL SEND LOGIC ──
+    // ── ACTUAL SEND ──
     function sendMessage() {
       const text = msgInput.value.trim();
       if (!text || !myUid) return;
 
-      const trimmed = text.substring(0, 500);
-
       push(ref(db, "public_chat"), {
         senderUid: myUid,
         senderName: myName,
-        text: trimmed,
+        text: text.substring(0, 500),
         timestamp: Date.now()
       });
 
       msgInput.value = '';
       msgInput.style.height = 'auto';
       syncBtnState();
-      scrollBottom();
+
+      // ★ FIX: scroll setelah keyboard mungkin masih terbuka ──
+      setTimeout(scrollBottom, 100);
+      setTimeout(scrollBottom, 300);
+
       set(ref(db, "chat_typing"), null);
     }
 
     function scrollBottom() {
-      requestAnimationFrame(() => { chatArea.scrollTop = chatArea.scrollHeight; });
+      chatArea.scrollTop = chatArea.scrollHeight;
     }
 
     // ── LOAD MESSAGES ──
@@ -428,10 +501,8 @@
     // ── UTILS ──
     function formatTime(ts) {
       if (typeof ts !== 'number') return '';
-      const d = new Date(ts);
-      return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      return new Date(ts).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
     }
-
     function formatDate(ts) {
       if (typeof ts !== 'number') return '';
       const d = new Date(ts);
@@ -441,23 +512,18 @@
       if (d.toDateString() === yesterday.toDateString()) return 'KEMARIN';
       return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase();
     }
-
     function escapeHtml(text) {
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
-
     function linkify(text) {
-      const urlRegex = /(https?:\/\/[^\s]+)/g;
-      return text.replace(urlRegex, '<a href="$1" target="_blank" rel="noopener" style="color:#53bdeb;text-decoration:underline;">$1</a>');
+      return text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:#53bdeb;text-decoration:underline;">$1</a>');
     }
-
     function hashCode(str) {
       let hash = 0;
       for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = ((hash << 5) - hash) + char;
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
         hash |= 0;
       }
       return Math.abs(hash);
@@ -467,11 +533,11 @@
     window.toggleDropdown = () => {
       const dd = document.getElementById('userDropdown');
       const ch = document.getElementById('dropdownChevron');
-      dd.classList.toggle('open');
-      dd.style.opacity = dd.classList.contains('open') ? '1' : '0';
-      dd.style.visibility = dd.classList.contains('open') ? 'visible' : 'hidden';
-      dd.style.transform = dd.classList.contains('open') ? 'translateY(0)' : 'translateY(-6px)';
-      ch.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
+      const isOpen = dd.classList.toggle('open');
+      dd.style.opacity = isOpen ? '1' : '0';
+      dd.style.visibility = isOpen ? 'visible' : 'hidden';
+      dd.style.transform = isOpen ? 'translateY(0)' : 'translateY(-6px)';
+      ch.style.transform = isOpen ? 'rotate(180deg)' : '';
     };
     document.addEventListener('click', (e) => {
       if (!document.getElementById('userMenu').contains(e.target)) {
