@@ -208,61 +208,152 @@
     .mobile-important-list { overflow: hidden; max-height: 0; transition: max-height 0.3s ease; }
     .mobile-important-list.open { max-height: 300px; }
 
-    /* ═══ TESTIMONIAL ═══ */
+    /* ═══ TESTIMONIAL — FIXED LAYOUT ═══ */
     .testi-card {
-      background: rgba(12,18,32,0.6); border: 1px solid var(--border); border-radius: 18px;
-      padding: 2rem; transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
-      position: relative; overflow: hidden;
+      background: rgba(12,18,32,0.6);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 0;
+      transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
     }
-    .testi-card::before {
-      content: '\201C'; position: absolute; top: -8px; right: 16px;
-      font-size: 7rem; font-family: Georgia, serif; line-height: 1;
-      color: rgba(0,232,157,0.04); pointer-events: none;
+    .testi-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--green), var(--cyan));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
     }
+    .testi-card:hover::after { transform: scaleX(1); }
     .testi-card:hover {
-      transform: translateY(-6px); border-color: rgba(0,232,157,0.35);
+      transform: translateY(-6px);
+      border-color: rgba(0,232,157,0.35);
       box-shadow: 0 16px 40px rgba(0,0,0,0.4), 0 0 20px rgba(0,232,157,0.08);
     }
-    .testi-stars { display: flex; gap: 3px; margin-bottom: 1rem; }
-    .testi-stars i { font-size: 0.75rem; color: #facc15; }
-    .testi-stars .empty { color: #1e293b; }
-    .testi-text {
-      font-size: 0.92rem; line-height: 1.7; color: #94a3b8; margin-bottom: 1.5rem;
-      display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+
+    /* Inner layout: top area (badge+stars), content, author */
+    .testi-top {
+      padding: 1.5rem 1.75rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
     }
-    .testi-author { display: flex; align-items: center; gap: 12px; }
-    .testi-avatar {
-      width: 42px; height: 42px; border-radius: 12px; object-fit: cover;
-      border: 1px solid rgba(255,255,255,0.08); background: #1a1f2e;
+    .testi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      letter-spacing: 0.4px;
+      flex-shrink: 0;
+    }
+    .testi-badge-buyer {
+      background: rgba(0,232,157,0.06);
+      border: 1px solid rgba(0,232,157,0.15);
+      color: rgba(0,232,157,0.7);
+    }
+    .testi-badge-admin {
+      background: rgba(0,196,255,0.06);
+      border: 1px solid rgba(0,196,255,0.15);
+      color: rgba(0,196,255,0.7);
+    }
+    .testi-stars {
+      display: flex;
+      gap: 2px;
+    }
+    .testi-stars i { font-size: 0.7rem; color: #facc15; }
+    .testi-stars .empty { color: #1e293b; }
+
+    .testi-content {
+      padding: 1.25rem 1.75rem;
+      flex: 1;
+      position: relative;
+    }
+    .testi-content::before {
+      content: '\201C';
+      position: absolute;
+      top: -4px;
+      left: 1.75rem;
+      font-size: 3rem;
+      font-family: Georgia, serif;
+      line-height: 1;
+      color: rgba(0,232,157,0.07);
+      pointer-events: none;
+    }
+    .testi-text {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: #94a3b8;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .testi-footer {
+      padding: 0 1.75rem 1.5rem;
+      margin-top: auto;
+    }
+    .testi-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin-bottom: 1rem;
+    }
+    .testi-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     .testi-avatar-fallback {
-      width: 42px; height: 42px; border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 700; font-size: 0.9rem; color: #060a10; flex-shrink: 0;
-      border: 1px solid rgba(255,255,255,0.08);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: #060a10;
+      flex-shrink: 0;
     }
-    .testi-name { font-size: 0.9rem; font-weight: 600; color: #e8ecf2; }
-    .testi-role { font-size: 0.75rem; color: #475569; font-family: 'JetBrains Mono', monospace; }
-    .testi-badge {
-      position: absolute; top: 1.25rem; left: 1.25rem;
-      display: flex; align-items: center; gap: 5px;
-      padding: 3px 10px; border-radius: 6px; font-size: 0.65rem;
-      font-family: 'JetBrains Mono', monospace; letter-spacing: 0.3px;
+    .testi-name {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #e8ecf2;
+      line-height: 1.3;
     }
-    .testi-badge-buyer { background: rgba(0,232,157,0.06); border: 1px solid rgba(0,232,157,0.15); color: rgba(0,232,157,0.7); }
-    .testi-badge-admin { background: rgba(0,196,255,0.06); border: 1px solid rgba(0,196,255,0.15); color: rgba(0,196,255,0.7); }
+    .testi-role {
+      font-size: 0.7rem;
+      color: #475569;
+      font-family: 'JetBrains Mono', monospace;
+    }
 
+    /* Skeleton */
     .testi-skeleton {
-      background: rgba(12,18,32,0.6); border: 1px solid var(--border); border-radius: 18px;
-      padding: 2rem; position: relative; overflow: hidden;
+      background: rgba(12,18,32,0.6);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      position: relative;
     }
     .testi-skeleton::after {
-      content: ''; position: absolute; inset: 0;
+      content: '';
+      position: absolute;
+      inset: 0;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.02), transparent);
       animation: shimmer 1.5s infinite;
     }
     @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-    .skel-line { height: 12px; border-radius: 6px; background: rgba(255,255,255,0.04); margin-bottom: 10px; }
+    .skel-line { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.04); margin-bottom: 8px; }
 
     /* ═══ FOOTER ═══ */
     .site-footer {
@@ -570,7 +661,7 @@
       </div>
     </div>
 
-    <!-- ═══ TESTIMONIALS (DYNAMIC FROM FIREBASE) ═══ -->
+    <!-- ═══ TESTIMONIALS ═══ -->
     <div class="max-w-7xl mx-auto px-6 mt-24 w-full reveal" style="transition-delay:0.1s;">
       <div class="flex items-end justify-between mb-10">
         <div>
@@ -585,10 +676,30 @@
       </div>
 
       <div id="homeTestiGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- 3 skeleton cards -->
-        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:100%;height:10px;"></div><div class="skel-line" style="width:90%;height:10px;"></div><div class="skel-line" style="width:75%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:60%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:40%;height:8px;margin-bottom:0;"></div></div></div></div>
-        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:100%;height:10px;"></div><div class="skel-line" style="width:85%;height:10px;"></div><div class="skel-line" style="width:70%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:55%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:35%;height:8px;margin-bottom:0;"></div></div></div></div>
-        <div class="testi-skeleton"><div class="skel-line" style="width:30%;height:10px;margin-bottom:16px;"></div><div class="skel-line" style="width:95%;height:10px;"></div><div class="skel-line" style="width:80%;height:10px;"></div><div class="skel-line" style="width:65%;height:10px;margin-bottom:20px;"></div><div style="display:flex;gap:12px;align-items:center;"><div class="skel-line" style="width:42px;height:42px;border-radius:12px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1;"><div class="skel-line" style="width:50%;height:10px;margin-bottom:6px;"></div><div class="skel-line" style="width:45%;height:8px;margin-bottom:0;"></div></div></div></div>
+        <div class="testi-skeleton">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-5"><div class="skel-line" style="width:60px;height:8px;margin-bottom:0;"></div><div class="skel-line" style="width:70px;height:8px;margin-bottom:0;"></div></div>
+            <div class="skel-line" style="width:100%;height:9px;"></div><div class="skel-line" style="width:88%;height:9px;"></div><div class="skel-line" style="width:72%;height:9px;margin-bottom:5px;"></div>
+            <div class="h-px bg-dark-border my-4"></div>
+            <div class="flex items-center gap-3"><div class="skel-line" style="width:38px;height:38px;border-radius:10px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1"><div class="skel-line" style="width:55%;height:8px;margin-bottom:5px;"></div><div class="skel-line" style="width:35%;height:7px;margin-bottom:0;"></div></div></div>
+          </div>
+        </div>
+        <div class="testi-skeleton">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-5"><div class="skel-line" style="width:55px;height:8px;margin-bottom:0;"></div><div class="skel-line" style="width:70px;height:8px;margin-bottom:0;"></div></div>
+            <div class="skel-line" style="width:95%;height:9px;"></div><div class="skel-line" style="width:80%;height:9px;"></div><div class="skel-line" style="width:65%;height:9px;margin-bottom:5px;"></div>
+            <div class="h-px bg-dark-border my-4"></div>
+            <div class="flex items-center gap-3"><div class="skel-line" style="width:38px;height:38px;border-radius:10px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1"><div class="skel-line" style="width:50%;height:8px;margin-bottom:5px;"></div><div class="skel-line" style="width:30%;height:7px;margin-bottom:0;"></div></div></div>
+          </div>
+        </div>
+        <div class="testi-skeleton">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-5"><div class="skel-line" style="width:50px;height:8px;margin-bottom:0;"></div><div class="skel-line" style="width:70px;height:8px;margin-bottom:0;"></div></div>
+            <div class="skel-line" style="width:90%;height:9px;"></div><div class="skel-line" style="width:75%;height:9px;"></div><div class="skel-line" style="width:85%;height:9px;margin-bottom:5px;"></div>
+            <div class="h-px bg-dark-border my-4"></div>
+            <div class="flex items-center gap-3"><div class="skel-line" style="width:38px;height:38px;border-radius:10px;flex-shrink:0;margin-bottom:0;"></div><div style="flex:1"><div class="skel-line" style="width:45%;height:8px;margin-bottom:5px;"></div><div class="skel-line" style="width:40%;height:7px;margin-bottom:0;"></div></div></div>
+          </div>
+        </div>
       </div>
 
       <div class="mt-8 text-center sm:hidden">
@@ -620,25 +731,17 @@
   <footer class="site-footer">
     <div class="footer-divider"></div>
     <div class="max-w-7xl mx-auto px-6 pt-16 pb-0">
-
       <div class="grid grid-cols-1 md:grid-cols-4 gap-10 pb-10">
-
         <div class="md:col-span-1">
           <a href="index.html" class="flex items-center gap-2.5 mb-4 group">
             <img src="https://cdn.discordapp.com/attachments/1442834960791769162/1495849456950841637/profile.png?ex=69e7bdde&is=69e66c5e&hm=bbfe25206f4188432365452ba76388c28075a6d3d2fadadb094415dc85bbcb72&" alt="KRYONIX" class="footer-logo-img">
             <span class="text-lg font-bold tracking-wide group-hover:text-green-400 transition">KRYONIX</span>
           </a>
-          <p class="text-sm text-gray-500 leading-relaxed mb-4" style="max-width:240px;">
-            Penyedia layanan Cloud Hosting & VPS berkinerja tinggi dengan dukungan 24/7.
-          </p>
+          <p class="text-sm text-gray-500 leading-relaxed mb-4" style="max-width:240px;">Penyedia layanan Cloud Hosting & VPS berkinerja tinggi dengan dukungan 24/7.</p>
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="footer-badge">
-              <span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span>
-              ALL SYSTEMS ONLINE
-            </span>
+            <span class="footer-badge"><span class="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></span> ALL SYSTEMS ONLINE</span>
           </div>
         </div>
-
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Navigasi</div>
           <div class="flex flex-col gap-2.5">
@@ -649,7 +752,6 @@
             <a href="testimoni.html" class="footer-link"><i class="fas fa-chevron-right"></i> Testimoni</a>
           </div>
         </div>
-
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Legal</div>
           <div class="flex flex-col gap-2.5">
@@ -659,7 +761,6 @@
             <a href="partner.html" class="footer-link"><i class="fas fa-chevron-right"></i> Partners</a>
           </div>
         </div>
-
         <div>
           <div class="text-xs font-bold tracking-widest text-gray-500 uppercase mb-4">Support</div>
           <div class="flex flex-col gap-2.5 mb-5">
@@ -675,9 +776,7 @@
             <a href="#" class="footer-social" title="YouTube"><i class="fab fa-youtube"></i></a>
           </div>
         </div>
-
       </div>
-
       <div class="footer-divider"></div>
       <div class="flex flex-col sm:flex-row items-center justify-between gap-3 py-6">
         <p class="text-xs text-gray-600 font-mono">&copy; 2025 KRYONIX. All rights reserved.</p>
@@ -691,7 +790,6 @@
           <a href="login-admin.html" class="text-[10px] text-gray-700 hover:text-green-500 transition font-mono flex items-center gap-1"><i class="fas fa-lock"></i> Admin</a>
         </div>
       </div>
-
     </div>
   </footer>
 
@@ -716,29 +814,20 @@
     const db = getDatabase(fbApp);
     const auth = getAuth(fbApp);
 
-    // ═══════════════════════════════════
-    // AUTH
-    // ═══════════════════════════════════
+    // ═══ AUTH ═══
     onAuthStateChanged(auth, async (user) => {
-      const userMenu    = document.getElementById('userMenu');
-      const loginBtn    = document.getElementById('loginBtn');
-      const mobileUser  = document.getElementById('mobileUserInfo');
+      const userMenu = document.getElementById('userMenu');
+      const loginBtn = document.getElementById('loginBtn');
+      const mobileUser = document.getElementById('mobileUserInfo');
       const mobileLogin = document.getElementById('mobileLoginBtn');
-
       if (user) {
         userMenu.classList.remove('hidden');
         loginBtn.classList.add('hidden');
         mobileUser.classList.remove('hidden');
         mobileLogin.classList.add('hidden');
-
         let name = user.email?.split('@')[0] || 'User';
-        try {
-          const snap = await get(ref(db, `users/${user.uid}/name`));
-          if (snap.exists()) name = snap.val();
-        } catch(e) {}
-
+        try { const s = await get(ref(db, `users/${user.uid}/name`)); if (s.exists()) name = s.val(); } catch(e) {}
         const initial = name.charAt(0).toUpperCase();
-
         document.getElementById('navAvatar').textContent = initial;
         document.getElementById('navName').textContent = name;
         document.getElementById('dropdownName').textContent = name;
@@ -754,31 +843,23 @@
       }
     });
 
-    // ═══════════════════════════════════
-    // DROPDOWNS
-    // ═══════════════════════════════════
+    // ═══ DROPDOWNS ═══
     window.toggleDropdown = () => {
-      const dd = document.getElementById('userDropdown');
-      const ch = document.getElementById('dropdownChevron');
+      const dd = document.getElementById('userDropdown'), ch = document.getElementById('dropdownChevron');
       dd.classList.toggle('open');
       ch.style.transform = dd.classList.contains('open') ? 'rotate(180deg)' : '';
     };
-
     window.toggleImportant = (e) => {
       if (e) e.stopPropagation();
-      const dd = document.getElementById('importantDropdown');
-      const trigger = document.getElementById('importantTrigger');
-      dd.classList.toggle('open');
-      trigger.classList.toggle('active');
+      document.getElementById('importantDropdown').classList.toggle('open');
+      document.getElementById('importantTrigger').classList.toggle('active');
     };
-
     window.toggleMobileImportant = () => {
       const list = document.getElementById('mobileImportantList');
       const chevron = document.getElementById('mobileImportantChevron');
       list.classList.toggle('open');
       chevron.style.transform = list.classList.contains('open') ? 'rotate(180deg)' : '';
     };
-
     document.addEventListener('click', (e) => {
       if (!document.getElementById('userMenu').contains(e.target)) {
         document.getElementById('userDropdown').classList.remove('open');
@@ -789,18 +870,10 @@
         document.getElementById('importantTrigger').classList.remove('active');
       }
     });
+    window.handleLogout = async () => { try { await signOut(auth); location.reload(); } catch(e){} };
+    document.getElementById('menuBtn').addEventListener('click', () => document.getElementById('mobileMenu').classList.toggle('hidden'));
 
-    window.handleLogout = async () => {
-      try { await signOut(auth); location.reload(); } catch(e) { console.error(e); }
-    };
-
-    document.getElementById('menuBtn').addEventListener('click', () => {
-      document.getElementById('mobileMenu').classList.toggle('hidden');
-    });
-
-    // ═══════════════════════════════════
-    // PARTICLES
-    // ═══════════════════════════════════
+    // ═══ PARTICLES ═══
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     let pArr = [];
@@ -829,9 +902,7 @@
     }
     animP();
 
-    // ═══════════════════════════════════
-    // TERMINAL TYPEWRITER
-    // ═══════════════════════════════════
+    // ═══ TERMINAL ═══
     const termLines = [
       {type:'prompt',text:'kryonix@sys:~$ '},{type:'cmd',text:'check status --verbose'},
       {type:'output',text:''},{type:'success',text:'  [OK] Firewall Active'},
@@ -852,9 +923,7 @@
         el.innerHTML=`<span class="prompt">${l.text}</span>`; termBody.appendChild(el); li++;
         if(li<termLines.length&&termLines[li].type==='cmd') typeCmd(el,termLines[li].text);
         else setTimeout(typeTerm,150);
-      } else {
-        el.className=l.type; el.textContent=l.text; termBody.appendChild(el); li++; setTimeout(typeTerm,80);
-      }
+      } else { el.className=l.type; el.textContent=l.text; termBody.appendChild(el); li++; setTimeout(typeTerm,80); }
       termBody.scrollTop=termBody.scrollHeight;
     }
     function typeCmd(container,text) {
@@ -870,19 +939,13 @@
     }
     setTimeout(typeTerm, 1000);
 
-    // ═══════════════════════════════════
-    // SCROLL REVEAL
-    // ═══════════════════════════════════
+    // ═══ SCROLL REVEAL ═══
     const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible');
-      });
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-    // ═══════════════════════════════════
-    // STAT COUNTER ANIMATION
-    // ═══════════════════════════════════
+    // ═══ STAT COUNTER ═══
     const statEl = document.querySelector('[data-count]');
     if (statEl) {
       const target = parseInt(statEl.getAttribute('data-count'));
@@ -890,46 +953,36 @@
       const countObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting && !counted) {
-            counted = true;
-            let current = 0;
-            const step = Math.ceil(target / 60);
-            const timer = setInterval(() => {
-              current += step;
-              if (current >= target) { current = target; clearInterval(timer); }
-              statEl.textContent = current + '+';
-            }, 20);
+            counted = true; let current = 0; const step = Math.ceil(target / 60);
+            const timer = setInterval(() => { current += step; if (current >= target) { current = target; clearInterval(timer); } statEl.textContent = current + '+'; }, 20);
           }
         });
       }, { threshold: 0.5 });
       countObserver.observe(statEl);
     }
 
-    // ═══════════════════════════════════
-    // HOMEPAGE TESTIMONIALS — DYNAMIC FROM FIREBASE
-    // ═══════════════════════════════════
+    // ═══ HOMEPAGE TESTIMONIALS ═══
     const homeTestiGrid = document.getElementById('homeTestiGrid');
     const TESTI_LIMIT = 3;
 
     const avatarGradients = [
-      'from-green-400 to-cyan-500',
-      'from-cyan-400 to-blue-500',
-      'from-purple-400 to-pink-500',
-      'from-amber-400 to-orange-500',
-      'from-emerald-400 to-teal-500',
-      'from-rose-400 to-red-500'
+      'from-green-400 to-cyan-500', 'from-cyan-400 to-blue-500',
+      'from-purple-400 to-pink-500', 'from-amber-400 to-orange-500',
+      'from-emerald-400 to-teal-500', 'from-rose-400 to-red-500'
     ];
 
     function getAvatarGradient(name) {
-      const code = name ? name.charCodeAt(0) : 0;
-      return avatarGradients[code % avatarGradients.length];
+      return avatarGradients[(name ? name.charCodeAt(0) : 0) % avatarGradients.length];
     }
 
     function buildStarsHtml(rating) {
-      let html = '';
-      for (let i = 1; i <= 5; i++) {
-        html += `<i class="fas fa-star ${i <= rating ? '' : 'empty'}"></i>`;
-      }
-      return html;
+      let h = '';
+      for (let i = 1; i <= 5; i++) h += `<i class="fas fa-star ${i <= rating ? '' : 'empty'}"></i>`;
+      return h;
+    }
+
+    function esc(str) {
+      return (str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     function renderHomeTestimonials(list) {
@@ -944,7 +997,6 @@
         return;
       }
 
-      const badgeColors = ['buyer', 'admin', 'buyer'];
       const badgeLabels = { buyer: 'USER', admin: 'VERIFIED' };
 
       list.forEach((t, idx) => {
@@ -952,7 +1004,6 @@
         const label = badgeLabels[src] || 'USER';
         const grad = getAvatarGradient(t.name);
         const initial = (t.name || '?').charAt(0).toUpperCase();
-        const safeText = (t.text || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
         const card = document.createElement('div');
         card.className = 'testi-card';
@@ -961,16 +1012,23 @@
         card.style.transition = `opacity 0.5s ease ${idx * 0.1}s, transform 0.5s ease ${idx * 0.1}s`;
 
         card.innerHTML = `
-          <div class="testi-badge testi-badge-${src}">
-            <i class="fas fa-check text-[8px]"></i> ${label}
+          <div class="testi-top">
+            <div class="testi-badge testi-badge-${src}">
+              <i class="fas fa-check text-[7px]"></i> ${label}
+            </div>
+            <div class="testi-stars">${buildStarsHtml(t.rating || 0)}</div>
           </div>
-          <div class="testi-stars">${buildStarsHtml(t.rating || 0)}</div>
-          <p class="testi-text">"${safeText}"</p>
-          <div class="testi-author">
-            <div class="testi-avatar-fallback bg-gradient-to-br ${grad}">${initial}</div>
-            <div>
-              <div class="testi-name">${(t.name || 'Anonim').replace(/</g, '&lt;')}</div>
-              <div class="testi-role">${t.product ? t.product.replace(/</g, '&lt;') : 'Pelanggan KRYONIX'}</div>
+          <div class="testi-content">
+            <p class="testi-text">"${esc(t.text)}"</p>
+          </div>
+          <div class="testi-footer">
+            <div class="testi-divider"></div>
+            <div class="testi-author">
+              <div class="testi-avatar-fallback bg-gradient-to-br ${grad}">${initial}</div>
+              <div>
+                <div class="testi-name">${esc(t.name) || 'Anonim'}</div>
+                <div class="testi-role">${esc(t.product) || 'Pelanggan KRYONIX'}</div>
+              </div>
             </div>
           </div>
         `;
@@ -989,19 +1047,9 @@
       try {
         const snap = await get(ref(db, 'testimonials'));
         const raw = snap.val();
-
-        if (!raw) {
-          renderHomeTestimonials([]);
-          return;
-        }
-
+        if (!raw) { renderHomeTestimonials([]); return; }
         const all = [];
-        Object.keys(raw).forEach(k => {
-          const t = raw[k];
-          if (t.approved === false) return;
-          all.push({ ...t });
-        });
-
+        Object.keys(raw).forEach(k => { const t = raw[k]; if (t.approved === false) return; all.push({ ...t }); });
         all.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
         renderHomeTestimonials(all.slice(0, TESTI_LIMIT));
       } catch (err) {
@@ -1010,15 +1058,10 @@
       }
     }
 
-    // Initial load
     loadHomeTestimonials();
-
-    // Refresh every 5 minutes
     setInterval(loadHomeTestimonials, 5 * 60 * 1000);
 
-    // ═══════════════════════════════════
-    // SECRET ADMIN TRIGGER (5x logo)
-    // ═══════════════════════════════════
+    // ═══ SECRET ADMIN TRIGGER ═══
     let logoClicks = 0, logoTimer;
     document.getElementById('logoLink').addEventListener('click', (e) => {
       logoClicks++;
@@ -1035,12 +1078,9 @@
       }
     });
 
-    // ═══════════════════════════════════
-    // NAVBAR SCROLL EFFECT
-    // ═══════════════════════════════════
+    // ═══ NAVBAR SCROLL ═══
     window.addEventListener('scroll', () => {
-      const navbar = document.getElementById('navbar');
-      navbar.style.boxShadow = window.scrollY > 100 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none';
+      document.getElementById('navbar').style.boxShadow = window.scrollY > 100 ? '0 4px 30px rgba(0,0,0,0.3)' : 'none';
     });
   </script>
 </body>
