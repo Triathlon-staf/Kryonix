@@ -29,7 +29,7 @@
     .nav-item{position:relative;transition:all .3s}
     .nav-item:hover,.nav-item.active{background:rgba(0,232,157,.05);color:var(--green)}
     .nav-item.active::before{content:'';position:absolute;left:0;top:10%;bottom:10%;width:3px;background:var(--green);border-radius:0 4px 4px 0}
-    /* 🔧 FIX #1: Tambah styling untuk mob-nav active */
+    /* 🔧 FIX #1: Styling mob-nav active */
     .mob-nav.active{background:rgba(0,232,157,.08);color:var(--green)}
     .admin-table th{text-align:left;padding:1rem;font-size:.8rem;text-transform:uppercase;letter-spacing:.05em;color:#5a6a80;border-bottom:1px solid var(--border)}
     .admin-table td{padding:0.85rem 1rem;border-bottom:1px solid #1e293b;font-size:.875rem}
@@ -132,7 +132,6 @@
     </header>
     <div class="flex-1 overflow-y-auto p-4 md:p-8">
 
-      <!-- TAB: PRODUCTS -->
       <div id="tab-products" class="tab-content">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div><h2 class="text-2xl font-bold">Product Management</h2><p class="text-sm text-gray-500">Kelola katalog hosting dan layanan.</p></div>
@@ -147,13 +146,11 @@
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full admin-table"><thead><tr><th>Product Info</th><th>Category</th><th class="text-right">Price</th><th class="text-center">Stock</th><th class="text-center">Actions</th></tr></thead><tbody id="products-tbody"><tr><td colspan="5" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody></table></div></div>
       </div>
 
-      <!-- TAB: ORDERS -->
       <div id="tab-orders" class="tab-content hidden">
         <div class="mb-8"><h2 class="text-2xl font-bold">Order Management</h2><p class="text-sm text-gray-500">Klik order untuk chat. Ketik <code class="text-green-400/80 bg-green-500/10 px-1.5 py-0.5 rounded text-[11px]">/donepayment</code> di chat untuk catat pembayaran berhasil.</p></div>
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full admin-table"><thead><tr><th>Buyer</th><th>Product</th><th>WhatsApp</th><th class="text-center">Status</th><th class="text-center">Chat</th><th class="text-center">Actions</th></tr></thead><tbody id="orders-tbody"><tr><td colspan="6" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody></table></div></div>
       </div>
 
-      <!-- TAB: PARTNERS -->
       <div id="tab-partners" class="tab-content hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div><h2 class="text-2xl font-bold">Partner Management</h2><p class="text-sm text-gray-500">Kelola daftar partner.</p></div>
@@ -168,7 +165,6 @@
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full admin-table"><thead><tr><th>Partner</th><th>Category</th><th>Website</th><th class="text-center">Actions</th></tr></thead><tbody id="partners-tbody"><tr><td colspan="4" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody></table></div></div>
       </div>
 
-      <!-- TAB: TESTIMONI -->
       <div id="tab-testimoni" class="tab-content hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div><h2 class="text-2xl font-bold">Testimoni Management</h2><p class="text-sm text-gray-500">Kelola dan moderasi testimoni.</p></div>
@@ -183,7 +179,6 @@
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full admin-table"><thead><tr><th>Review</th><th class="text-center">Rating</th><th class="text-center">Source</th><th class="text-center">Status</th><th class="text-center">Actions</th></tr></thead><tbody id="testi-tbody"><tr><td colspan="5" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody></table></div></div>
       </div>
 
-      <!-- TAB: DONE PAYMENT -->
       <div id="tab-donepayment" class="tab-content hidden">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div><h2 class="text-2xl font-bold">Done Payment</h2><p class="text-sm text-gray-500">Data yang tersimpan otomatis via <code class="text-green-400/80 bg-green-500/10 px-1.5 py-0.5 rounded text-[11px]">/donepayment</code> di chat order.</p></div>
@@ -197,7 +192,6 @@
         <div class="bg-dark-card border border-dark-border rounded-xl overflow-hidden shadow-xl"><div class="overflow-x-auto"><table class="w-full admin-table"><thead><tr><th>Buyer</th><th>Produk</th><th>Paket</th><th class="text-right">Harga</th><th class="text-center">Tampil</th><th class="text-center">Actions</th></tr></thead><tbody id="dp-tbody"><tr><td colspan="6" class="text-center py-10 text-gray-500"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr></tbody></table></div></div>
       </div>
 
-      <!-- TAB: SETTINGS -->
       <div id="tab-settings" class="tab-content hidden">
         <div class="max-w-3xl">
           <h2 class="text-2xl font-bold mb-6">General Settings</h2>
@@ -221,7 +215,6 @@
     </div>
   </main>
 
-  <!-- MODAL: PRODUCT -->
   <div id="productModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closeProductModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
@@ -241,7 +234,6 @@
     </div>
   </div>
 
-  <!-- MODAL: PARTNER -->
   <div id="partnerModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closePartnerModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
@@ -259,7 +251,6 @@
     </div>
   </div>
 
-  <!-- MODAL: TESTIMONI -->
   <div id="testiModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closeTestiModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-lg">
@@ -276,7 +267,6 @@
     </div>
   </div>
 
-  <!-- MODAL: DONE PAYMENT (manual add) -->
   <div id="doneModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closeDoneModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
@@ -296,7 +286,6 @@
     </div>
   </div>
 
-  <!-- MODAL: QRIS -->
   <div id="qrisModal" class="fixed inset-0 z-50 hidden">
     <div class="absolute inset-0 modal-backdrop" onclick="closeQrisModal()"></div>
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
@@ -312,7 +301,6 @@
     </div>
   </div>
 
-  <!-- PANEL: ORDER DETAIL + CHAT -->
   <div id="orderDetailPanel" class="hidden fixed inset-0 z-40">
     <div class="absolute inset-0 bg-black/60" onclick="closeOrderDetail()"></div>
     <div class="absolute right-0 top-0 bottom-0 w-full md:max-w-2xl bg-dark-bg border-l border-dark-border flex flex-col shadow-2xl">
@@ -340,9 +328,7 @@
           <div id="chatMessages" class="flex-1 overflow-y-auto px-4 pb-4 space-y-3"><div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div></div>
         </div>
       </div>
-      <!-- QRIS quick bar -->
       <div id="qrisQuickBar" class="hidden flex-shrink-0 border-t border-dark-border px-4 py-2 bg-dark-card/80"><div class="flex items-center gap-2 overflow-x-auto" id="qrisQuickBarInner"><span class="text-[10px] text-gray-600 font-mono flex-shrink-0">QRIS:</span></div></div>
-      <!-- Inline done-payment form -->
       <div id="dpFormBar" class="dp-form-bar flex-shrink-0 border-t border-dark-border">
         <div class="px-4 pt-3 pb-1 flex items-center gap-2">
           <i class="fas fa-check-circle text-green-400 text-sm"></i>
@@ -360,7 +346,6 @@
           <button onclick="submitDpFromChat()" class="ml-auto px-4 py-1.5 bg-green-600 hover:bg-green-500 text-black font-bold rounded-lg text-xs transition"><i class="fas fa-check mr-1"></i>Simpan</button>
         </div>
       </div>
-      <!-- Chat input -->
       <div class="flex-shrink-0 border-t border-dark-border p-4 bg-dark-card space-y-2">
         <div id="chatImagePreview" class="hidden img-preview-bar">
           <img id="chatPreviewImg" src="" alt="preview">
@@ -511,7 +496,8 @@
       document.getElementById('productModal').classList.remove('hidden');
       document.getElementById('productModalTitle').textContent = isEdit ? 'Edit Product' : 'Add New Product';
       if (isEdit && data) { editProductCache[data.id] = data; document.getElementById('prodId').value = data.id; document.getElementById('prodTitle').value = data.title; document.getElementById('prodCat').value = data.category; document.getElementById('prodPrice').value = data.price; document.getElementById('prodStock').value = data.stock; document.getElementById('prodImage').value = data.image || ''; document.getElementById('prodDesc').value = data.description; document.getElementById('prodFeatures').value = (data.features || []).join(', '); document.getElementById('prodIcon').value = data.icon || ''; }
-      else { document.getElementById('productForm').reset(); document.getElementById('prodId').value = ''; /* 🔧 FIX #2: Hapus editProductCache = {} — tidak perlu reset seluruh cache saat buka modal ADD */ }
+      /* 🔧 FIX #2: Jangan reset editProductCache saat buka modal ADD */
+      else { document.getElementById('productForm').reset(); document.getElementById('prodId').value = ''; }
     };
     window.closeProductModal = function() { document.getElementById('productModal').classList.add('hidden'); };
     window.handleProductSubmit = async function(e) {
@@ -576,4 +562,188 @@
       e.preventDefault(); var id = document.getElementById('dpId').value;
       var price = parseInt(document.getElementById('dpPrice').value);
       /* 🔧 FIX #3: Validasi harga > 0 */
-      if (!price || price <= 0) { showToast('Harga harus lebih dari 0.',
+      if (!price || price <= 0) { showToast('Harga harus lebih dari 0.', 'error'); return; }
+      var data = { buyerName: document.getElementById('dpBuyer').value.trim(), product: document.getElementById('dpProduct').value.trim(), pkg: document.getElementById('dpPackage').value.trim(), price: price, visible: document.getElementById('dpVisible').checked };
+      try { if (id) { await update(ref(db, 'done_payments/' + id), data); showToast('Diupdate!'); } else { data.createdAt = serverTimestamp(); await set(push(ref(db, 'done_payments')), data); showToast('Ditambahkan!'); } closeDoneModal(); } catch (e) { console.error(e); showToast('Gagal.', 'error'); }
+    };
+    window.toggleDoneVisible = async function(id, current) { try { await update(ref(db, 'done_payments/' + id), { visible: !current }); showToast(current ? 'Ditampilkan.' : 'Disembunyikan.'); } catch (e) { showToast('Gagal.', 'error'); } };
+    window.deleteDone = async function(id) { if (!confirm('Hapus?')) return; try { await remove(ref(db, 'done_payments/' + id)); showToast('Dihapus.'); } catch (e) { showToast('Gagal.', 'error'); } };
+    document.getElementById('dp-tbody').addEventListener('click', function(e) { var eb = e.target.closest('[data-dp-edit]'); var db2 = e.target.closest('[data-dp-del]'); var tb = e.target.closest('[data-dp-toggle]'); if (eb) openDoneModal(true, editDoneCache[eb.getAttribute('data-dp-edit')]); if (db2) deleteDone(db2.getAttribute('data-dp-del')); if (tb) { var p = tb.getAttribute('data-dp-toggle').split(','); toggleDoneVisible(p[0], p[1] === 'true'); } });
+    onValue(ref(db, 'done_payments'), function(snap) {
+      var tbody = document.getElementById('dp-tbody'); tbody.innerHTML = ''; var raw = snap.val(); var total = 0, revenue = 0, visible = 0;
+      if (!raw) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">Belum ada data.</td></tr>'; }
+      else { var sorted = Object.keys(raw).map(function(k) { return { key: k, val: raw[k] }; }).sort(function(a, b) { return (b.val.createdAt || 0) - (a.val.createdAt || 0); }); sorted.forEach(function(item) { var d = item.val; var k = item.key; total++; revenue += (d.price || 0); var vis = d.visible !== false; if (vis) visible++; editDoneCache[k] = { id: k, buyerName: d.buyerName, product: d.product, pkg: d.pkg, price: d.price, visible: vis }; var visClass = vis ? 'bg-green-500/10 text-green-400 border-green-500/20' : 'bg-gray-500/10 text-gray-500 border-gray-500/20'; var tr = document.createElement('tr'); tr.innerHTML = '<td class="font-bold text-sm text-white">' + esc(d.buyerName) + '</td><td class="text-sm text-gray-300">' + esc(d.product) + '</td><td class="text-xs font-mono text-gray-500">' + esc(d.pkg || '-') + '</td><td class="text-right font-mono text-sm text-green-400">Rp' + (d.price || 0).toLocaleString('id-ID') + '</td><td class="text-center"><button data-dp-toggle="' + k + ',' + vis + '" class="status-badge border ' + visClass + ' cursor-pointer hover:opacity-80 transition">' + (vis ? 'YA' : 'TIDAK') + '</button></td><td class="text-center whitespace-nowrap"><button data-dp-edit="' + k + '" class="text-cyan-400 hover:text-cyan-300 mx-0.5 p-1.5 rounded-lg hover:bg-cyan-500/10 transition"><i class="fas fa-edit"></i></button><button data-dp-del="' + k + '" class="text-red-400 hover:text-red-300 mx-0.5 p-1.5 rounded-lg hover:bg-red-500/10 transition"><i class="fas fa-trash"></i></button></td>'; tbody.appendChild(tr); }); }
+      document.getElementById('stat-dp-total').textContent = total; document.getElementById('stat-dp-revenue').textContent = 'Rp' + revenue.toLocaleString('id-ID'); document.getElementById('stat-dp-visible').textContent = visible;
+    });
+
+    // ═══ ORDERS ═══
+    onValue(ref(db, 'orders'), function(snap) {
+      var tbody = document.getElementById('orders-tbody'); tbody.innerHTML = ''; var raw = snap.val();
+      /* 🔧 FIX #4: Hitung order yang belum dibalas admin (lastMsg = buyer), bukan total pesan kumulatif */
+      var needsReply = 0;
+      if (!raw) { tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">Belum ada pesanan.</td></tr>'; }
+      else {
+        var sorted = Object.keys(raw).map(function(k) { return { key: k, val: raw[k] }; }).sort(function(a, b) { return (b.val.createdAt || 0) - (a.val.createdAt || 0); });
+        sorted.forEach(function(item) {
+          var o = item.val; var k = item.key;
+          /* Cek apakah pesan terakhir dari buyer → perlu balasan */
+          var lastMsgFromBuyer = false;
+          if (o.chat) {
+            var chatKeys = Object.keys(o.chat);
+            if (chatKeys.length > 0) {
+              var lastKey = chatKeys[chatKeys.length - 1];
+              if (o.chat[lastKey].sender === 'buyer') lastMsgFromBuyer = true;
+            }
+          }
+          if (lastMsgFromBuyer) needsReply++;
+          /* Jika tidak ada chat sama sekali, juga dihitung perlu reply */
+          if (!o.chat || Object.keys(o.chat).length === 0) needsReply++;
+
+          var ss = statusStyles[o.status] || statusStyles.pending;
+          /* Tampilkan jumlah pesan buyer di tombol chat */
+          var buyerMsgCount = 0;
+          if (o.chat) { Object.values(o.chat).forEach(function(m) { if (m.sender === 'buyer') buyerMsgCount++; }); }
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td class="font-bold text-sm text-white">' + esc(o.buyerName) + '</td><td class="text-sm text-gray-400">' + esc(o.productTitle) + '</td><td class="text-sm font-mono text-gray-400">' + esc(o.buyerWhatsapp) + '</td><td class="text-center"><span class="status-badge border ' + ss + '">' + (o.status || 'pending') + '</span></td><td class="text-center"><button data-order-chat="' + k + '" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 hover:bg-cyan-500/20 transition"><i class="fas fa-comments"></i> Chat' + (buyerMsgCount ? '<span class="w-4 h-4 bg-cyan-500 text-black text-[10px] font-bold rounded-full flex items-center justify-center">' + buyerMsgCount + '</span>' : '') + '</button></td><td class="text-center"><button data-order-del="' + k + '" class="text-red-400 hover:text-red-300 p-1"><i class="fas fa-trash"></i></button></td>';
+          tbody.appendChild(tr);
+        });
+      }
+      var bv = needsReply > 99 ? '99+' : String(needsReply); var bd = document.getElementById('orderBadge'); var bm = document.getElementById('orderBadgeMob');
+      if (needsReply > 0) { bd.classList.remove('hidden'); bd.textContent = bv; bm.classList.remove('hidden'); bm.textContent = bv; } else { bd.classList.add('hidden'); bm.classList.add('hidden'); }
+    });
+    document.getElementById('orders-tbody').addEventListener('click', function(e) { var cb = e.target.closest('[data-order-chat]'); var db2 = e.target.closest('[data-order-del]'); if (cb) openOrderDetail(cb.getAttribute('data-order-chat')); if (db2) deleteOrder(db2.getAttribute('data-order-del')); });
+    window.updateOrderStatusFromPanel = async function() {
+      if (!currentChatOrderId) return; var ns = document.getElementById('detailStatus').value;
+      try { await update(ref(db, 'orders/' + currentChatOrderId), { status: ns }); var os = await get(ref(db, 'orders/' + currentChatOrderId)); var o = os.val(); if (o) { var lb = { pending: 'Menunggu Pembayaran', processing: 'Sedang Diproses', completed: 'Pesanan Selesai!', cancelled: 'Pesanan Dibatalkan' }; await set(push(ref(db, 'notifications/pending')), { title: 'KRYONIX — Update Pesanan', body: '"' + (o.productTitle || '') + '" sekarang: ' + (lb[ns] || ns), url: '/track.html', orderId: currentChatOrderId, createdAt: serverTimestamp() }); } showToast('Status diupdate!'); } catch (e) { showToast('Gagal.', 'error'); }
+    };
+    window.deleteOrder = async function(k) {
+      if (!confirm('Hapus order?')) return;
+      if (k === currentChatOrderId) closeOrderDetail();
+      try { await remove(ref(db, 'orders/' + k)); showToast('Dihapus.'); } catch (e) { showToast('Gagal.', 'error'); }
+    };
+
+    // ═══ ORDER CHAT ═══
+    var currentChatOrderId = null, unsubOrder = null, unsubChat = null, pendingChatImage = null;
+    var cachedOrderData = {};
+
+    window.openOrderDetail = function(orderId) {
+      if (unsubOrder) { unsubOrder(); unsubOrder = null; }
+      if (unsubChat) { unsubChat(); unsubChat = null; }
+      currentChatOrderId = orderId; cachedOrderData = {};
+      document.getElementById('orderDetailPanel').classList.remove('hidden');
+      document.getElementById('chatMessages').innerHTML = '<div class="text-center text-gray-600 text-sm py-8"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat...</div>';
+      document.getElementById('chatInput').value = '';
+      clearChatImage(); hideDpForm(); renderQrisQuickBar();
+
+      unsubOrder = onValue(ref(db, 'orders/' + orderId), function(snap) {
+        var o = snap.val();
+        if (!o) { closeOrderDetail(); showToast('Order dihapus.', 'error'); return; }
+        cachedOrderData = { buyerName: o.buyerName || '-', productTitle: o.productTitle || '-', price: o.price || 0 };
+        document.getElementById('detailOrderId').textContent = orderId.slice(-6).toUpperCase();
+        document.getElementById('detailBuyerName').textContent = o.buyerName || '-';
+        document.getElementById('detailProduct').textContent = o.productTitle || '-';
+        document.getElementById('detailPrice').textContent = 'Rp ' + (o.price || 0).toLocaleString('id-ID') + '/bln';
+        var wa = o.buyerWhatsapp || '';
+        document.getElementById('detailWaText').textContent = wa;
+        document.getElementById('detailWaText').href = 'https://wa.me/' + wa;
+        document.getElementById('detailWaLink').href = 'https://wa.me/' + wa + '?text=Halo%20' + encodeURIComponent(o.buyerName || '') + '%2C%20terkait%20pesanan%20anda%20di%20KRYONIX.';
+        document.getElementById('detailNote').textContent = o.orderNote || '-';
+        document.getElementById('detailDate').textContent = formatTime(o.createdAt);
+        document.getElementById('detailStatus').value = o.status || 'pending';
+        var ss = statusStyles[o.status] || statusStyles.pending;
+        document.getElementById('detailStatus').className = 'text-xs font-mono px-3 py-1 rounded-lg border outline-none cursor-pointer focus:border-green-500 ' + ss;
+      });
+
+      unsubChat = onValue(ref(db, 'orders/' + orderId + '/chat'), function(snap) {
+        var c = document.getElementById('chatMessages'); var raw = snap.val(); c.innerHTML = '';
+        if (!raw) { c.innerHTML = '<div class="text-center text-gray-600 text-sm py-8">Belum ada pesan.</div>'; return; }
+        var msgs = Object.keys(raw).map(function(mk) { return { key: mk, val: raw[mk] }; }).sort(function(a, b) { return (a.val.timestamp || 0) - (b.val.timestamp || 0); });
+        msgs.forEach(function(m) {
+          var isMe = m.val.sender === 'admin'; var div = document.createElement('div'); div.className = 'flex ' + (isMe ? 'justify-end' : 'justify-start');
+          var ch = '';
+          if (m.val.text) ch += '<p class="text-sm text-gray-200 break-words">' + esc(m.val.text) + '</p>';
+          if (m.val.image) { var ik = 'img_' + m.key; imageStore[ik] = m.val.image; ch += '<img src="' + esc(m.val.image) + '" loading="lazy" class="rounded-lg mt-1.5 max-w-[260px] cursor-pointer hover:brightness-110 transition border border-white/5" onclick="viewImage(\'' + ik + '\')">'; }
+          ch += '<p class="text-[10px] ' + (isMe ? 'text-green-500/50' : 'text-gray-600') + ' mt-1 text-right">' + formatTime(m.val.timestamp) + '</p>';
+          div.innerHTML = '<div class="chat-bubble ' + (isMe ? 'bg-green-500/10 border-green-500/20' : 'bg-dark-card border-dark-border') + ' border rounded-2xl ' + (isMe ? 'rounded-br-sm' : 'rounded-bl-sm') + ' px-4 py-2.5">' + ch + '</div>';
+          c.appendChild(div);
+        });
+        requestAnimationFrame(function() { requestAnimationFrame(function() { c.scrollTop = c.scrollHeight; }); });
+      });
+    };
+
+    window.closeOrderDetail = function() {
+      if (unsubOrder) { unsubOrder(); unsubOrder = null; }
+      if (unsubChat) { unsubChat(); unsubChat = null; }
+      currentChatOrderId = null; cachedOrderData = {};
+      document.getElementById('orderDetailPanel').classList.add('hidden');
+      hideDpForm();
+    };
+
+    window.showDpForm = function() {
+      if (!currentChatOrderId) return;
+      var f = document.getElementById('dpFormBar'); f.classList.add('open');
+      document.getElementById('dpChatBuyer').value = cachedOrderData.buyerName || '';
+      document.getElementById('dpChatProduct').value = cachedOrderData.productTitle || '';
+      document.getElementById('dpChatPrice').value = cachedOrderData.price || '';
+      document.getElementById('dpChatPkg').value = '1 Bulan';
+      document.getElementById('dpChatVisible').checked = true;
+      document.getElementById('chatInput').value = '';
+    };
+    window.hideDpForm = function() { document.getElementById('dpFormBar').classList.remove('open'); };
+
+    window.submitDpFromChat = async function() {
+      /* 🔧 FIX #6: Guard null orderId */
+      if (!currentChatOrderId) { showToast('Tidak ada order aktif.', 'error'); return; }
+      var buyer = document.getElementById('dpChatBuyer').value.trim();
+      var product = document.getElementById('dpChatProduct').value.trim();
+      var pkg = document.getElementById('dpChatPkg').value.trim();
+      var price = parseInt(document.getElementById('dpChatPrice').value);
+      if (!buyer || !product || !price || price <= 0) { showToast('Isi data wajib dengan benar.', 'error'); return; }
+      try {
+        var data = { buyerName: buyer, product: product, pkg: pkg, price: price, visible: document.getElementById('dpChatVisible').checked, createdAt: serverTimestamp() };
+        await set(push(ref(db, 'done_payments')), data);
+        await set(push(ref(db, 'orders/' + currentChatOrderId + '/chat')), { sender: 'admin', text: '\u2705 Payment berhasil dicatat untuk @' + buyer + ' \u2014 ' + product + ' (' + pkg + ').', timestamp: serverTimestamp() });
+        hideDpForm();
+        showToast('Done payment disimpan!');
+      } catch (e) { console.error(e); showToast('Gagal.', 'error'); }
+    };
+
+    window.sendChat = async function(sender) {
+      /* 🔧 FIX #5: Guard null orderId — cegah tulis ke path null di Firebase */
+      if (!currentChatOrderId) { showToast('Tidak ada order aktif.', 'error'); return; }
+      var input = document.getElementById('chatInput'); var text = input.value.trim(); var img = pendingChatImage;
+      if (!text && !img) return;
+      if (text.toLowerCase().trim() === '/donepayment') { input.value = ''; showDpForm(); return; }
+      input.value = ''; clearChatImage();
+      try {
+        var cmd = text.toLowerCase().trim();
+        if (cmd.startsWith('/') && qrisCommands[cmd]) {
+          var q = qrisCommands[cmd];
+          if (q.image) { await set(push(ref(db, 'orders/' + currentChatOrderId + '/chat')), { sender: 'admin', text: '\uD83D\uDCB0 Pembayaran via ' + (q.label || cmd) + '. Scan QRIS:', image: q.image, timestamp: serverTimestamp() }); showToast('QRIS terkirim!'); return; }
+        }
+        var md = { sender: sender, timestamp: serverTimestamp() };
+        if (text) md.text = text;
+        if (img) md.image = img;
+        await set(push(ref(db, 'orders/' + currentChatOrderId + '/chat')), md);
+      } catch (e) { console.error(e); showToast('Gagal kirim.', 'error'); }
+    };
+
+    document.getElementById('chatInput').addEventListener('keydown', function(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat('admin'); } });
+    document.getElementById('chatImageInput').addEventListener('change', async function(e) {
+      var file = e.target.files[0]; if (!file) return;
+      try { showToast('Memproses...'); pendingChatImage = await compressImage(file); document.getElementById('chatPreviewImg').src = pendingChatImage; document.getElementById('chatPreviewName').textContent = file.name; document.getElementById('chatImagePreview').classList.remove('hidden'); } catch (err) { showToast(typeof err === 'string' ? err : 'Gagal.', 'error'); }
+      e.target.value = '';
+    });
+    window.clearChatImage = function() { pendingChatImage = null; document.getElementById('chatImagePreview').classList.add('hidden'); };
+
+    // ═══ SETTINGS ═══
+    function loadSettings() { get(ref(db, 'settings/site_info')).then(function(s) { if (s.exists()) document.getElementById('tos-input').value = s.val().tos || ''; }).catch(function() {}); }
+    window.saveSettings = async function() { try { await update(ref(db, 'settings/site_info'), { tos: document.getElementById('tos-input').value }); showToast('Disimpan!'); } catch (e) { showToast('Gagal.', 'error'); } };
+
+    loadQrisCommands();
+  </script>
+  <script>
+    if ('serviceWorker' in navigator) { window.addEventListener('load', function() { navigator.serviceWorker.register('/sw.js').then(function(r) { console.log('[SW] OK'); }).catch(function(e) { console.warn('[SW] Fail:', e); }); }); }
+  </script>
+</body>
+</html>
