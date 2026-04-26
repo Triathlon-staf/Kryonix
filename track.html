@@ -277,31 +277,59 @@
           const sl=statusLabels[o.status]||o.status;
           let chatCount=0; if(o.chat) chatCount=Object.keys(o.chat).length;
           const div=document.createElement('div');
-          div.className='bg-dark-card border border-dark-border rounded-2xl p-5 hover:border-green-500/30 transition cursor-pointer';
-          div.onclick=()=>openOrderDetail(o.key);
-          div.innerHTML=`
-            <div class="flex items-start justify-between mb-3">
-              <div>
-                <h3 class="font-bold text-white text-lg">${o.productTitle||'-'}</h3>
-                <p class="text-green-400 font-mono text-sm">Rp ${(o.price||0).toLocaleString('id-ID')}/bln</p>
+          div.className='bg-dark-card border border-dark-border rounded-2xl p-5 hover:border-green-500/30 transition';
+
+          // Multi-product: tampilkan tombol chat per admin group
+          if(o.isMultiProduct && o.adminGroups && o.adminGroups.length > 1){
+            const groupBtns = o.adminGroups.map((g,i)=>`
+              <button onclick="openOrderDetail('${o.key}','${g.adminId||''}','${(g.adminName||'Admin').replace(/'/g,"\\'")}',${i})"
+                class="flex-1 text-center py-2 px-2 rounded-lg border border-dark-border hover:border-cyan-500/40 text-xs text-gray-400 hover:text-cyan-300 transition">
+                <i class="fas fa-comments mb-1 block text-cyan-500/60"></i>
+                <span class="font-mono">${g.adminName||'Admin'}</span>
+                <span class="block text-[10px] text-gray-600">${g.items?g.items.length:0} produk</span>
+              </button>`).join('');
+            div.innerHTML=`
+              <div class="flex items-start justify-between mb-3">
+                <div class="min-w-0 flex-1 mr-3">
+                  <h3 class="font-bold text-white text-base leading-tight truncate">${o.productTitle||'-'}</h3>
+                  <p class="text-green-400 font-mono text-sm">Rp ${(o.price||0).toLocaleString('id-ID')}/bln</p>
+                  <p class="text-[10px] text-gray-600 mt-0.5 font-mono">MULTI-PRODUK · ${o.adminGroups.length} penjual</p>
+                </div>
+                <span class="status-badge border ${ss} flex-shrink-0">${sl}</span>
               </div>
-              <span class="status-badge border ${ss}">${sl}</span>
-            </div>
-            <div class="flex items-center justify-between text-xs text-gray-500">
-              <span><i class="far fa-calendar mr-1"></i>${formatTime(o.createdAt)}</span>
-              <span class="flex items-center gap-1 ${chatCount?'text-cyan-400':'text-gray-600'}"><i class="fas fa-comments"></i> ${chatCount} pesan</span>
-            </div>
-          `;
+              <p class="text-[10px] text-gray-600 mb-2"><i class="far fa-calendar mr-1"></i>${formatTime(o.createdAt)}</p>
+              <p class="text-xs text-gray-500 mb-2">Chat dengan penjual:</p>
+              <div class="flex gap-2">${groupBtns}</div>`;
+          } else {
+            div.onclick=()=>openOrderDetail(o.key);
+            div.style.cursor='pointer';
+            const adminInfo = o.adminName ? `<span class="text-[10px] text-gray-600 font-mono"><i class="fas fa-user-shield mr-1 text-[9px]"></i>${o.adminName}</span>` : '';
+            div.innerHTML=`
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-white text-lg">${o.productTitle||'-'}</h3>
+                  <p class="text-green-400 font-mono text-sm">Rp ${(o.price||0).toLocaleString('id-ID')}/bln</p>
+                  ${adminInfo}
+                </div>
+                <span class="status-badge border ${ss}">${sl}</span>
+              </div>
+              <div class="flex items-center justify-between text-xs text-gray-500">
+                <span><i class="far fa-calendar mr-1"></i>${formatTime(o.createdAt)}</span>
+                <span class="flex items-center gap-1 ${chatCount?'text-cyan-400':'text-gray-600'}"><i class="fas fa-comments"></i> ${chatCount} pesan</span>
+              </div>`;
+          }
           results.appendChild(div);
         });
       },{onlyOnce:true});
     }
 
     // ═══ ORDER DETAIL + CHAT ═══
-    let currentChatOrderId=null, unsubOrder=null, unsubChat=null;
+    let currentChatOrderId=null, currentAdminFilter=null, currentAdminFilterName=null, unsubOrder=null, unsubChat=null;
 
-    window.openOrderDetail=(orderId)=>{
+    window.openOrderDetail=(orderId, adminId, adminName, groupIdx)=>{
       currentChatOrderId=orderId;
+      currentAdminFilter = adminId || null;
+      currentAdminFilterName = adminName || null;
       document.getElementById('orderDetailPanel').classList.remove('hidden');
       document.getElementById('chatMessages').innerHTML='<div class="text-center text-gray-600 text-sm py-8"><i class="fas fa-spinner fa-spin mr-1"></i>Memuat...</div>';
       document.getElementById('chatInput').value='';
@@ -312,7 +340,14 @@
         const o=snap.val(); if(!o)return;
         document.getElementById('detailOrderId').textContent=orderId.slice(-6).toUpperCase();
         document.getElementById('detailBuyerName').textContent=o.buyerName||'-';
-        document.getElementById('detailProduct').textContent=o.productTitle||'-';
+        // For multi-product, show which admin's products we're viewing
+        if(o.isMultiProduct && currentAdminFilterName){
+          const group = (o.adminGroups||[]).find(g=>g.adminId===currentAdminFilter);
+          const items = group ? group.items.map(i=>i.productTitle).join(', ') : o.productTitle;
+          document.getElementById('detailProduct').textContent=`[${currentAdminFilterName}] ${items}`;
+        } else {
+          document.getElementById('detailProduct').textContent=o.productTitle||'-';
+        }
         document.getElementById('detailPrice').textContent='Rp '+(o.price||0).toLocaleString('id-ID')+'/bln';
         document.getElementById('detailNote').textContent=o.orderNote||'-';
         document.getElementById('detailDate').textContent=formatTime(o.createdAt);
@@ -326,7 +361,12 @@
         const container=document.getElementById('chatMessages');
         const raw=snap.val(); container.innerHTML='';
         if(!raw){container.innerHTML='<div class="text-center text-gray-600 text-sm py-8">Belum ada pesan. Tanyakan sesuatu ke admin.</div>';return;}
-        const msgs=Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+        let msgs=Object.keys(raw).map(k=>({key:k,...raw[k]})).sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));
+        // Filter pesan berdasarkan adminId jika multi-product
+        if(currentAdminFilter){
+          msgs=msgs.filter(m=>!m.targetAdminId || m.targetAdminId===currentAdminFilter || m.sender==='buyer');
+        }
+        if(!msgs.length){container.innerHTML='<div class="text-center text-gray-600 text-sm py-8">Belum ada pesan untuk penjual ini.</div>';return;}
         msgs.forEach(m=>{
           const isMe=m.sender==='buyer';
           const div=document.createElement('div');
@@ -364,6 +404,8 @@
         const msgData={sender, timestamp:serverTimestamp()};
         if(text) msgData.text=text;
         if(img) msgData.image=img;
+        // Tag pesan dengan targetAdminId supaya bisa difilter per admin
+        if(currentAdminFilter) msgData.targetAdminId=currentAdminFilter;
         const chatRef=push(ref(db,`orders/${currentChatOrderId}/chat`));
         await set(chatRef, msgData);
       }catch(e){console.error(e);showToast("Gagal kirim pesan.","error");}
