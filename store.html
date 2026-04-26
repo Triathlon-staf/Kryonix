@@ -286,11 +286,6 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Tombol Keranjang -->
-        <button onclick="openCart()" class="relative w-9 h-9 rounded-lg hover:bg-white/5 flex items-center justify-center transition text-gray-400 hover:text-green-400">
-          <i class="fas fa-shopping-cart text-base"></i>
-          <span id="cartBadge" class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-green-500 text-black text-[9px] font-bold rounded-full flex items-center justify-center">0</span>
-        </button>
         <div id="userMenu" class="user-menu hidden">
           <button onclick="toggleDropdown()" class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-white/5 transition">
             <div class="w-7 h-7 rounded-full bg-green-500/10 border border-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold" id="navAvatar">?</div>
@@ -459,36 +454,6 @@
       </div>
     </div>
   </footer>
-
-  <!-- ═══════════ CART MODAL ═══════════ -->
-  <div id="cartModal" class="fixed inset-0 z-50 hidden">
-    <div class="absolute inset-0 order-modal-backdrop" onclick="closeCart()"></div>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
-      <div class="bg-dark-card border border-dark-border rounded-2xl shadow-2xl m-4 overflow-hidden">
-        <div class="flex items-center justify-between p-5 border-b border-dark-border">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center">
-              <i class="fas fa-shopping-cart text-green-400 text-sm"></i>
-            </div>
-            <h3 class="text-lg font-bold">Keranjang Belanja</h3>
-          </div>
-          <button onclick="closeCart()" class="w-8 h-8 rounded-lg hover:bg-white/5 flex items-center justify-center text-gray-500 hover:text-white transition">
-            <i class="fas fa-times text-sm"></i>
-          </button>
-        </div>
-        <div id="cartItems" class="p-5 max-h-72 overflow-y-auto"></div>
-        <div class="px-5 pb-5 pt-3 border-t border-dark-border space-y-3">
-          <div class="flex items-center justify-between text-sm">
-            <span class="text-gray-500 font-mono">TOTAL</span>
-            <span id="cartTotal" class="text-green-400 font-bold text-base font-mono">Rp 0</span>
-          </div>
-          <button id="cartCheckoutBtn" onclick="checkoutCart()" disabled class="w-full py-3 rounded-xl bg-green-600 hover:bg-green-500 disabled:opacity-40 disabled:cursor-not-allowed text-black font-bold transition text-sm">
-            <i class="fas fa-receipt mr-2"></i>Lanjut Checkout
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- ═══════════ ORDER MODAL ═══════════ -->
   <div id="orderModal" class="fixed inset-0 z-50 hidden">
@@ -673,15 +638,13 @@
 
       const sorted = Object.keys(raw)
         .map(k => ({ key: k, ...raw[k] }))
-        .sort((a, b) => (a.title || '').localeCompare(b.title || '', 'id', { sensitivity: 'base' }));
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
       sorted.forEach((p, idx) => {
         const card = document.createElement('div');
         card.className = 'product-card';
         card.dataset.category = p.category || '';
         card.dataset.searchText = ((p.title || '') + ' ' + (p.description || '') + ' ' + (p.category || '')).toLowerCase();
-        card.dataset.adminId = p.adminId || '';
-        card.dataset.adminName = p.adminName || 'Admin';
 
         const outOfStock = (p.stock || 0) <= 0;
         const lowStock = (p.stock || 0) > 0 && (p.stock || 0) <= 5;
@@ -715,8 +678,8 @@
               ${!outOfStock ? `<div class="text-xs font-mono ${lowStock ? 'text-yellow-400' : 'text-gray-500'}">${p.stock} stok</div>` : ''}
             </div>
             <ul class="mb-6 space-y-2">${featuresHtml}</ul>
-            <button class="btn-buy" ${outOfStock ? 'disabled' : ''} onclick="addToCart('${p.key}', '${safeTitle}', ${p.price}, '${p.adminId || ''}', '${(p.adminName || 'Admin').replace(/'/g, "\\'")}')">
-              ${outOfStock ? '<i class="fas fa-ban mr-2"></i> STOK HABIS' : '<i class="fas fa-cart-plus mr-2"></i> TAMBAH KE KERANJANG'}
+            <button class="btn-buy" ${outOfStock ? 'disabled' : ''} onclick="openOrderModal('${p.key}', '${safeTitle}', ${p.price})">
+              ${outOfStock ? '<i class="fas fa-ban mr-2"></i> STOK HABIS' : '<i class="fas fa-shopping-cart mr-2"></i> BELI SEKARANG'}
             </button>
           </div>
         `;
@@ -808,130 +771,7 @@
       applyFilters();
     };
 
-    // ═══ KERANJANG BELANJA ═══
-    let cart = [];
-
-    window.addToCart = (productId, productTitle, price, adminId, adminName) => {
-      const existing = cart.find(item => item.productId === productId);
-      if (existing) {
-        showToast(`"${productTitle}" sudah ada di keranjang!`, 'error');
-        return;
-      }
-      cart.push({ productId, productTitle, price, adminId: adminId || '', adminName: adminName || 'Admin' });
-      updateCartBadge();
-      showToast(`"${productTitle}" ditambahkan ke keranjang!`);
-    };
-
-    function updateCartBadge() {
-      const badge = document.getElementById('cartBadge');
-      if (cart.length > 0) {
-        badge.textContent = cart.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-    }
-
-    window.removeFromCart = (productId) => {
-      cart = cart.filter(item => item.productId !== productId);
-      updateCartBadge();
-      renderCartItems();
-    };
-
-    function renderCartItems() {
-      const container = document.getElementById('cartItems');
-      const totalEl = document.getElementById('cartTotal');
-      const checkoutBtn = document.getElementById('cartCheckoutBtn');
-
-      if (!cart.length) {
-        container.innerHTML = `
-          <div class="text-center py-10">
-            <i class="fas fa-shopping-cart text-4xl text-gray-700 mb-4 block"></i>
-            <p class="text-gray-500 text-sm">Keranjang kosong</p>
-          </div>`;
-        totalEl.textContent = 'Rp 0';
-        checkoutBtn.disabled = true;
-        return;
-      }
-
-      // Kelompokkan per admin
-      const grouped = {};
-      cart.forEach(item => {
-        const key = item.adminId || 'unknown';
-        if (!grouped[key]) grouped[key] = { adminName: item.adminName, items: [] };
-        grouped[key].items.push(item);
-      });
-
-      let html = '';
-      Object.keys(grouped).forEach(adminId => {
-        const group = grouped[adminId];
-        html += `<div class="mb-4">
-          <div class="text-[10px] font-mono text-gray-600 mb-2 flex items-center gap-1.5">
-            <i class="fas fa-user-shield text-green-500/60"></i>
-            <span class="text-green-400/70">${group.adminName}</span>
-          </div>`;
-        group.items.forEach(item => {
-          html += `<div class="flex items-center justify-between py-2 border-b border-dark-border last:border-0">
-            <div class="min-w-0 flex-1">
-              <div class="text-sm text-white font-semibold truncate">${item.productTitle}</div>
-              <div class="text-xs font-mono text-green-400">Rp ${item.price.toLocaleString('id-ID')}/bln</div>
-            </div>
-            <button onclick="removeFromCart('${item.productId}')" class="ml-3 text-red-400 hover:text-red-300 w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/10 flex-shrink-0 transition">
-              <i class="fas fa-trash text-xs"></i>
-            </button>
-          </div>`;
-        });
-        html += `</div>`;
-      });
-
-      container.innerHTML = html;
-
-      const total = cart.reduce((sum, item) => sum + item.price, 0);
-      totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
-      checkoutBtn.disabled = false;
-    }
-
-    window.openCart = () => {
-      renderCartItems();
-      document.getElementById('cartModal').classList.remove('hidden');
-    };
-    window.closeCart = () => document.getElementById('cartModal').classList.add('hidden');
-
-    // ═══ CHECKOUT DARI KERANJANG ═══
-    window.checkoutCart = () => {
-      if (!cart.length) return;
-      // Isi form checkout dengan info keranjang
-      const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
-      const productTitles = cart.map(i => i.productTitle).join(', ');
-
-      document.getElementById('orderProductId').value = cart.map(i => i.productId).join(',');
-      document.getElementById('orderProductTitle').value = productTitles;
-      document.getElementById('orderPrice').value = totalPrice;
-
-      // Tampilkan info produk per admin di modal order
-      const grouped = {};
-      cart.forEach(item => {
-        const key = item.adminId || 'unknown';
-        if (!grouped[key]) grouped[key] = { adminName: item.adminName, items: [] };
-        grouped[key].items.push(item);
-      });
-
-      let infoHtml = '';
-      Object.keys(grouped).forEach(adminId => {
-        const group = grouped[adminId];
-        infoHtml += `<div class="mb-1.5">
-          <span class="text-[10px] font-mono text-green-500/60"><i class="fas fa-user-shield mr-1"></i>${group.adminName}:</span>
-          ${group.items.map(i => `<span class="text-green-400 font-bold text-sm">${i.productTitle}</span> <span class="font-mono text-white text-xs">Rp ${i.price.toLocaleString('id-ID')}</span>`).join(', ')}
-        </div>`;
-      });
-      infoHtml += `<div class="mt-2 pt-2 border-t border-dark-border text-xs font-mono text-white">Total: <span class="text-green-400 font-bold">Rp ${totalPrice.toLocaleString('id-ID')}</span>/bln</div>`;
-
-      document.getElementById('orderProductInfo').innerHTML = infoHtml;
-      closeCart();
-      document.getElementById('orderModal').classList.remove('hidden');
-    };
-
-    // ═══ ORDER MODAL (single product) ═══
+    // ═══ ORDER MODAL ═══
     window.openOrderModal = (productId, productTitle, price) => {
       document.getElementById('orderProductId').value = productId;
       document.getElementById('orderProductTitle').value = productTitle;
@@ -946,7 +786,7 @@
     // ═══ SUBMIT ORDER ═══
     window.submitOrder = async (e) => {
       e.preventDefault();
-      const productIdRaw = document.getElementById('orderProductId').value;
+      const productId = document.getElementById('orderProductId').value;
       const productTitle = document.getElementById('orderProductTitle').value;
       const price = parseInt(document.getElementById('orderPrice').value) || 0;
       const buyerName = document.getElementById('orderName').value.trim();
@@ -958,86 +798,26 @@
         return;
       }
 
-      const isMulti = cart.length > 1 && productIdRaw.includes(',');
-      const productIds = productIdRaw.split(',').filter(Boolean);
-
       try {
-        if (isMulti) {
-          // Order multi-produk: simpan sebagai 1 order dengan items[]
-          // Kelompokkan per admin untuk info chat
-          const grouped = {};
-          cart.forEach(item => {
-            const key = item.adminId || 'unknown';
-            if (!grouped[key]) grouped[key] = { adminId: item.adminId, adminName: item.adminName, items: [] };
-            grouped[key].items.push(item);
-          });
+        const productRef = ref(db, `products/${productId}`);
+        const result = await runTransaction(productRef, (currentData) => {
+          if (!currentData) return undefined;
+          if ((currentData.stock || 0) <= 0) return undefined;
+          return { ...currentData, stock: currentData.stock - 1 };
+        });
 
-          // Kurangi stok semua produk
-          for (const item of cart) {
-            const productRef = ref(db, `products/${item.productId}`);
-            const result = await runTransaction(productRef, (currentData) => {
-              if (!currentData) return undefined;
-              if ((currentData.stock || 0) <= 0) return undefined;
-              return { ...currentData, stock: currentData.stock - 1 };
-            });
-            if (!result.committed) {
-              showToast(`Stok "${item.productTitle}" habis!`, "error");
-              return;
-            }
-          }
-
-          const orderRef = push(ref(db, "orders"));
-          await set(orderRef, {
-            productId: productIdRaw,
-            productTitle,
-            price,
-            buyerName,
-            buyerWhatsapp,
-            buyerWhatsappClean: buyerWhatsapp.replace(/\D/g, ''),
-            orderNote,
-            status: 'pending',
-            buyerUid: auth.currentUser.uid,
-            isMultiProduct: true,
-            items: cart.map(i => ({ productId: i.productId, productTitle: i.productTitle, price: i.price, adminId: i.adminId || '', adminName: i.adminName || 'Admin' })),
-            adminGroups: Object.keys(grouped).map(k => ({ adminId: grouped[k].adminId, adminName: grouped[k].adminName, items: grouped[k].items })),
-            createdAt: serverTimestamp()
-          });
-
-          cart = [];
-          updateCartBadge();
-        } else {
-          // Order single produk
-          const productId = productIds[0];
-          const productRef = ref(db, `products/${productId}`);
-          const result = await runTransaction(productRef, (currentData) => {
-            if (!currentData) return undefined;
-            if ((currentData.stock || 0) <= 0) return undefined;
-            return { ...currentData, stock: currentData.stock - 1 };
-          });
-
-          if (!result.committed) {
-            showToast("Stok habis! Produk sudah dibeli orang lain.", "error");
-            return;
-          }
-
-          // Ambil adminId dari cart jika ada, atau dari produk langsung
-          const cartItem = cart.find(i => i.productId === productId);
-          const adminId = cartItem ? cartItem.adminId : '';
-          const adminName = cartItem ? cartItem.adminName : 'Admin';
-
-          const orderRef = push(ref(db, "orders"));
-          await set(orderRef, {
-            productId, productTitle, price, buyerName, buyerWhatsapp,
-            buyerWhatsappClean: buyerWhatsapp.replace(/\D/g, ''),
-            orderNote, status: 'pending', buyerUid: auth.currentUser.uid,
-            adminId, adminName,
-            isMultiProduct: false,
-            createdAt: serverTimestamp()
-          });
-
-          cart = cart.filter(i => i.productId !== productId);
-          updateCartBadge();
+        if (!result.committed) {
+          showToast("Stok habis! Produk sudah dibeli orang lain.", "error");
+          return;
         }
+
+        const orderRef = push(ref(db, "orders"));
+        await set(orderRef, {
+          productId, productTitle, price, buyerName, buyerWhatsapp,
+          buyerWhatsappClean: buyerWhatsapp.replace(/\D/g, ''),
+          orderNote, status: 'pending', buyerUid: auth.currentUser.uid,
+          createdAt: serverTimestamp()
+        });
 
         closeOrderModal();
         showToast("Pesanan berhasil dikirim!");
