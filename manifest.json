@@ -1,7 +1,7 @@
 {
-  "name": "KRYONIX",
-  "short_name": "KRYONIX",
-  "description": "Cloud Hosting & VPS Provider",
+  "name": "ADMIN KRYONIX",
+  "short_name": "ADMIN KRYONIX",
+  "description": "Cloud Hosting, VPS Provider, & APP PREMIUM",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#060a10",
